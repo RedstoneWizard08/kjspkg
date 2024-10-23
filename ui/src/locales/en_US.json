@@ -1,0 +1,68 @@
+{
+    "name": "English",
+
+    "errors.something_went_wrong": "Something went wrong",
+    "errors.package_not_found": "Here, have a cookie, if that makes you feel any better: 🍪",
+    "errors.package_not_found.details": "Fun fact: You can use '@author:name' to view packages made by an author. What 'bout using '@details' to get technical details on each package?",
+    "errors.no_packages_published": "Looks like you don't have any approved packages published to KJSPKG. How sad!",
+    "errors.automatin_down": "Our statistics database seems to be down",
+    "errors.automatin_down.details": "Download and view counts might be missing. Please report this to",
+    "errors.automatin_down.server": "our Discord server",
+
+    "menu.language": "Language",
+    "menu.theme": "Theme",
+
+    "list.by": "by",
+    "list.detailed.on_branch": "on branch",
+    "list.detailed.at_path": "at path",
+    "list.detailed.in_repo": "in repo",
+    "list.download_singluar": "download",
+    "list.download_plural": "downloads",
+    "list.view_singular": "view",
+    "list.view_plural": "views",
+
+    "author.owns": "owns",
+    "author.package_singular": "package",
+    "author.package_plural": "packages",
+    "author.you": "is you!",
+    "author.organizations": "Organizations",
+
+    "author.auth_required": "To access this page, you have to first authenticate yourself through GitHub.",
+    "author.auth_required.login": "Log in",
+
+    "search.placeholder": "Search for packages",
+    "search.package_singular": "package",
+    "search.package_plural": "packages",
+    "search.found_singular": "Found <span>%d</span>",
+    "search.found_plural": "Found <span>%d</span>",
+    "search.matching": "matching",
+    "search.made_by": "made by",
+    "search.detailed": "detailed",
+
+    "search.show_details": "Show details",
+    "search.clear_filters": "Clear filters",
+    "search.use_view.list": "Use list view",
+    "search.use_view.compact": "Use compact view",
+
+    "search.sorted_by": "Sorted by",
+    "search.sort_type.name": "Name (a-z)",
+    "search.sort_type.author": "Author (a-z)",
+    "search.sort_type.downloads": "Download count",
+    "search.sort_type.views": "View count",
+    "search.sorted_by.name": "name",
+    "search.sorted_by.author": "author",
+    "search.sorted_by.downloads": "downloads",
+    "search.sorted_by.views": "views",
+
+    "package.created_by": "Created by",
+    "package.available_for": "Available for",
+    "package.manage_package": "Manage package (click to copy)",
+    "package.readme_file": "README file",
+    "package.package_preview": "Package preview",
+
+    "package.depends_on": "Depends on",
+    "package.incompatible_with": "Incompatible with",
+    "package.dependency.kjs_package": "KJS package",
+    "package.dependency.external_mod": "external mod",
+    "package.dependency.mod_open_in": "Open in"
+}

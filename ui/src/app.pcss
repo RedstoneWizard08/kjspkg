@@ -1,0 +1,151 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    @apply h-full overflow-hidden;
+}
+
+@layer utilities {
+    .style-markdown h1 {
+        @apply h1 mb-2 mt-4 font-bold;
+    }
+    .style-markdown h2 {
+        @apply h2 mb-2 mt-4 font-bold;
+    }
+    .style-markdown h3 {
+        @apply h3 mb-2 mt-4 font-bold;
+    }
+
+    .style-markdown strong {
+        @apply font-bold;
+    }
+    .style-markdown em {
+        @apply italic;
+    }
+    .style-markdown s {
+        @apply line-through;
+    }
+    .style-markdown blockquote {
+        @apply blockquote p-2;
+    }
+
+    .style-markdown ol > li {
+        @apply ml-6 list-decimal;
+    }
+    .style-markdown ul > li {
+        @apply ml-6 list-disc;
+    }
+
+    .style-markdown pre {
+        @apply bg-surface-backdrop-token pre w-full overflow-auto text-nowrap;
+    }
+    .style-markdown pre > code {
+        @apply select-text;
+    }
+
+    .style-markdown code:not(pre code) {
+        @apply code select-text;
+    }
+
+    .style-markdown a {
+        @apply anchor;
+    }
+    .style-markdown img {
+        @apply rounded-container-token;
+    }
+
+    .style-markdown table {
+        @apply table;
+    }
+
+    /* --------- */
+
+    .style-markdown a > img[alt="kjspkg-available"] {
+        animation: kjspkgBadge 2s infinite ease-out;
+        animation-delay: 1s;
+        animation-iteration-count: 1;
+    }
+}
+
+@keyframes kjspkgBadge {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+
+    75% {
+        scale: 100%;
+    }
+    85% {
+        scale: 110%;
+    }
+    96% {
+        scale: 100%;
+    }
+
+    100% {
+        filter: hue-rotate(360deg);
+    }
+}
+
+/* @layer base {
+	body {
+		@apply border-8 border-error-900;
+	}
+	body::after {
+		@apply absolute left-0 top-0 z-50 rounded bg-error-900 p-2 text-sm;
+		content: 'Work in progress! Expect bugs.';
+	}
+} */
+
+* {
+    @apply select-none;
+}
+
+:root.color-animated * {
+    @apply transition-colors duration-[750ms] ease-in-out;
+}
+
+/* ------------------------------------------------------------------------------------- */
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slide-from-right {
+    from {
+        transform: translateX(30px);
+    }
+}
+
+@keyframes slide-to-left {
+    to {
+        transform: translateX(-30px);
+    }
+}
+
+:root::view-transition-old(root) {
+    animation:
+        90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+}
+
+:root::view-transition-new(root) {
+    animation:
+        210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+.vt-none {
+    view-transition-name: _;
+}

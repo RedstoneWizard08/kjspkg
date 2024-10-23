@@ -1,0 +1,68 @@
+{
+    "name": "Italiano",
+
+    "errors.something_went_wrong": "Qualcosa è andato storto",
+    "errors.package_not_found": "Tieni , prendi questo biscotto , se può farti sentire meglio : 🍪",
+    "errors.package_not_found.details": "Curiosità : Puoi usare '@author:name' per filtrare via autore . Cosa ne pensi di usare '@details' per visualizzare più dettagli tecnici di ogni pacchetto? ",
+    "errors.no_packages_published": "Sembra che non tu abbia ancora un progetto pubblicato su KJSPKG. Male!",
+    "errors.automatin_down": "I nostri database sembrano offline",
+    "errors.automatin_down.details": "Scarica e il numero di visualizzazioni può mancare. Per favore reportalo",
+    "errors.automatin_down.server": "Nostro server Discord",
+
+    "menu.language": "Lingua",
+    "menu.theme": "Tema",
+
+    "list.by": "creato da",
+    "list.detailed.on_branch": "per ramo",
+    "list.detailed.at_path": "per percorso",
+    "list.detailed.in_repo": "repository",
+    "list.download_singluar": "download",
+    "list.download_plural": "downloads",
+    "list.view_singular": "visualizzazione",
+    "list.view_plural": "visualizzazioni",
+
+    "author.owns": "nostri",
+    "author.package_singular": "pacchetto",
+    "author.package_plural": "pacchetti",
+    "author.you": "Eccoti!",
+    "author.organizations": "Organizzazione",
+
+    "author.auth_required": "Per accedere a questa pagina è necessario avere un accesso su GitHub.",
+    "author.auth_required.login": "Accedi",
+
+    "search.placeholder": "Cerca per pacchetto",
+    "search.package_singular": "pacchetto",
+    "search.package_plural": "pacchetti",
+    "search.found_singular": "Trovato <span>%d</span>",
+    "search.found_plural": "Trovato <span>%d</span>",
+    "search.matching": "con",
+    "search.made_by": "creato da",
+    "search.detailed": "dettagliato",
+
+    "search.show_details": "Mostra dettagli",
+    "search.clear_filters": "Cancella i filtri",
+    "search.use_view.list": "Usa la vista a lista",
+    "search.use_view.compact": "Usa la vista compatta",
+
+    "search.sorted_by": "Ordina per",
+    "search.sort_type.name": "Nome (a-z)",
+    "search.sort_type.author": "Autore (a-z)",
+    "search.sort_type.downloads": "Numero di Download",
+    "search.sort_type.views": "Visualizzazioni",
+    "search.sorted_by.name": "nome",
+    "search.sorted_by.author": "autore",
+    "search.sorted_by.downloads": "downloads",
+    "search.sorted_by.views": "visualizzazioni",
+
+    "package.created_by": "Creato da",
+    "package.available_for": "Disponibile per",
+    "package.manage_package": "Gestisci pacchetto (premi per copiare)",
+    "package.readme_file": "README file",
+    "package.package_preview": "Anteprima del pacchetto",
+
+    "package.depends_on": "Requisiti",
+    "package.incompatible_with": "Incompatibile con",
+    "package.dependency.kjs_package": "KJS pacchetto",
+    "package.dependency.external_mod": "Mod esterna",
+    "package.dependency.mod_open_in": "Aperto in"
+}

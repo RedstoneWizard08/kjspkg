@@ -1,0 +1,68 @@
+{
+    "name": "Gen Alpha Slang",
+
+    "errors.something_went_wrong": "Something went sus",
+    "errors.package_not_found": "Here, have a grimace shake, if that makes you feel any more skibidi: 🥤",
+    "errors.package_not_found.details": "Zesty fact: You can use '@author:name' to view packages made by a sigma. What 'bout using '@details' to get yap on each package?",
+    "errors.no_packages_published": "Looks like you don't have any sus packages published to KJSPKG. Ratio!",
+    "errors.automatin_down": "Our statistics database is not giving skibidi vibes",
+    "errors.automatin_down.details": "Rizz and fanum tax counts might be missing. Please yap this out to",
+    "errors.automatin_down.server": "our Ohio server",
+
+    "menu.language": "Yap",
+    "menu.theme": "Mewing",
+
+    "list.by": "by sigma",
+    "list.detailed.on_branch": "on branch",
+    "list.detailed.at_path": "at path",
+    "list.detailed.in_repo": "in repo",
+    "list.download_singluar": "rizz",
+    "list.download_plural": "rizz",
+    "list.view_singular": "fanum tax",
+    "list.view_plural": "fanum tax",
+
+    "author.owns": "has level",
+    "author.package_singular": "gyat",
+    "author.package_plural": "gyat",
+    "author.you": "drank grimace shake!",
+    "author.organizations": "Ohionizations",
+
+    "author.auth_required": "To access this mid page, you have to first ratio yourself through GitHub.",
+    "author.auth_required.login": "Touch grass",
+
+    "search.placeholder": "Glow-up some packages",
+    "search.package_singular": "gyat",
+    "search.package_plural": "gyat",
+    "search.found_singular": "Level <span>%d</span>",
+    "search.found_plural": "Level <span>%d</span>",
+    "search.matching": "giving",
+    "search.made_by": "made by sigma",
+    "search.detailed": "yapped out",
+
+    "search.show_details": "Show more yap",
+    "search.clear_filters": "Gatekeep filters",
+    "search.use_view.list": "Use yap view",
+    "search.use_view.compact": "Use skibidi view",
+
+    "search.sorted_by": "Looksmaxxing by",
+    "search.sort_type.name": "Ick (a-z)",
+    "search.sort_type.author": "Sigma name (a-z)",
+    "search.sort_type.downloads": "Rizz count",
+    "search.sort_type.views": "Fanum tax",
+    "search.sorted_by.name": "ick",
+    "search.sorted_by.author": "sigma name",
+    "search.sorted_by.downloads": "rizz",
+    "search.sorted_by.views": "fanum tax",
+
+    "package.created_by": "Created by sigma",
+    "package.available_for": "Hits different for",
+    "package.manage_package": "Rizz up the package (click to copy)",
+    "package.readme_file": "Yapping file",
+    "package.package_preview": "Kai senat preview",
+
+    "package.depends_on": "Simps for",
+    "package.incompatible_with": "Vibe checks",
+    "package.dependency.kjs_package": "Skibidi package",
+    "package.dependency.external_mod": "sus mod",
+    "package.dependency.mod_open_in": "See yap in"
+}
