@@ -4,7 +4,7 @@ export interface UserPreferences {
     theme: string;
     lightMode: boolean;
     compact: boolean;
-    alreadyVisited: boolean;
 }
 
 export type SortMode = "" | "name" | "downloads" | "views";
+export type LoadingState = "loading" | "ready" | "failed";

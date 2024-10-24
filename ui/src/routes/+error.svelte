@@ -14,6 +14,11 @@
             timeout: 5000,
             background: "variant-filled-error",
         });
-        goto(base + "/");
+        
+        setTimeout(() => {
+            goto(base + "/");
+        }, 5000);
     });
 </script>
+
+<!-- TODO: Better error page -->

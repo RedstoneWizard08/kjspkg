@@ -13,7 +13,7 @@ export default defineConfig({
         hmr: {
             clientPort: 443,
             port: 4001,
-            protocol: "ws",
+            protocol: "wss",
             path: "/vite-hmr",
         },
     },

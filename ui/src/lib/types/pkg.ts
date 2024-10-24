@@ -27,6 +27,53 @@ export interface Package {
     description: string;
 
     /**
+     * An optional link to this package's source code.
+     */
+    source?: string;
+
+    /**
+     * An optional link to this package's issue tracker.
+     */
+    issues?: string;
+
+    /**
+     * An optional link to this package's wiki.
+     */
+    wiki?: string;
+
+    /**
+     * A stringified {@link Date} for when this version was created.
+     */
+    created_at: string;
+
+    /**
+     * A stringified {@link Date} for when this version was updated.
+     */
+    updated_at: string;
+
+    /**
+     * The amount of views this package gets.
+     */
+    views: number;
+}
+
+export interface PackageUpdate {
+    /**
+     * The package name.
+     */
+    name: string;
+
+    /**
+     * The content of this package's README file.
+     */
+    readme: string;
+
+    /**
+     * This package's description.
+     */
+    description: string;
+
+    /**
      * Whether this package supports Forge (LexForge).
      */
     supports_forge: boolean;
@@ -45,21 +92,6 @@ export interface Package {
      * Whether this package suppoorts NeoForge.
      */
     supports_neoforge: boolean;
-
-    /**
-     * A stringified {@link Date} for when this version was created.
-     */
-    created_at: string;
-
-    /**
-     * A stringified {@link Date} for when this version was updated.
-     */
-    updated_at: string;
-
-    /**
-     * The amount of views this package gets.
-     */
-    Views: number;
 }
 
 export interface NewPackage {

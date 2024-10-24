@@ -12,6 +12,8 @@ const config = {
 
         alias: {
             "$locales/*": "./src/locales/*",
+            "$components/*": "./src/components/*",
+            $api: "./src/lib/api/index.ts",
         },
     },
 };

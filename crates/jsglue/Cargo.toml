@@ -1,0 +1,33 @@
+[package]
+name = "jsglue"
+version = "0.1.0"
+description = "A Rust framework for building frontends with JS/TS!"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+axum.workspace = true
+axumite.workspace = true
+cfg-if.workspace = true
+ctrlc.workspace = true
+derive_builder.workspace = true
+futures-util.workspace = true
+http-body-util.workspace = true
+hyper.workspace = true
+hyper-util.workspace = true
+include_dir.workspace = true
+lazy_static.workspace = true
+mime_guess.workspace = true
+once_cell.workspace = true
+regex.workspace = true
+tokio.workspace = true
+tokio-tungstenite.workspace = true
+tracing.workspace = true
+tungstenite.workspace = true
+url.workspace = true

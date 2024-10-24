@@ -28,7 +28,17 @@ export interface PackageVersion {
     /**
      * The KubeJS versions this version works on.
      */
-    kubejs_versions: string;
+    kubejs: string[];
+
+    /**
+     * A list of modloaders this version works on.
+     */
+    loaders: string[];
+
+    /**
+     * A list of Minecraft versions this version works on.
+     */
+    minecraft: string[];
 
     /**
      * A stringified {@link Date} for when this version was created.
@@ -45,3 +55,38 @@ export interface PackageVersion {
      */
     downloads: number;
 }
+
+export interface PackageVersionInit {
+    /**
+     * The display name of this version.
+     */
+    name: string;
+
+    /**
+     * This version's version number.
+     */
+    version_number: string;
+
+    /**
+     * The changelog for this version.
+     * Can be empty/undefined.
+     */
+    changelog?: string;
+
+    /**
+     * The KubeJS versions this version works on.
+     */
+    kubejs: string[];
+
+    /**
+     * A list of modloaders this version works on.
+     */
+    loaders: string[];
+
+    /**
+     * A list of Minecraft versions this version works on.
+     */
+    minecraft: string[];
+}
+
+export type PackageVersionUpdate = Partial<PackageVersionInit>;

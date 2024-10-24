@@ -1,0 +1,43 @@
+[package]
+name = "kjspkg"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+axum-extra.workspace = true
+chrono.workspace = true
+clap.workspace = true
+clap-verbosity-flag.workspace = true
+colored.workspace = true
+diesel.workspace = true
+diesel-async.workspace = true
+diesel_async_migrations.workspace = true
+dotenvy.workspace = true
+flate2.workspace = true
+jsglue.workspace = true
+lazy_static.workspace = true
+log.workspace = true
+oauth2.workspace = true
+octocrab.workspace = true
+random-string.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tar.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+url.workspace = true
+utoipa.workspace = true
+utoipa-rapidoc.workspace = true
+utoipa-redoc.workspace = true
+utoipa-swagger-ui.workspace = true
+uuid.workspace = true

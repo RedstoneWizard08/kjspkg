@@ -60,6 +60,9 @@
     "package.readme_file": "README file",
     "package.package_preview": "Package preview",
 
+    "package.versions": "Versions",
+    "package.version.action": "Select Action",
+
     "package.depends_on": "Depends on",
     "package.incompatible_with": "Incompatible with",
     "package.dependency.kjs_package": "KJS package",
