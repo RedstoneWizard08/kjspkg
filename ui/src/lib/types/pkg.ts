@@ -61,37 +61,32 @@ export interface PackageUpdate {
     /**
      * The package name.
      */
-    name: string;
+    name?: string;
 
     /**
      * The content of this package's README file.
      */
-    readme: string;
+    readme?: string;
 
     /**
      * This package's description.
      */
-    description: string;
+    description?: string;
 
     /**
-     * Whether this package supports Forge (LexForge).
+     * An optional link to this package's source code.
      */
-    supports_forge: boolean;
+    source?: string;
 
     /**
-     * Whether this package supports Fabric.
+     * An optional link to this package's issue tracker.
      */
-    supports_fabric: boolean;
+    issues?: string;
 
     /**
-     * Whether this package supports Quilt.
+     * An optional link to this package's wiki.
      */
-    supports_quilt: boolean;
-
-    /**
-     * Whether this package suppoorts NeoForge.
-     */
-    supports_neoforge: boolean;
+    wiki?: string;
 }
 
 export interface NewPackage {
@@ -116,28 +111,19 @@ export interface NewPackage {
     description: string;
 
     /**
-     * Whether the package supports Forge (LexForge).
-     * Defaults to `false`.
+     * An optional link to this package's source code.
      */
-    supports_forge?: boolean;
+    source?: string;
 
     /**
-     * Whether the package supports Fabric.
-     * Defaults to `false`.
+     * An optional link to this package's issue tracker.
      */
-    supports_fabric?: boolean;
+    issues?: string;
 
     /**
-     * Whether the package supports Quilt.
-     * Defaults to `false`.
+     * An optional link to this package's wiki.
      */
-    supports_quilt?: boolean;
-
-    /**
-     * Whether the package supports NeoForge.
-     * Defaults to `false`.
-     */
-    supports_neoforge?: boolean;
+    wiki?: string;
 }
 
 export interface PackageData extends Package {

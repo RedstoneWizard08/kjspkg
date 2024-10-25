@@ -74,7 +74,7 @@
 >
     <svelte:fragment slot="lead">
         <a class="flex items-center gap-2" href="{base}/">
-            <img src="/kjspkg.png" alt="logo" class="rounded-token aspect-square w-8 min-w-8" />
+            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
             <span class="hidden lg:inline">KJSPKG Lookup</span>
         </a>
     </svelte:fragment>
@@ -84,7 +84,7 @@
             class="input-group input-group-divider w-full grid-cols-[1fr] lg:w-fit lg:grid-cols-[auto_1fr]"
             transition:fly={{ y: -40 }}
         >
-            <div class="text-surface-400 hidden lg:inline">
+            <div class="hidden text-surface-400 lg:inline">
                 <IconSearch class="hidden lg:block" />
             </div>
 

@@ -5,9 +5,9 @@
 </script>
 
 {#if link != null}
-    <a href={link} class="btn-icon variant-soft-primary">
+    <a href={link} class="variant-soft-primary btn-icon">
         <IconUser />
     </a>
 {:else}
-    <div class="btn-icon variant-soft-primary cursor-pointer"><IconUser /></div>
+    <div class="variant-soft-primary btn-icon cursor-pointer"><IconUser /></div>
 {/if}

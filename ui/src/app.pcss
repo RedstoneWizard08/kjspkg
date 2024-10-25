@@ -8,6 +8,29 @@ body {
     @apply h-full overflow-hidden;
 }
 
+html.dark .carta-theme__default {
+    --border-color: var(--border-color-dark);
+    --selection-color: var(--selection-color-dark);
+    --focus-outline: var(--focus-outline-dark);
+    --hover-color: var(--hover-color-dark);
+    --caret-color: var(--caret-color-dark);
+    --text-color: var(--text-color-dark);
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+    color: var(--shiki-dark) !important;
+}
+
+.carta-font-code {
+    font-family: var(--theme-font-family-base), monospace;
+    font-size: 1.1rem;
+}
+
+.carta-editor {
+    width: 100%;
+}
+
 @layer utilities {
     .style-markdown h1 {
         @apply h1 mb-2 mt-4 font-bold;

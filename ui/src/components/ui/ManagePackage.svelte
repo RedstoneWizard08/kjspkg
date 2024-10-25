@@ -8,9 +8,9 @@
         link?: string;
     }
 
-    const { name, version, link }: Props = $props();
+    const { name, version }: Props = $props();
     const toastStore = getToastStore();
-    const options = ["install", "remove", "update", null, "pkg"];
+    const options = ["install", "remove", "update"];
 </script>
 
 {#each options as o}

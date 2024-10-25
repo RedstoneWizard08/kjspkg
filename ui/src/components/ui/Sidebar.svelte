@@ -2,7 +2,12 @@
     import { page } from "$app/stores";
     import { slide } from "svelte/transition";
     import PackageList from "./PackageList.svelte";
-    import { currentScrollPosition, filteredStore, updateFilteredPackages, updatePackagesStore } from "$lib/stores";
+    import {
+        currentScrollPosition,
+        filteredStore,
+        updateFilteredPackages,
+        updatePackagesStore,
+    } from "$lib/stores";
     import { onMount } from "svelte";
 
     const sidebarHidden = $derived($page.route.id == "/" || $page.route.id == "/s");
@@ -17,7 +22,7 @@
 
 {#if !sidebarHidden}
     <div
-        class="border-surface-800 flex h-full w-96 flex-col gap-2 overflow-y-scroll p-2 {$currentScrollPosition.y >
+        class="flex h-full w-96 flex-col gap-2 overflow-y-scroll border-surface-800 p-2 {$currentScrollPosition.y >
         16
             ? 'border-r'
             : 'border-none'}"

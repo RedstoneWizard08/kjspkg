@@ -46,8 +46,8 @@
                     </dd>
                 {:else if item.type == "ITEM"}
                     <button
-                        onclick={async () => item.type == "ITEM" && await item.action()}
-                        class="rounded-container-token hover:variant-soft-primary flex items-center gap-2 overflow-hidden whitespace-nowrap p-2 pl-3 pr-12"
+                        onclick={async () => item.type == "ITEM" && (await item.action())}
+                        class="flex items-center gap-2 overflow-hidden whitespace-nowrap p-2 pl-3 pr-12 rounded-container-token hover:variant-soft-primary"
                     >
                         {#if item.icon}
                             <svelte:component this={item.icon} />

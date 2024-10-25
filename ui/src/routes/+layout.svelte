@@ -1,16 +1,24 @@
 <script lang="ts">
     import "../app.pcss";
+    import "carta-md/default.css";
     import { currentScrollPosition, updateUserStore, userPreferencesStore } from "$lib/stores";
-    import { AppShell, Modal, Toast, storePopup, initializeStores, ProgressRadial } from "@skeletonlabs/skeleton";
+    import {
+        AppShell,
+        Modal,
+        Toast,
+        storePopup,
+        initializeStores,
+        ProgressRadial,
+    } from "@skeletonlabs/skeleton";
     import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
-    import { afterNavigate, beforeNavigate, onNavigate, replaceState } from "$app/navigation";
+    import { afterNavigate, beforeNavigate, onNavigate } from "$app/navigation";
     import { onMount, type Snippet } from "svelte";
     import { fly } from "svelte/transition";
     import HeaderBar from "$components/ui/HeaderBar.svelte";
     import ContextMenu from "$components/ui/ContextMenu.svelte";
     import Sidebar from "$components/ui/Sidebar.svelte";
 
-    const { data, children }: { data: any, children: Snippet } = $props();
+    const { data, children }: { data: any; children: Snippet } = $props();
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
     initializeStores();

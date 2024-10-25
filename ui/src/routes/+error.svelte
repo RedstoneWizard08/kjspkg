@@ -14,7 +14,7 @@
             timeout: 5000,
             background: "variant-filled-error",
         });
-        
+
         setTimeout(() => {
             goto(base + "/");
         }, 5000);

@@ -32,7 +32,7 @@
 {#each [...$filteredStore].slice(startFrom, maxCount) as pkg, i (pkg)}
     <a
         href={`${base}/p/${pkg.slug}`}
-        class="card hover:variant-soft-primary flex p-4"
+        class="card flex p-4 hover:variant-soft-primary"
         class:flex-col={compact}
         onclick={() => select?.(pkg.id)}
         class:!variant-filled-primary={$page.url.searchParams.get("id") == pkg.name}
@@ -44,7 +44,7 @@
             <img
                 src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
                 alt="author's profile avatar"
-                class="rounded-token my-auto mr-4 aspect-square h-8"
+                class="my-auto mr-4 aspect-square h-8 rounded-token"
                 in:slide={{ axis: "x" }}
             />
         {/if}
@@ -77,9 +77,7 @@
                 &bull;
                 <span
                     >{pkg.views}
-                    {pkg.views == 1
-                        ? $_("list.view_singular")
-                        : $_("list.view_plural")}</span
+                    {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
                 >
             </dd>
         </dl>

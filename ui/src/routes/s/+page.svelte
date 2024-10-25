@@ -62,7 +62,7 @@
 <div class="mb-2 flex flex-wrap gap-2">
     {#if $currentSearchStore}
         <button
-            class="variant-soft-secondary btn hover:variant-filled-primary w-fit"
+            class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
             onclick={() => ($currentSearchStore = "")}
         >
             <IconClearAll class="mr-2" />
@@ -71,11 +71,11 @@
     {/if}
 
     <button
-        class="variant-soft-secondary btn hover:variant-filled-primary w-fit"
+        class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
         onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
     >
         <IconLayoutDashboard class="mr-2" />
-        
+
         <!-- <span class="inline md:hidden">
 			{$userPreferencesStore.compact ? 'Show icons' : 'Hide icons'}
 		</span> -->
@@ -89,7 +89,7 @@
 </div>
 
 <div
-    class="border-surface-600 bg-surface-900 rounded-bl-container-token rounded-br-container-token sticky top-[-1px] z-10 justify-between p-2 backdrop-blur md:flex"
+    class="sticky top-[-1px] z-10 justify-between border-surface-600 bg-surface-900 p-2 backdrop-blur rounded-bl-container-token rounded-br-container-token md:flex"
     bind:this={optionsHeader}
 >
     <h1 class="h3">
@@ -113,7 +113,7 @@
             {#if $currentSearchStore != ""}
                 {$_("search.matching")}
                 <button
-                    class="hover:variant-filled-error transition-all hover:rounded hover:p-1 hover:px-2 hover:line-through"
+                    class="transition-all hover:variant-filled-error hover:rounded hover:p-1 hover:px-2 hover:line-through"
                     onclick={() => ($currentSearchStore = "")}
                 >
                     {$currentSearchStore}
@@ -166,7 +166,7 @@
         class:lg:grid-cols-3={$userPreferencesStore.compact}
     >
         {#each Array(5) as _}
-            <div class="placeholder rounded-container-token h-24 w-full animate-pulse"></div>
+            <div class="placeholder h-24 w-full animate-pulse rounded-container-token"></div>
         {/each}
     </dl>
 {:else if loadingState == "ready" && $filteredStore.length == 0}

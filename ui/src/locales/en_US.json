@@ -56,12 +56,17 @@
 
     "package.created_by": "Created by",
     "package.available_for": "Available for",
-    "package.manage_package": "Manage package (click to copy)",
+    "package.manage_package": "Commands (click to copy)",
     "package.readme_file": "README file",
     "package.package_preview": "Package preview",
 
     "package.versions": "Versions",
     "package.version.action": "Select Action",
+    "package.loaders_title": "Works on",
+    "package.minecraft_title": "Minecraft versions",
+    "package.version.changelog": "Changelog",
+    "package.version.published": "Published on",
+    "package.version.updated": "Updated on",
 
     "package.depends_on": "Depends on",
     "package.incompatible_with": "Incompatible with",
