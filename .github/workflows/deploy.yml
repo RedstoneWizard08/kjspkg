@@ -1,0 +1,23 @@
+name: Shuttle Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shuttle-hq/deploy-action@v2
+        with:
+          shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
+          project-id: proj_01JB57K5YKJ6R74NW4R8DQZ24B
+          secrets: |
+            DATABASE_URL = '${{ secrets.DATABASE_URL }}'
+            GH_CLIENT_ID = '${{ secrets.GH_CLIENT_ID }}'
+            GH_CLIENT_SECRET = '${{ secrets.GH_CLIENT_SECRET }}'
+            SUPABASE_URL = '${{ secrets.SUPABASE_URL }}'
+            SUPABASE_KEY = '${{ secrets.SUPABASE_KEY }}'
+            SUPABASE_PACKAGES_BUCKET = '${{ secrets.SUPABASE_PACKAGES_BUCKET }}'

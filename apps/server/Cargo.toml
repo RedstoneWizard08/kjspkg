@@ -8,11 +8,16 @@ homepage.workspace = true
 authors.workspace = true
 readme.workspace = true
 
+[features]
+default = []
+shuttle = []
+
 [dependencies]
 anyhow.workspace = true
 axum.workspace = true
 axum-core.workspace = true
 axum-extra.workspace = true
+cfg-if.workspace = true
 chrono.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
@@ -31,6 +36,8 @@ random-string.workspace = true
 reqwest.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+shuttle-axum.workspace = true
+shuttle-runtime.workspace = true
 tar.workspace = true
 thiserror.workspace = true
 tokio.workspace = true

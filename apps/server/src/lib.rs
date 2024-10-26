@@ -40,6 +40,7 @@ pub use models::*;
 use anyhow::Result;
 use db::{create_connection, run_migrations};
 use routes::create_router;
+use shuttle_axum::ShuttleAxum;
 use state::AppState;
 use tokio::{join, net::TcpListener};
 
@@ -101,4 +102,32 @@ pub async fn start_app(cli: Cli) -> Result<()> {
     server.await??;
 
     Ok(())
+}
+
+pub async fn create_shuttle_axum() -> ShuttleAxum {
+    info!("Starting app...");
+
+    register_exit_handler()?;
+
+    info!("Connecting to the database...");
+
+    let pool = create_connection(None).await?;
+
+    info!("Running migrations...");
+
+    run_migrations(&pool).await?;
+
+    info!("Creating state...");
+
+    let state = AppState::new(pool, None, None, None, None, None)?;
+
+    info!("Creating glue...");
+
+    let glue = make_glue()?;
+
+    info!("Registering routes...");
+
+    let router = create_router(state, glue.clone());
+
+    Ok(router.into())
 }

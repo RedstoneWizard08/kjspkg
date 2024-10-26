@@ -18,9 +18,13 @@ pub type DbPool = Pool<AsyncPgConnection>;
 pub type DbConn = Object<AsyncPgConnection>;
 
 pub async fn create_connection(db_url: Option<String>) -> Result<DbPool> {
-    let db_url = db_url
-        .map(|v| Ok(v))
-        .unwrap_or_else(|| env::var("DATABASE_URL"))?;
+    let embedded_db_url = option_env!("DATABASE_URL").map(|v| v.to_string());
+
+    let db_url = db_url.map(|v| Ok(v)).unwrap_or_else(|| {
+        embedded_db_url
+            .map(|v| Ok(v))
+            .unwrap_or_else(|| env::var("DATABASE_URL"))
+    })?;
 
     Ok(Pool::builder(AsyncDieselConnectionManager::new(db_url)).build()?)
 }

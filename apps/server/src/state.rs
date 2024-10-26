@@ -23,25 +23,43 @@ impl AppState {
         supabase_key: Option<String>,
         packages_bucket: Option<String>,
     ) -> Result<Self> {
-        let client_id = client_id
-            .map(|v| Ok(v))
-            .unwrap_or_else(|| env::var("GITHUB_CLIENT_ID"))?;
+        let embedded_client_id = option_env!("GH_CLIENT_ID").map(|v| v.to_string());
+        let embedded_client_secret = option_env!("GH_CLIENT_SECRET").map(|v| v.to_string());
+        let embedded_supabase_url = option_env!("SUPABASE_URL").map(|v| v.to_string());
+        let embedded_supabase_key = option_env!("SUPABASE_KEY").map(|v| v.to_string());
 
-        let client_secret = client_secret
-            .map(|v| Ok(v))
-            .unwrap_or_else(|| env::var("GITHUB_CLIENT_SECRET"))?;
+        let embedded_packages_bucket =
+            option_env!("SUPABASE_PACKAGES_BUCKET").map(|v| v.to_string());
 
-        let supabase_url = supabase_url
-            .map(|v| Ok(v))
-            .unwrap_or_else(|| env::var("SUPABASE_URL"))?;
+        let client_id = client_id.map(|v| Ok(v)).unwrap_or_else(|| {
+            embedded_client_id
+                .map(|v| Ok(v))
+                .unwrap_or_else(|| env::var("GH_CLIENT_ID"))
+        })?;
 
-        let supabase_key = supabase_key
-            .map(|v| Ok(v))
-            .unwrap_or_else(|| env::var("SUPABASE_KEY"))?;
+        let client_secret = client_secret.map(|v| Ok(v)).unwrap_or_else(|| {
+            embedded_client_secret
+                .map(|v| Ok(v))
+                .unwrap_or_else(|| env::var("GH_CLIENT_SECRET"))
+        })?;
 
-        let packages_bucket = packages_bucket
-            .map(|v| Ok(v))
-            .unwrap_or_else(|| env::var("SUPABASE_PACKAGES_BUCKET"))?;
+        let supabase_url = supabase_url.map(|v| Ok(v)).unwrap_or_else(|| {
+            embedded_supabase_url
+                .map(|v| Ok(v))
+                .unwrap_or_else(|| env::var("SUPABASE_URL"))
+        })?;
+
+        let supabase_key = supabase_key.map(|v| Ok(v)).unwrap_or_else(|| {
+            embedded_supabase_key
+                .map(|v| Ok(v))
+                .unwrap_or_else(|| env::var("SUPABASE_KEY"))
+        })?;
+
+        let packages_bucket = packages_bucket.map(|v| Ok(v)).unwrap_or_else(|| {
+            embedded_packages_bucket
+                .map(|v| Ok(v))
+                .unwrap_or_else(|| env::var("SUPABASE_PACKAGES_BUCKET"))
+        })?;
 
         Ok(Self {
             pool,

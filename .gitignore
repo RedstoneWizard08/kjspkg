@@ -15,3 +15,6 @@ vite.config.ts.timestamp-*
 *+layout.server.ts
 .netlify
 old-ui
+/target
+.shuttle*
+Secrets*.toml

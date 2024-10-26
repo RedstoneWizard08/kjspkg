@@ -41,6 +41,12 @@ where
             return Ok(Scheme(scheme.to_string()));
         }
 
-        Ok(Scheme("http".into()))
+        cfg_if::cfg_if! {
+            if #[cfg(feature = "shuttle")] {
+                Ok(Scheme("https".into()))
+            } else {
+                Ok(Scheme("http".into()))
+            }
+        }
     }
 }
