@@ -9,7 +9,7 @@ fn build() {
 
     std::process::Command::new("bun")
         .arg("install")
-        .current_dir(path)
+        .current_dir(path.clone())
         .spawn()
         .unwrap()
         .wait()
