@@ -7,7 +7,15 @@ fn build() {
         .join("..")
         .join("ui");
 
-    std::process::Command::new("pnpm")
+    std::process::Command::new("bun")
+        .arg("install")
+        .current_dir(path)
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap();
+
+    std::process::Command::new("bun")
         .arg("run")
         .arg("build")
         .current_dir(path)
