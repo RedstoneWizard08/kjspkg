@@ -1,9 +1,9 @@
 import { goto } from "$app/navigation";
 import type { User } from "$lib/types";
-import { localStorageStore } from "@skeletonlabs/skeleton";
+import { persisted } from "svelte-persisted-store";
 import { get } from "svelte/store";
 
-const tokenStore = localStorageStore<string | undefined>("kjspkg-auth-token", undefined);
+const tokenStore = persisted<string | undefined>("kjspkg-auth-token", undefined);
 
 export const setToken = (token?: string) => tokenStore.set(token);
 export const getToken = () => get(tokenStore);

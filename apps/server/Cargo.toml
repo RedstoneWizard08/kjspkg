@@ -11,6 +11,7 @@ readme.workspace = true
 [dependencies]
 anyhow.workspace = true
 axum.workspace = true
+axum-core.workspace = true
 axum-extra.workspace = true
 chrono.workspace = true
 clap.workspace = true
@@ -41,3 +42,7 @@ utoipa-rapidoc.workspace = true
 utoipa-redoc.workspace = true
 utoipa-swagger-ui.workspace = true
 uuid.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+openssl-sys.workspace = true
+pq-sys.workspace = true

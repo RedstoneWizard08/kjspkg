@@ -1,8 +1,12 @@
 use std::collections::HashMap;
 
 use crate::{
-    auth::create_token, routes::auth::CALLBACK_URL, schema::users, state::AppState,
-    util::create_github_client, HttpResult, NewUser, User,
+    auth::create_token,
+    routes::auth::CALLBACK_URL,
+    schema::users,
+    state::AppState,
+    util::{create_github_client, scheme::Scheme},
+    HttpResult, NewUser, User,
 };
 use axum::{
     body::Body,
@@ -37,6 +41,7 @@ use oauth2::{RedirectUrl, TokenResponse};
 pub async fn callback_handler(
     State(state): State<AppState>,
     Host(host): Host,
+    Scheme(scheme): Scheme,
     url: Uri,
 ) -> HttpResult<Response> {
     let mut conn = state.pool.get().await?;
@@ -47,12 +52,7 @@ pub async fn callback_handler(
     let code = query.get("code").unwrap();
     let to = query.get("to");
 
-    let auth_url = format!(
-        "{}://{}{}",
-        url.scheme_str().unwrap_or("https"),
-        host,
-        CALLBACK_URL
-    );
+    let auth_url = format!("{}://{}{}", scheme, host, CALLBACK_URL);
 
     let client = state.auth.set_redirect_uri(RedirectUrl::new(auth_url)?);
 

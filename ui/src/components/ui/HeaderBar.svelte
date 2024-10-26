@@ -5,12 +5,13 @@
     import { base } from "$app/paths";
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
-    import { IconSearch, IconCheck, IconWorld, IconColorSwatch } from "@tabler/icons-svelte";
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import IconBlank from "$components/icons/IconBlank.svelte";
     import IconAuth from "$components/auth/IconAuth.svelte";
     import { onMount } from "svelte";
     import { replaceState } from "$app/navigation";
+    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
 
     let inputElement: HTMLInputElement = $state(null!);
 
@@ -26,7 +27,7 @@
             ...$locales.map((lang) => ({
                 type: "ITEM",
                 label: lang,
-                icon: $userPreferencesStore.locale == lang ? IconCheck : IconBlank,
+                icon: $userPreferencesStore.locale == lang ? TablerIconCheck : IconBlank,
                 action: () => {
                     $userPreferencesStore.locale = lang;
                 },
@@ -53,7 +54,7 @@
                 return {
                     type: "ITEM" as const,
                     label,
-                    icon: $userPreferencesStore.theme == name ? IconCheck : IconBlank,
+                    icon: $userPreferencesStore.theme == name ? TablerIconCheck : IconBlank,
                     action: () => {
                         document.documentElement.classList.add("color-animated");
                         $userPreferencesStore.theme = name;
@@ -85,7 +86,7 @@
             transition:fly={{ y: -40 }}
         >
             <div class="hidden text-surface-400 lg:inline">
-                <IconSearch class="hidden lg:block" />
+                <TablerIcon name="search" class="hidden lg:block" />
             </div>
 
             <input
@@ -106,11 +107,11 @@
     <svelte:fragment slot="trail">
         <span>
             <button class="btn-icon hover:variant-soft-primary" use:contextMenu={langContextMenu}>
-                <IconWorld />
+                <TablerIcon name="world" />
             </button>
 
             <button class="btn-icon hover:variant-soft-primary" use:contextMenu={themeContextMenu}>
-                <IconColorSwatch />
+                <TablerIcon name="color-swatch" />
             </button>
         </span>
 

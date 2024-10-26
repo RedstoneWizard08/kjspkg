@@ -9,7 +9,6 @@
         filteredStore,
         updatePackagesStore,
     } from "$lib/stores";
-    import { IconCheck, IconClearAll, IconLayoutDashboard } from "@tabler/icons-svelte";
     import { vsprintf } from "sprintf-js";
     import type { LoadingState, SortMode } from "$lib/types";
     import IconBlank from "$components/icons/IconBlank.svelte";
@@ -18,6 +17,8 @@
     import { guessSortMode } from "$lib/utils";
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import PackageList from "$components/ui/PackageList.svelte";
+    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
 
     let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
@@ -28,31 +29,19 @@
         showDetails = ($page.url.searchParams.get("showDetails") ?? "false") == "true";
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
         $currentSearchStore = $page.url.searchParams.get("q") ?? "";
-    });
 
-    const observer = new IntersectionObserver(
-        ([e]) => {
-            // e.target.classList.toggle('backdrop-brightness-75', e.intersectionRatio < 1);
-            e.target.classList.toggle("border-b", e.intersectionRatio < 1);
-        },
-        { threshold: [1] },
-    );
+        let largeScreen = matchMedia("(min-width: 1024px)").matches;
+
+        window.onresize = () => {
+            largeScreen = matchMedia("(min-width: 1024px)").matches;
+        };
+    });
 
     $effect(() => {
         if ($currentSearchStore != "") $page.url.searchParams.set("q", $currentSearchStore);
         else $page.url.searchParams.delete("q");
         replaceState($page.url, $page.state);
     });
-
-    $effect(() => {
-        optionsHeader ? observer.observe(optionsHeader) : "";
-    });
-
-    let largeScreen = matchMedia("(min-width: 1024px)").matches;
-
-    window.onresize = () => {
-        largeScreen = matchMedia("(min-width: 1024px)").matches;
-    };
 </script>
 
 <svelte:head>
@@ -65,7 +54,7 @@
             class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
             onclick={() => ($currentSearchStore = "")}
         >
-            <IconClearAll class="mr-2" />
+            <TablerIcon name="clear-all" class="mr-2" />
             {$_("search.clear_filters")}
         </button>
     {/if}
@@ -74,7 +63,7 @@
         class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
         onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
     >
-        <IconLayoutDashboard class="mr-2" />
+        <TablerIcon name="layout-dashboard" class="mr-2" />
 
         <!-- <span class="inline md:hidden">
 			{$userPreferencesStore.compact ? 'Show icons' : 'Hide icons'}
@@ -133,7 +122,10 @@
                             ({
                                 type: "ITEM",
                                 label: $_(`search.sort_type.${name}`),
-                                icon: $userPreferencesStore.sortBy == name ? IconCheck : IconBlank,
+                                icon:
+                                    $userPreferencesStore.sortBy == name
+                                        ? TablerIconCheck
+                                        : IconBlank,
                                 action: () => ($userPreferencesStore.sortBy = name as SortMode),
                             }) as ContextMenuItem,
                     ),
@@ -141,7 +133,7 @@
                     {
                         type: "ITEM",
                         label: $_(`search.show_details`),
-                        icon: showDetails ? IconCheck : IconBlank,
+                        icon: showDetails ? TablerIconCheck : IconBlank,
                         action: () => {
                             if (showDetails) $page.url.searchParams.delete("showDetails");
                             else $page.url.searchParams.set("showDetails", "true");

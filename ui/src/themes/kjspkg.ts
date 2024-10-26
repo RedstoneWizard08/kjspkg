@@ -1,6 +1,6 @@
 import type { CustomThemeConfig } from "@skeletonlabs/tw-plugin";
 
-export const ThemeKjspkg: CustomThemeConfig = {
+export const defaultTheme: CustomThemeConfig = {
     name: "kjspkg",
     properties: {
         // =~= Theme Properties =~=

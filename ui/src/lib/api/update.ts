@@ -2,6 +2,7 @@ import type {
     NewPackage,
     PackageData,
     PackageUpdate,
+    PackageVersion,
     PackageVersionInit,
     PackageVersionUpdate,
     User,
@@ -99,7 +100,7 @@ export const createVersion = async (
     id: string | number,
     data: PackageVersionInit,
     file: File | Blob,
-): Promise<string | undefined> => {
+): Promise<PackageVersion | undefined> => {
     const token = getToken();
 
     if (!token) return undefined;
@@ -125,7 +126,7 @@ export const createVersion = async (
                     Authorization: `Bearer ${token}`,
                 },
             })
-        ).text();
+        ).json();
     } catch (_err: any) {
         return undefined;
     }

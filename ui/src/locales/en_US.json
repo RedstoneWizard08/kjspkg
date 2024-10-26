@@ -8,6 +8,8 @@
     "errors.automatin_down": "Our statistics database seems to be down",
     "errors.automatin_down.details": "Download and view counts might be missing. Please report this to",
     "errors.automatin_down.server": "our Discord server",
+    "errors.delete_version": "Failed to delete version!",
+    "errors.delete_package": "Failed to delete package!",
 
     "menu.language": "Language",
     "menu.theme": "Theme",
@@ -59,6 +61,7 @@
     "package.manage_package": "Commands (click to copy)",
     "package.readme_file": "README file",
     "package.package_preview": "Package preview",
+    "package.unknown": "Unknown",
 
     "package.versions": "Versions",
     "package.version.action": "Select Action",

@@ -23,7 +23,7 @@ pub fn make_glue() -> Result<Glue> {
             .base("http://localhost:4001")
             .dir(client::CLIENT_DIR)
             .project(format!("{}/../../ui", env!("CARGO_MANIFEST_DIR")))
-            .cmd("pnpm")
+            .cmd("bun")
             .arg("run")
             .arg("dev")
             .framework(Framework::Vite("/vite-hmr"))

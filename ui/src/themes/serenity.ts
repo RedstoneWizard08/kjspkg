@@ -1,6 +1,6 @@
 import type { CustomThemeConfig } from "@skeletonlabs/tw-plugin";
 
-export const ThemeSerenity: CustomThemeConfig = {
+export const serenityTheme: CustomThemeConfig = {
     name: "serenity",
     properties: {
         // =~= Theme Properties =~=

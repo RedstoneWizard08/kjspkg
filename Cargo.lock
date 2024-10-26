@@ -1323,6 +1323,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "axum-core",
  "axum-extra",
  "chrono",
  "clap",
@@ -1338,6 +1339,8 @@ dependencies = [
  "log",
  "oauth2",
  "octocrab",
+ "openssl-sys",
+ "pq-sys",
  "random-string",
  "reqwest 0.12.8",
  "serde",
@@ -1638,6 +1641,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
 
 [[package]]
+name = "openssl-src"
+version = "300.4.0+3.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a709e02f2b4aca747929cca5ed248880847c650233cf8b8cdc48f40aaf4898a6"
+dependencies = [
+ "cc",
+]
+
+[[package]]
+name = "openssl-sys"
+version = "0.9.104"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "45abf306cbf99debc8195b66b7346498d7b10c210de50418b5ccd7ceba08c741"
+dependencies = [
+ "cc",
+ "libc",
+ "openssl-src",
+ "pkg-config",
+ "vcpkg",
+]
+
+[[package]]
 name = "overload"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1733,6 +1758,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "pkg-config"
+version = "0.3.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
+
+[[package]]
 name = "postgres-protocol"
 version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1777,11 +1808,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "pq-src"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28fbf44fbf1d3e50d0ca0c6e6253f65d1bf01bb004a6ea553efb32e7081948c7"
+dependencies = [
+ "cc",
+ "openssl-sys",
+]
+
+[[package]]
 name = "pq-sys"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6cc05d7ea95200187117196eee9edd0644424911821aeb28a18ce60ea0b8793"
 dependencies = [
+ "pq-src",
  "vcpkg",
 ]
 

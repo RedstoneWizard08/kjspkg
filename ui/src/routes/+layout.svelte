@@ -9,6 +9,7 @@
         storePopup,
         initializeStores,
         ProgressRadial,
+        type ModalComponent,
     } from "@skeletonlabs/skeleton";
     import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
     import { afterNavigate, beforeNavigate, onNavigate } from "$app/navigation";
@@ -17,15 +18,36 @@
     import HeaderBar from "$components/ui/HeaderBar.svelte";
     import ContextMenu from "$components/ui/ContextMenu.svelte";
     import Sidebar from "$components/ui/Sidebar.svelte";
+    import { page } from "$app/stores";
+    import { setToken } from "$api";
+    import AuthorAddModal from "$components/modals/AuthorAddModal.svelte";
+    import UploadVersionModal from "$components/modals/UploadVersionModal.svelte";
 
     const { data, children }: { data: any; children: Snippet } = $props();
+    let navigating = $state(false);
+
+    const modalRegistry: Record<string, ModalComponent> = {
+        addAuthor: { ref: AuthorAddModal },
+        uploadVersion: { ref: UploadVersionModal },
+    };
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
     initializeStores();
 
-    let navigating = $state(false);
+    const handleScroll = (e: Event) =>
+        ($currentScrollPosition = {
+            x: (e.currentTarget as Element).scrollLeft,
+            y: (e.currentTarget as Element).scrollTop,
+        });
 
     onMount(async () => {
+        if ($page.url.searchParams.has("token")) {
+            const token = $page.url.searchParams.get("token");
+            setToken(token!);
+            $page.url.searchParams.delete("token");
+            history.replaceState(null, "", $page.url.toString());
+        }
+
         if ($userPreferencesStore.lightMode) document.documentElement.classList.remove("dark");
 
         document.body.dataset.theme = $userPreferencesStore.theme ?? "kjspkg";
@@ -51,7 +73,7 @@
 
 <Toast position="br" max={8} />
 <ContextMenu />
-<Modal />
+<Modal components={modalRegistry} />
 
 {#if navigating}
     <div
@@ -63,7 +85,65 @@
     </div>
 {/if}
 
-<AppShell
+<div class="flex h-full w-full flex-col overflow-hidden">
+    <header class="flex-none">
+        <HeaderBar />
+    </header>
+
+    <div class="flex h-full w-full flex-auto overflow-hidden">
+        <aside class="overfloe-x-hidden hidden flex-none overflow-y-auto xl:block">
+            <Sidebar />
+        </aside>
+
+        <div
+            class="flex flex-1 flex-col overflow-x-hidden"
+            style:scrollbar-gutter="auto"
+            onscroll={handleScroll}
+        >
+            <main class="flex-auto">
+                <div
+                    class="container mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4 md:p-10"
+                >
+                    <!-- {#key data.href} -->
+                    {@render children?.()}
+                    <!-- {/key} -->
+                </div>
+            </main>
+
+            <footer class="flex-none">
+                <span class="hidden md:inline">
+                    <a
+                        href="https://github.com/Modern-Modpacks/kjspkg"
+                        class="anchor no-underline"
+                        target="_blank">KJSPKG @ GitHub</a
+                    >
+                    &bull;
+                    <a
+                        href="https://modernmodpacks.site"
+                        class="anchor no-underline"
+                        target="_blank">Modern Modpacks</a
+                    >
+                </span>
+
+                <span class="mt-auto hidden text-sm opacity-50 md:inline">
+                    Website designed with love by <a
+                        href="https://github.com/tizu69"
+                        class="anchor no-underline"
+                        target="_blank">tizu69</a
+                    >
+                    and
+                    <a
+                        href="https://github.com/RedstoneWizard08"
+                        class="anchor no-underline"
+                        target="_blank">RedstoneWizard08</a
+                    > &lt;3
+                </span>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- <AppShell
     slotSidebarLeft="hidden xl:block"
     slotPageFooter="p-2 flex justify-between"
     onscroll={(e: WheelEvent) =>
@@ -115,4 +195,4 @@
             > &lt;3
         </span>
     </svelte:fragment>
-</AppShell>
+</AppShell> -->

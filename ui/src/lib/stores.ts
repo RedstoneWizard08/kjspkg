@@ -1,17 +1,18 @@
 import { get, writable } from "svelte/store";
 import type { User, PackageData, UserPreferences, Vec2 } from "./types";
 import { browser } from "$app/environment";
-import { localStorageStore } from "@skeletonlabs/skeleton";
 import { locales } from "svelte-i18n";
 import { getCurrentUser, getPackages } from "$api";
+import { persisted } from "svelte-persisted-store";
 
 export const currentScrollPosition = writable<Vec2>({ x: 0, y: 0 });
 export const currentSearchStore = writable<string>("");
 export const packagesStore = writable<PackageData[]>([]);
 export const filteredStore = writable<PackageData[]>([]);
 export const user = writable<User | undefined>(undefined);
+export const currentPackage = writable<PackageData | undefined>(undefined);
 
-export const userPreferencesStore = localStorageStore<UserPreferences>("preferences", {
+export const userPreferencesStore = persisted<UserPreferences>("preferences", {
     sortBy: "name",
     locale: browser && get(locales).includes(navigator.language) ? navigator.language : "en-US",
     theme: "kjspkg",

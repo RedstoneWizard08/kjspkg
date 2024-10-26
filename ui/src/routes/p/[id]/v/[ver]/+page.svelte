@@ -2,49 +2,101 @@
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import type { LoadingState, PackageData, PackageVersion } from "$lib/types";
-    import { fixLoaderName, formatDate } from "$lib/utils";
+    import { fixLoaderName, formatDate, markdown } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { onMount } from "svelte";
-    import { getPackage, getPackageVersion } from "$api";
-    import { getToastStore } from "@skeletonlabs/skeleton";
-    import { IconDownload } from "@tabler/icons-svelte";
+    import { getPackage, getPackageVersion, updateVersion } from "$api";
+    import { getToastStore, ProgressRadial } from "@skeletonlabs/skeleton";
     import ManagePackage from "$components/ui/ManagePackage.svelte";
+    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { currentPackage, user } from "$lib/stores";
+    import { beforeNavigate } from "$app/navigation";
+    import { Carta, MarkdownEditor } from "carta-md";
 
     const id = $derived($page.params.id);
     const ver = $derived($page.params.ver);
+    const editor = new Carta();
+
+    let editing = $state(false);
+    let saving = $state(false);
 
     let loadingState: LoadingState = $state("loading");
-    let pkg: PackageData | undefined = $state(undefined);
     let version: PackageVersion | undefined = $state(undefined);
 
+    let name = $state("");
+    let changelog = $state<string | undefined>(undefined);
+
+    const canEdit = $derived(
+        $currentPackage &&
+            $user &&
+            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id),
+    );
+
+    const toggleEditing = async () => {
+        if (editing) {
+            saving = true;
+
+            await updateVersion(id, ver, { name });
+
+            saving = false;
+        }
+
+        editing = !editing;
+    };
+
     onMount(async () => {
-        pkg = await getPackage(id);
+        $currentPackage = await getPackage(id);
         version = await getPackageVersion(id, ver);
 
-        if (pkg) {
+        if ($currentPackage && version) {
+            name = version.name;
+            changelog = version.changelog;
             loadingState = "ready";
         } else {
             loadingState = "failed";
         }
     });
+
+    beforeNavigate(() => {
+        $currentPackage = undefined;
+    });
 </script>
 
 <svelte:head>
-    <title>{pkg?.name ?? "no-name"} - KJSPKG Lookup</title>
+    <title>{version?.name ?? "no-name"} - KJSPKG Lookup</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
     <div class="placeholder m-2 mx-auto w-32 animate-pulse"></div>
-{:else if loadingState == "ready" && pkg && version}
+{:else if loadingState == "ready" && $currentPackage && version}
+    {#if saving}
+        <div
+            class="bg-primary-900 fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-opacity-25 text-white"
+            in:fly={{ y: 20 }}
+            out:fly={{ y: 20 }}
+        >
+            <ProgressRadial width="w-20" />
+        </div>
+    {/if}
+
     <ol class="breadcrumb">
         <li class="crumb-separator text-2xl" aria-hidden="true">&lsaquo;</li>
         <li class="crumb">
-            <a href="/p/{id}" class="anchor select-text no-underline">{pkg.name}</a>
+            <a href="/p/{id}" class="anchor select-text no-underline">{$currentPackage.name}</a>
         </li>
     </ol>
 
     <h1 class="h2 mb-1 font-bold">
-        {version.name ?? "Unnamed Package"}
+        {#if editing}
+            <input
+                in:fly={{ y: 20 }}
+                type="text"
+                bind:value={name}
+                class="input variant-form-material border-primary-900 w-full"
+            />
+        {:else}
+            <span class="h2 font-bold" in:fly={{ y: 20 }}>{name}</span>
+        {/if}
     </h1>
 
     <div
@@ -66,12 +118,28 @@
                 >
             </span>
         </div>
-        <a
-            href="/api/v1/packages/{id}/versions/{ver}/download"
-            class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
-        >
-            <IconDownload />
-        </a>
+
+        <div class="flex flex-row items-center justify-end">
+            {#if canEdit}
+                <button
+                    onclick={toggleEditing}
+                    class="hover:variant-filled-primary mr-2 flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                >
+                    {#if editing}
+                        <TablerIcon name="device-floppy" />
+                    {:else}
+                        <TablerIcon name="pencil" />
+                    {/if}
+                </button>
+            {/if}
+
+            <a
+                href="/api/v1/packages/{id}/versions/{ver}/download"
+                class="hover:variant-filled-primary flex flex-row items-center justify-center rounded-full p-2 transition-all"
+            >
+                <TablerIcon name="download" />
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -95,17 +163,14 @@
             </dd>
         </div>
 
-        <!-- <CodeBlock
-			language="Install package"
-			code={'kjspkg install ' + id}
-			background="variant-soft w-full"
-			buttonCopied="ok have fun"
-		/> -->
-
         <div class="card space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">{$_("package.manage_package")}</dt>
             <dd class="flex flex-col gap-1">
-                <ManagePackage name={pkg.slug ?? "no-name"} {version} link={pkg.issues} />
+                <ManagePackage
+                    name={$currentPackage.slug ?? "no-name"}
+                    {version}
+                    link={$currentPackage.issues}
+                />
             </dd>
         </div>
 
@@ -120,14 +185,23 @@
             </div>
         </div>
 
-        {#if version.changelog}
+        {#if changelog || editing}
             <section class="card h-fit space-y-4 p-4 lg:col-span-2" in:fly={{ y: 20 }}>
                 <dt class="text-sm opacity-50">
                     {$_("package.version.changelog")}
                 </dt>
-                <dd class="style-markdown flex select-text flex-col items-start *:select-text">
-                    {@html version.changelog}
-                </dd>
+                {#if editing}
+                    <dd class="flex w-full flex-col items-start" in:fly={{ y: 20 }}>
+                        <MarkdownEditor carta={editor} bind:value={changelog} mode="tabs" />
+                    </dd>
+                {:else if changelog}
+                    <dd
+                        class="style-markdown flex select-text flex-col items-start *:select-text"
+                        in:fly={{ y: 20 }}
+                    >
+                        {@html markdown(changelog)}
+                    </dd>
+                {/if}
             </section>
         {/if}
     </div>

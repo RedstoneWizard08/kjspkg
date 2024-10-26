@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::CALLBACK_URL;
-use crate::{state::AppState, HttpResult};
+use crate::{state::AppState, util::scheme::Scheme, HttpResult};
 use axum::{
     body::Body,
     extract::{Host, State},
@@ -28,6 +28,7 @@ use oauth2::{CsrfToken, RedirectUrl, Scope};
 pub async fn login_handler(
     State(state): State<AppState>,
     Host(host): Host,
+    Scheme(scheme): Scheme,
     url: Uri,
 ) -> HttpResult<Response> {
     let query = url::form_urlencoded::parse(url.query().unwrap_or_default().as_bytes())
@@ -41,10 +42,7 @@ pub async fn login_handler(
 
     let callback_url = format!(
         "{}://{}{}?to={}",
-        url.scheme_str().unwrap_or("https"),
-        host,
-        CALLBACK_URL,
-        callback_url_base
+        scheme, host, CALLBACK_URL, callback_url_base
     );
 
     let client = state

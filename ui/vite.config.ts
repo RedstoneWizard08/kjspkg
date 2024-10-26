@@ -1,8 +1,9 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
+import { tablerIconLoader } from "./vite/tabler-loader";
 
 export default defineConfig({
-    plugins: [sveltekit()],
+    plugins: [tablerIconLoader(), sveltekit()],
     clearScreen: false,
 
     server: {
@@ -10,11 +11,15 @@ export default defineConfig({
         strictPort: true,
         cors: true,
 
-        hmr: {
-            clientPort: 443,
-            port: 4001,
-            protocol: "wss",
-            path: "/vite-hmr",
-        },
+        hmr: process.env.REDSTONE_IS_DUMB
+            ? {
+                  clientPort: 443,
+                  port: 4001,
+                  protocol: "wss",
+                  path: "/vite-hmr",
+              }
+            : {
+                  path: "/vite-hmr",
+              },
     },
 });

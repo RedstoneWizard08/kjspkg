@@ -1,4 +1,5 @@
 pub mod pkg;
+pub mod scheme;
 
 use anyhow::Result;
 use octocrab::Octocrab;

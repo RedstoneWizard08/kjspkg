@@ -1,6 +1,7 @@
+
 import type { CustomThemeConfig } from "@skeletonlabs/tw-plugin";
 
-export const ThemeKjspkgGcat: CustomThemeConfig = {
+export const gcatTheme: CustomThemeConfig = {
     name: "kjspkg-gcat",
     properties: {
         // =~= Theme Properties =~=

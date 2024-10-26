@@ -1,10 +1,10 @@
 <script lang="ts">
+    import { beforeNavigate } from "$app/navigation";
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import type { LoadingState, PackageData, PackageVersion } from "$lib/types";
     import {
         fixLoaderName,
-        getKubeJS,
         getLoaders,
         getMinecraft,
         markdown,
@@ -13,29 +13,44 @@
     import { fly } from "svelte/transition";
     import { onMount } from "svelte";
     import { getPackage, getPackageVersions, updatePackage } from "$api";
-    import { getToastStore } from "@skeletonlabs/skeleton";
+    import { getToastStore, getModalStore, ProgressRadial } from "@skeletonlabs/skeleton";
     import { base } from "$app/paths";
     import Version from "$components/ui/Version.svelte";
-    import { user } from "$lib/stores";
-    import { IconPencil, IconDeviceFloppy } from "@tabler/icons-svelte";
+    import { currentPackage, user } from "$lib/stores";
     import { Carta, MarkdownEditor } from "carta-md";
-    import { sanitize } from "isomorphic-dompurify";
+    import TablerIcon from "$components/icons/TablerIcon.svelte";
 
     const id = $derived($page.params.id);
+    const toasts = getToastStore();
+    const modals = getModalStore();
 
     let loadingState: LoadingState = $state("loading");
-    let pkg: PackageData | undefined = $state(undefined);
     let versions: PackageVersion[] = $state([]);
+
     let readme = $state("");
     let name = $state("");
+    let repo = $state("");
+    let issues = $state("");
+    let wiki = $state("");
+
     let editing = $state(false);
+    let saving = $state(false);
 
     const loaders = $derived(getLoaders(versions));
-    const kubejs = $derived(getKubeJS(versions));
     const minecraft = $derived(getMinecraft(versions));
 
+    const hasRepo = $derived(repo != "");
+    const hasIssues = $derived(issues != "");
+    const hasWiki = $derived(wiki != "");
+
+    const realRepo = $derived(repo != "" ? repo : undefined);
+    const realIssues = $derived(issues != "" ? issues : undefined);
+    const realWiki = $derived(wiki != "" ? wiki : undefined);
+
     const canEdit = $derived(
-        pkg && $user && !!(pkg as PackageData).authors.find((v) => v.id == $user.id),
+        $currentPackage &&
+            $user &&
+            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id),
     );
 
     const sortedVersions = $derived(
@@ -44,51 +59,91 @@
         ),
     );
 
-    const latest = $derived(sortedVersions[0]);
-
-    const editor = new Carta({
-        sanitizer: sanitize,
-    });
+    const editor = new Carta();
 
     const toggleEditing = async () => {
         if (editing) {
+            saving = true;
+
             await updatePackage(id, {
                 name,
                 readme,
+                source: realRepo,
+                issues: realIssues,
+                wiki: realWiki,
             });
+
+            saving = false;
         }
 
         editing = !editing;
     };
 
+    const openAddingModal = () => {
+        modals.trigger({
+            type: "component",
+            component: "addAuthor",
+        });
+    };
+
+    const openUploadModal = () => {
+        modals.trigger({
+            type: "component",
+            component: "uploadVersion",
+        });
+    };
+
+    const onDeleteVersion = async () => {
+        versions = (await getPackageVersions(id)) ?? [];
+    };
+
     onMount(async () => {
-        pkg = await getPackage(id);
+        // openUploadModal();
+
+        $currentPackage = await getPackage(id);
         versions = (await getPackageVersions(id)) ?? [];
 
-        if (pkg) {
-            name = pkg.name;
-            readme = pkg.readme;
+        if ($currentPackage) {
+            name = $currentPackage.name;
+            readme = $currentPackage.readme;
+            repo = $currentPackage.source ?? "";
+            issues = $currentPackage.issues ?? "";
+            wiki = $currentPackage.wiki ?? "";
             loadingState = "ready";
         } else {
             loadingState = "failed";
         }
     });
+
+    beforeNavigate(() => {
+        $currentPackage = undefined;
+    });
 </script>
 
 <svelte:head>
-    <title>{pkg?.name ?? "no-name"} - KJSPKG Lookup</title>
+    <title>{$currentPackage?.name ?? "no-name"} - KJSPKG Lookup</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
     <div class="placeholder m-2 mx-auto w-32 animate-pulse"></div>
-{:else if loadingState == "ready" && pkg}
+{:else if loadingState == "ready" && $currentPackage}
+    {#if saving}
+        <div
+            class="fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-primary-900 bg-opacity-25 text-white"
+            in:fly={{ y: 20 }}
+            out:fly={{ y: 20 }}
+        >
+            <ProgressRadial width="w-20" />
+        </div>
+    {/if}
+
     <h1 class="h2 mb-1 font-bold">
         {#if editing}
             <input
                 in:fly={{ y: 20 }}
                 type="text"
                 bind:value={name}
-                class="border-primary-900 w-full border-0 border-b-2 focus:filter-none bg-transparent outline-none transition-all"
+                class="input variant-form-material w-full border-primary-900"
             />
         {:else}
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{name}</span>
@@ -101,20 +156,22 @@
     >
         <div class="flex h-full w-full flex-col gap-1 overflow-x-auto">
             <span class="select-text *:select-text">
-                {@html markdownInline(pkg.description)}
+                {@html markdownInline($currentPackage.description)}
             </span>
 
             <span class="text-sm opacity-50">
                 <span
-                    >{pkg.downloads}
-                    {pkg.downloads == 1
+                    >{$currentPackage.downloads}
+                    {$currentPackage.downloads == 1
                         ? $_("list.download_singluar")
                         : $_("list.download_plural")}</span
                 >
                 &bull;
                 <span
-                    >{pkg.views}
-                    {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
+                    >{$currentPackage.views}
+                    {$currentPackage.views == 1
+                        ? $_("list.view_singular")
+                        : $_("list.view_plural")}</span
                 >
             </span>
         </div>
@@ -122,84 +179,119 @@
         {#if canEdit}
             <button
                 onclick={toggleEditing}
-                class="hover:variant-filled-primary flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
                 {#if editing}
-                    <IconDeviceFloppy />
+                    <TablerIcon name="device-floppy" />
                 {:else}
-                    <IconPencil />
+                    <TablerIcon name="pencil" />
                 {/if}
             </button>
         {/if}
     </div>
 
-    {#if pkg.source || pkg.issues || pkg.wiki}
-        <span class="card p-4" class:input-group={editing}>
-            {#if editing}
-                <input type="text" class="focus-within:border-0" />
-            {:else}
-                {#if pkg.source}
-                    <a href={pkg.source} class="anchor select-text no-underline" target="_blank">
-                        Source Code
-                    </a>
-                {/if}
-                {#if (pkg.source && pkg.issues) || (pkg.source && pkg.wiki)}
-                    &bull;
-                {/if}
-                {#if pkg.issues}
-                    <a href={pkg.issues} class="anchor select-text no-underline" target="_blank">
-                        Issue Tracker
-                    </a>
-                {/if}
-                {#if (pkg.issues && pkg.wiki) || (pkg.source && pkg.wiki)}
-                    &bull;
-                {/if}
-                {#if pkg.wiki}
-                    <a href={pkg.wiki} class="anchor select-text no-underline" target="_blank">
-                        Wiki
-                    </a>
-                {/if}
+    {#if editing}
+        <span class="input-group p-0">
+            <input
+                type="text"
+                class="indent-2"
+                placeholder="Code Repository URL"
+                bind:value={repo}
+            />
+        </span>
+        <span class="input-group p-0">
+            <input
+                type="text"
+                class="indent-2"
+                placeholder="Issue Tracker URL"
+                bind:value={issues}
+            />
+        </span>
+        <span class="input-group p-0">
+            <input type="text" class="indent-2" placeholder="Wiki URL" bind:value={wiki} />
+        </span>
+    {:else if hasRepo || hasIssues || hasWiki}
+        <span class="card p-4">
+            {#if hasRepo}
+                <a href={repo} class="anchor select-text no-underline" target="_blank">
+                    Source Code
+                </a>
+            {/if}
+            {#if (hasRepo && hasIssues) || (hasRepo && hasWiki)}
+                &bull;
+            {/if}
+            {#if hasIssues}
+                <a href={issues} class="anchor select-text no-underline" target="_blank">
+                    Issue Tracker
+                </a>
+            {/if}
+            {#if (hasIssues && hasWiki) || (hasRepo && hasWiki)}
+                &bull;
+            {/if}
+            {#if hasWiki}
+                <a href={wiki} class="anchor select-text no-underline" target="_blank"> Wiki </a>
             {/if}
         </span>
     {/if}
 
     <div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        <!-- TODO: href={base + `/s?q=@author:${locatorInfo[1]}`} -->
         <div class="card p-4" in:fly={{ y: 20 }}>
             <dt class="mb-2 text-sm opacity-50">{$_("package.created_by")}</dt>
-            {#each pkg.authors as author}
+
+            {#each $currentPackage.authors as author}
                 <a
-                    class="card hover:variant-soft-primary flex p-4"
+                    class="card mb-2 flex flex-row items-center p-2 hover:variant-soft-primary"
                     href="{base}/s?q={author.username}"
                     in:fly={{ y: 20 }}
                 >
                     <img
                         src="https://avatars.githubusercontent.com/u/{author.github_id}"
                         alt="author's profile afirst child cssvatar"
-                        class="rounded-token my-auto mr-4 aspect-square h-8"
+                        class="my-auto mr-4 aspect-square h-8 rounded-token"
                     />
-                    <!-- <dd class="select-text font-bold"> -->
                     {author.username}
-                    <!-- {locatorInfo[1] != thisPackage.author ? `(${locatorInfo[1]})` : ""} -->
-                    <!-- </dd> -->
                 </a>
             {/each}
+
+            {#if editing}
+                <button
+                    class="card flex w-full p-2 transition-all hover:variant-soft-primary"
+                    in:fly={{ y: 20 }}
+                    onclick={openAddingModal}
+                >
+                    <TablerIcon name="plus" />
+                    Add People
+                </button>
+            {/if}
         </div>
 
         <div class="card p-4" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">{$_("package.available_for")}</dt>
-            <dd class="mt-2 flex flex-wrap gap-1">
-                {#each loaders as loader}
+
+            {#if loaders.length > 0 || minecraft.length > 0}
+                {#if loaders.length > 0}
+                    <dd class="mt-2 flex flex-wrap gap-1">
+                        {#each loaders as loader}
+                            <span class="variant-filled-primary badge select-text"
+                                >{fixLoaderName(loader)}</span
+                            >
+                        {/each}
+                    </dd>
+                {/if}
+                {#if minecraft.length > 0}
+                    <dd class="mt-2 flex flex-wrap gap-1">
+                        {#each minecraft as version}
+                            <span class="variant-filled-primary badge select-text">{version}</span>
+                        {/each}
+                    </dd>
+                {/if}
+            {:else}
+                <dd class="mt-2 flex flex-wrap gap-1">
                     <span class="variant-filled-primary badge select-text"
-                        >{fixLoaderName(loader)}</span
+                        >{$_("package.unknown")}</span
                     >
-                {/each}
-            </dd>
-            <dd class="mt-2 flex flex-wrap gap-1">
-                {#each minecraft as version}
-                    <span class="variant-filled-primary badge select-text">{version}</span>
-                {/each}
-            </dd>
+                </dd>
+            {/if}
         </div>
 
         <!-- <CodeBlock
@@ -216,17 +308,33 @@
             </dd>
         </div> -->
 
-        {#if sortedVersions.length > 0}
+        {#if sortedVersions.length > 0 || editing}
             <div class="card h-fit space-y-2 p-4 lg:col-span-2" in:fly|global={{ y: 20 }}>
                 <dt class="text-sm opacity-50">{$_("package.versions")}</dt>
 
                 <dd class="flex w-full gap-1">
                     <dl class="list-dl w-full">
                         {#each sortedVersions as version}
-                            <Version {version} pkg={pkg.slug} />
+                            <Version
+                                {version}
+                                pkg={$currentPackage.slug}
+                                {editing}
+                                onDelete={onDeleteVersion}
+                            />
                         {/each}
                     </dl>
                 </dd>
+
+                {#if editing}
+                    <button
+                        class="variant-soft-secondary btn w-full transition-all hover:variant-soft-primary"
+                        in:fly={{ y: 20 }}
+                        onclick={openUploadModal}
+                    >
+                        <TablerIcon name="upload" class="mr-2" />
+                        Upload Version
+                    </button>
+                {/if}
             </div>
         {/if}
 
@@ -251,7 +359,7 @@
 {:else if loadingState == "failed"}
     <!-- <p>Something went wrong (this package doesn't seem to exist)</p> -->
     {(() => {
-        getToastStore().trigger({
+        toasts.trigger({
             message: `Package Broken`,
             hideDismiss: true,
             timeout: 5000,

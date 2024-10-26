@@ -1,6 +1,6 @@
 import type { CustomThemeConfig } from "@skeletonlabs/tw-plugin";
 
-export const ThemeKjspkgLighter: CustomThemeConfig = {
+export const lighterTheme: CustomThemeConfig = {
     name: "kjspkg-lighter",
     properties: {
         // =~= Theme Properties =~=

@@ -1,6 +1,6 @@
 import markdownit from "markdown-it";
 import { full as emoji } from "markdown-it-emoji";
-import type { PackageData, PackageVersion, SortMode } from "./types";
+import type { ModLoader, PackageData, PackageVersion, SortMode } from "./types";
 
 const md = markdownit({
     html: false,
@@ -13,17 +13,10 @@ const md = markdownit({
     highlight: (/*str, lang*/) => "",
 }).use(emoji);
 
+export const allLoaders: ModLoader[] = ["forge", "fabric", "quilt", "neoforge"];
 export const markdownInline = (str: string): string => md.renderInline(str);
 export const markdown = (str: string): string => md.render(str);
 export const removeBase = (target: string, base: string) => target.replace(base, "");
-
-// export function filterPkgsByAuthor(authorCheck: string | undefined) : [string, string][] {
-// 	return get(packageStatusStore).search.d.filter((p : [string, string]) => {
-// 		const locatorInfo = p[1].match(consts.LOCATOR_REGEX)!;
-// 		const author = locatorInfo[1];
-// 		return author == authorCheck;
-// 	});
-// }
 
 export const guessSortMode = (input: string): SortMode => {
     if (["", "name", "downloads", "views"].includes(input)) {
