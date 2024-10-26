@@ -18,6 +18,7 @@ jobs:
         with:
           shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
           project-id: proj_01JB57K5YKJ6R74NW4R8DQZ24B
+          extra-args: --features shuttle
           secrets: |
             DATABASE_URL = '${{ secrets.DATABASE_URL }}'
             GH_CLIENT_ID = '${{ secrets.GH_CLIENT_ID }}'
