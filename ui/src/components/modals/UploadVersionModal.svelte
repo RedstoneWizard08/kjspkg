@@ -1,15 +1,14 @@
 <script lang="ts">
+    import { _ } from "svelte-i18n";
     import {
         getModalStore,
         ProgressRadial,
         InputChip,
         Autocomplete,
-        popup,
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
-    import { addPackageAuthor, createVersion, getUser, searchUsers } from "$api";
-    import type { ModLoader, PackageVersion, PackageVersionInit, User } from "$lib/types";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { createVersion } from "$api";
+    import type { ModLoader, PackageVersion, PackageVersionInit } from "$lib/types";
     import { currentPackage } from "$lib/stores";
     import { allLoaders, fixLoaderName } from "$lib/utils";
     import { onDestroy, onMount } from "svelte";
@@ -17,7 +16,7 @@
     import { goto } from "$app/navigation";
 
     const modals = getModalStore();
-    let minecraftVersions = $state([]);
+    let minecraftVersions = $state<string[]>([]);
 
     let name = $state("");
     let version_number = $state("");
@@ -65,23 +64,23 @@
         const file = files?.[0];
 
         if (name == "") {
-            errorMessages.push("Version name is required");
+            errorMessages.push($_("modal.upload_version.error.name"));
         }
 
         if (version_number == "") {
-            errorMessages.push("Version number is required");
+            errorMessages.push($_("modal.upload_version.error.version_number"));
         }
 
         if (loaders.length == 0) {
-            errorMessages.push("At least one loader is required");
+            errorMessages.push($_("modal.upload_version.error.loaders"));
         }
 
         if (minecraft.length == 0) {
-            errorMessages.push("At least one Minecraft version is required");
+            errorMessages.push($_("modal.upload_version.error.minecraft"));
         }
 
         if (!file) {
-            errorMessages.push("A file is required");
+            errorMessages.push($_("modal.upload_version.error.file"));
         }
 
         if (errorMessages.length > 0) {
@@ -93,7 +92,7 @@
         const data: PackageVersionInit = {
             name,
             version_number,
-            changelog,
+            changelog: changelog == "" ? undefined : changelog,
             kubejs,
             loaders,
             minecraft,
@@ -106,10 +105,10 @@
             res = await createVersion($currentPackage!.id, data, new Blob([fileData]));
 
             if (!res) {
-                throw new Error("Failed to upload version");
+                throw new Error($_("modal.upload_version.error.api"));
             }
         } catch (err) {
-            errorMessages.push("Failed to upload version");
+            errorMessages.push($_("modal.upload_version.error.api"));
             loading = false;
             return;
         }
@@ -131,13 +130,13 @@
 
 {#if $modals[0]}
     <div class="w-modal bg-secondary-700 relative rounded-lg p-8 shadow-xl">
-        <header class="text-2xl font-bold">Upload Version</header>
+        <header class="text-2xl font-bold">{$_("modal.upload_version.title")}</header>
 
         <form class="modal-form mt-4 rounded-md border p-4 border-transparent" onsubmit={submit} class:form-error={errorMessages.length > 0}>
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder="Version display name"
+                placeholder={$_("modal.upload_version.placeholder.name")}
                 disabled={loading}
                 bind:value={name}
             />
@@ -145,13 +144,13 @@
             <input
                 class="input variant-form-material rounded-lg"
                 type="text"
-                placeholder="Version number"
+                placeholder={$_("modal.upload_version.placeholder.version_number")}
                 disabled={loading}
                 bind:value={version_number}
             />
 
             <div class="m-2 mt-4 flex flex-row items-center">
-                <p class="mr-2 text-base">Supported Loaders</p>
+                <p class="mr-2 text-base">{$_("modal.upload_version.placeholder.loaders")}</p>
                 {#each allLoaders as loader}
                     <button
                         type="button"
@@ -169,7 +168,7 @@
                 bind:value={minecraft}
                 name="chips"
                 class="variant-form-material mt-4 !outline-none"
-                placeholder="Minecraft versions"
+                placeholder={$_("modal.upload_version.placeholder.minecraft")}
                 whitelist={minecraftVersions}
                 data-ref="minecraftInputChip"
             />
@@ -191,7 +190,7 @@
 
             <textarea
                 class="input variant-form-material mt-2 h-48 w-full rounded-lg"
-                placeholder="Changelog"
+                placeholder={$_("modal.upload_version.placeholder.changelog")}
                 disabled={loading}
                 bind:value={changelog}
             ></textarea>
@@ -208,7 +207,7 @@
 
         {#if errorMessages.length > 0}
             <div class="card variant-filled-error mt-4 p-4">
-                <p class="w-full">Error:</p>
+                <p class="w-full">{$_("error.prefix")}</p>
                 <ul class="ml-6 list-disc">
                     {#each errorMessages as message}
                         <li>{message}</li>
@@ -221,7 +220,7 @@
             <button
                 class="variant-soft-tertiary btn hover:variant-soft-primary mr-2 outline-none"
                 disabled={loading}
-                onclick={() => modals.close()}>Cancel</button
+                onclick={() => modals.close()}>{$_("action.cancel")}</button
             >
             <button
                 class="variant-primary btn hover:variant-filled-secondary flex flex-row items-center outline-none"
@@ -231,7 +230,7 @@
                 {#if loading}
                     <ProgressRadial width="w-4" class="mr-2" />
                 {/if}
-                Upload
+                {$_("action.upload")}
             </button>
         </footer>
     </div>

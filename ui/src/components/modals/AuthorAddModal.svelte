@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { _ } from "svelte-i18n";
     import { fly } from "svelte/transition";
     import {
         getModalStore,
@@ -67,7 +68,7 @@
 
 {#if $modals[0]}
     <div class="w-modal-slim relative rounded-lg bg-secondary-700 p-8 shadow-xl">
-        <header class="text-2xl font-bold">Add Author</header>
+        <header class="text-2xl font-bold">{$_("modal.add_author.title")}</header>
 
         <form class="modal-form mt-4" onsubmit={submit}>
             <div
@@ -78,7 +79,7 @@
                     class="input rounded-lg"
                     type="text"
                     bind:value={username}
-                    placeholder="Enter username..."
+                    placeholder={$_("modal.add_author.placeholder.username")}
                     use:popup={popupSettings}
                     oninput={refetchUsers}
                     disabled={loading}
@@ -94,7 +95,7 @@
             </div>
 
             <div class="card variant-filled-secondary p-4" data-popup="errorPopup">
-                <p class="w-full">Invalid user!</p>
+                <p class="w-full">{$_("modal.add_author.error.user")}</p>
                 <div class="variant-filled-secondary arrow"></div>
             </div>
 
@@ -121,7 +122,7 @@
                         </div>
                     {/each}
                 {:else}
-                    <div class="text-center">No users found</div>
+                    <div class="text-center">{$_("modal.add_author.error.no_users")}</div>
                 {/if}
 
                 <div class="variant-filled-surface arrow"></div>
@@ -132,7 +133,7 @@
             <button
                 class="variant-soft-tertiary btn mr-2 outline-none hover:variant-soft-primary"
                 disabled={loading}
-                onclick={() => modals.close()}>Cancel</button
+                onclick={() => modals.close()}>{$_("action.cancel")}</button
             >
             <button
                 class="variant-primary btn flex flex-row items-center outline-none hover:variant-filled-secondary"
@@ -142,7 +143,7 @@
                 {#if loading}
                     <ProgressRadial width="w-4" class="mr-2" />
                 {/if}
-                Add
+                {$_("action.add")}
             </button>
         </footer>
     </div>

@@ -1,6 +1,8 @@
 import markdownit from "markdown-it";
 import { full as emoji } from "markdown-it-emoji";
 import type { ModLoader, PackageData, PackageVersion, SortMode } from "./types";
+import { get } from "svelte/store";
+import { _ } from "svelte-i18n";
 
 const md = markdownit({
     html: false,
@@ -65,13 +67,13 @@ export const getKubeJS = (versions: PackageVersion[]) => {
 export const fixLoaderName = (name: string) => {
     switch (name.toLowerCase()) {
         case "forge":
-            return "Forge";
+            return get(_)("loader.forge");
         case "fabric":
-            return "Fabric";
+            return get(_)("loader.fabric");
         case "quilt":
-            return "Quilt";
+            return get(_)("loader.quilt");
         case "neoforge":
-            return "NeoForge";
+            return get(_)("loader.neoforge");
         default:
             return name;
     }

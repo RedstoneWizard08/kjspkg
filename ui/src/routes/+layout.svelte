@@ -106,9 +106,9 @@
                 <div
                     class="container mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4 md:p-10"
                 >
-                    <!-- {#key data.href} -->
-                    {@render children?.()}
-                    <!-- {/key} -->
+                    {#key data.href}
+                        {@render children?.()}
+                    {/key}
                 </div>
             </main>
 
@@ -120,10 +120,8 @@
                         target="_blank">GitHub</a
                     >
                     &bull;
-                    <a
-                        href="/api/v1/docs/scalar"
-                        class="anchor no-underline"
-                        target="_blank">API Docs</a
+                    <a href="/api/v1/docs/scalar" class="anchor no-underline" target="_blank"
+                        >API Docs</a
                     >
                     &bull;
                     <a
@@ -150,57 +148,3 @@
         </div>
     </div>
 </div>
-
-<!-- <AppShell
-    slotSidebarLeft="hidden xl:block"
-    slotPageFooter="p-2 flex justify-between"
-    onscroll={(e: WheelEvent) =>
-        ($currentScrollPosition = {
-            x: (e.currentTarget as Element).scrollLeft,
-            y: (e.currentTarget as Element).scrollTop,
-        })}
->
-    <svelte:fragment slot="header">
-        <HeaderBar />
-    </svelte:fragment>
-
-    <svelte:fragment slot="sidebarLeft">
-        <Sidebar />
-    </svelte:fragment>
-
-    <div
-        class="container relative mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4 md:p-10"
-    >
-        {#key data.href}
-            {@render children?.()}
-        {/key}
-    </div>
-
-    <svelte:fragment slot="pageFooter">
-        <span class="hidden md:inline">
-            <a
-                href="https://github.com/Modern-Modpacks/kjspkg"
-                class="anchor no-underline"
-                target="_blank">KJSPKG @ GitHub</a
-            >
-            &bull;
-            <a href="https://modernmodpacks.site" class="anchor no-underline" target="_blank"
-                >Modern Modpacks</a
-            >
-        </span>
-
-        <span class="mt-auto hidden text-sm opacity-50 md:inline">
-            Website designed with love by <a
-                href="https://github.com/tizu69"
-                class="anchor no-underline"
-                target="_blank">tizu69</a
-            >
-            and
-            <a
-                href="https://github.com/RedstoneWizard08"
-                class="anchor no-underline"
-                target="_blank">RedstoneWizard08</a
-            > &lt;3
-        </span>
-    </svelte:fragment>
-</AppShell> -->

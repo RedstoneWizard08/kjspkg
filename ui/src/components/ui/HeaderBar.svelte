@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { _, locales } from "svelte-i18n";
+    import { _, locales, locale } from "svelte-i18n";
     import { AppBar, getModalStore } from "@skeletonlabs/skeleton";
     import {
         currentScrollPosition,
@@ -32,10 +32,11 @@
 
             ...$locales.map((lang) => ({
                 type: "ITEM",
-                label: lang,
+                label: $_("name", { locale: lang }),
                 icon: $userPreferencesStore.locale == lang ? TablerIconCheck : IconBlank,
                 action: () => {
                     $userPreferencesStore.locale = lang;
+                    $locale = lang;
                 },
             })),
         ] as ContextMenuItem[],

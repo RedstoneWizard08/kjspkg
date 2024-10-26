@@ -226,7 +226,7 @@
         <span class="card p-4">
             {#if hasRepo}
                 <a href={repo} class="anchor select-text no-underline" target="_blank">
-                    Source Code
+                    {$_("package.source")}
                 </a>
             {/if}
             {#if (hasRepo && hasIssues) || (hasRepo && hasWiki)}
@@ -234,14 +234,16 @@
             {/if}
             {#if hasIssues}
                 <a href={issues} class="anchor select-text no-underline" target="_blank">
-                    Issue Tracker
+                    {$_("package.issues")}
                 </a>
             {/if}
             {#if (hasIssues && hasWiki) || (hasRepo && hasWiki)}
                 &bull;
             {/if}
             {#if hasWiki}
-                <a href={wiki} class="anchor select-text no-underline" target="_blank"> Wiki </a>
+                <a href={wiki} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.wiki")}
+                </a>
             {/if}
         </span>
     {/if}
@@ -272,7 +274,7 @@
                     onclick={openAddingModal}
                 >
                     <TablerIcon name="plus" />
-                    Add People
+                    {$_("modal.add_author.trigger")}
                 </button>
             {/if}
         </div>
@@ -344,13 +346,13 @@
                         onclick={openUploadModal}
                     >
                         <TablerIcon name="upload" class="mr-2" />
-                        Upload Version
+                        {$_("package.upload_version")}
                     </button>
                 {/if}
             </div>
         {/if}
 
-        <section class="card h-fit space-y-4 p-4 lg:col-span-2" in:fly={{ y: 20 }}>
+        <section class="card h-fit p-4 lg:col-span-2" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">
                 {$_("package.readme_file")}
             </dt>

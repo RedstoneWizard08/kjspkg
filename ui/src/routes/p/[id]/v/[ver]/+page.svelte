@@ -105,7 +105,7 @@
     >
         <div class="flex h-full w-full flex-col gap-1 overflow-x-auto">
             <span class="select-text *:select-text">
-                <span class="font-bold">Version Number:</span>
+                <span class="font-bold">{$_("package.version.prefix")}</span>
                 {version.version_number}
             </span>
 
@@ -186,7 +186,7 @@
         </div>
 
         {#if changelog || editing}
-            <section class="card h-fit space-y-4 p-4 lg:col-span-2" in:fly={{ y: 20 }}>
+            <section class="card h-fit p-4 lg:col-span-2" in:fly={{ y: 20 }}>
                 <dt class="text-sm opacity-50">
                     {$_("package.version.changelog")}
                 </dt>
