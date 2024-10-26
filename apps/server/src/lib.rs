@@ -26,6 +26,7 @@ pub(crate) mod routes;
 pub(crate) mod schema;
 pub(crate) mod state;
 pub(crate) mod util;
+pub(crate) mod worker;
 
 use std::net::{IpAddr, SocketAddr};
 
@@ -43,6 +44,7 @@ use routes::create_router;
 use shuttle_axum::ShuttleAxum;
 use state::AppState;
 use tokio::{join, net::TcpListener};
+use worker::run_worker;
 
 pub async fn start_app(cli: Cli) -> Result<()> {
     info!("Starting app...");
@@ -60,7 +62,7 @@ pub async fn start_app(cli: Cli) -> Result<()> {
     info!("Creating state...");
 
     let state = AppState::new(
-        pool,
+        pool.clone(),
         cli.github_client_id,
         cli.github_client_secret,
         cli.supabase_url,
@@ -71,6 +73,10 @@ pub async fn start_app(cli: Cli) -> Result<()> {
     info!("Creating glue...");
 
     let glue = make_glue()?;
+
+    info!("Starting worker...");
+
+    run_worker(pool);
 
     info!("Registering routes...");
 
@@ -119,11 +125,15 @@ pub async fn create_shuttle_axum() -> ShuttleAxum {
 
     info!("Creating state...");
 
-    let state = AppState::new(pool, None, None, None, None, None)?;
+    let state = AppState::new(pool.clone(), None, None, None, None, None)?;
 
     info!("Creating glue...");
 
     let glue = make_glue()?;
+
+    info!("Starting worker...");
+
+    run_worker(pool);
 
     info!("Registering routes...");
 

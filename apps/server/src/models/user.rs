@@ -1,4 +1,5 @@
 use crate::schema::{user_tokens, users};
+use chrono::NaiveDateTime;
 use diesel::pg::Pg;
 
 /// A user.
@@ -88,6 +89,9 @@ pub struct UserToken {
 
     /// The token's value.
     pub value: String,
+
+    /// The token's expiration date.
+    pub expires: NaiveDateTime,
 }
 
 /// A model for creating a new user token in the database.
@@ -117,4 +121,7 @@ pub struct NewUserToken {
 
     /// The token's value.
     pub value: String,
+
+    /// The token's expiration date.
+    pub expires: NaiveDateTime,
 }

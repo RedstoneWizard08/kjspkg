@@ -106,8 +106,6 @@
     };
 
     onMount(async () => {
-        // openUploadModal();
-
         $currentPackage = await getPackage(id);
         versions = (await getPackageVersions(id)) ?? [];
 
@@ -322,7 +320,7 @@
             </dd>
         </div> -->
 
-        {#if sortedVersions.length > 0 || editing}
+        {#if sortedVersions.length > 0 || canEdit}
             <div class="card h-fit space-y-2 p-4 lg:col-span-2" in:fly|global={{ y: 20 }}>
                 <dt class="text-sm opacity-50">{$_("package.versions")}</dt>
 
@@ -339,7 +337,7 @@
                     </dl>
                 </dd>
 
-                {#if editing}
+                {#if canEdit}
                     <button
                         class="variant-soft-secondary btn hover:variant-soft-primary w-full transition-all"
                         in:fly={{ y: 20 }}

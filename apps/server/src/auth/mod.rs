@@ -6,9 +6,15 @@ use crate::{
 use anyhow::{anyhow, Result};
 use axum::http::HeaderMap;
 use axum_extra::extract::CookieJar;
+use chrono::{DateTime, Utc};
 use diesel::{insert_into, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use random_string::{charsets::ALPHANUMERIC, generate};
+
+/// The time until a token expires in milliseconds.
+/// Calculation: 1 * SECS_PER_WEEK * MILLIS_PER_SEC
+#[allow(clippy::identity_op)]
+pub const TOKEN_EXPIRE_TIME: i64 = 1 * 604800 * 1000;
 
 pub const TOKEN_LENGTH: usize = 64;
 
@@ -16,6 +22,9 @@ pub fn generate_token(user_id: i32) -> NewUserToken {
     NewUserToken {
         user_id,
         value: generate(TOKEN_LENGTH, ALPHANUMERIC),
+        expires: DateTime::from_timestamp_millis(Utc::now().timestamp_millis() + TOKEN_EXPIRE_TIME)
+            .unwrap()
+            .naive_utc(),
     }
 }
 
