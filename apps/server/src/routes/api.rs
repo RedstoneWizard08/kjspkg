@@ -2,7 +2,8 @@ use crate::{api::ApiDocs, state::AppState, HttpResult};
 use axum::{extract::Query, routing::get, Router};
 use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
-use utoipa_redoc::{Redoc, Servable};
+use utoipa_redoc::{Redoc, Servable as ServableRedoc};
+use utoipa_scalar::{Scalar, Servable as ServableScalar};
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
 #[derive(
@@ -64,6 +65,7 @@ pub fn register(router: Router<AppState>) -> Router<AppState> {
             Redoc::with_url("/api/v1/docs/redoc", ApiDocs::openapi())
                 .custom_html(include_str!("../redoc.html")),
         )
+        .merge(Scalar::with_url("/api/v1/docs/scalar", ApiDocs::openapi()))
         .merge(RapiDoc::new("/api/v1/openapi/json").path("/api/v1/docs/rapidoc"))
         .route("/api/v1/openapi/yaml", get(yaml_api))
         .route("/api/v1/openapi/json", get(json_api))

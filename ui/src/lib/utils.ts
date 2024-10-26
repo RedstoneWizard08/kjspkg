@@ -88,3 +88,9 @@ export const formatDate = (date: Date) => {
         hour12: true,
     }).format(date);
 };
+
+export const createSlug = (input: string) => {
+    const slugRegex = /[^a-z0-9_-]/gm;
+
+    return input.toLowerCase().replace(slugRegex, "-");
+};

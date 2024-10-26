@@ -22,6 +22,7 @@
     import { setToken } from "$api";
     import AuthorAddModal from "$components/modals/AuthorAddModal.svelte";
     import UploadVersionModal from "$components/modals/UploadVersionModal.svelte";
+    import CreatePackageModal from "$components/modals/CreatePackageModal.svelte";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -29,6 +30,7 @@
     const modalRegistry: Record<string, ModalComponent> = {
         addAuthor: { ref: AuthorAddModal },
         uploadVersion: { ref: UploadVersionModal },
+        createPackage: { ref: CreatePackageModal },
     };
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -115,7 +117,13 @@
                     <a
                         href="https://github.com/Modern-Modpacks/kjspkg"
                         class="anchor no-underline"
-                        target="_blank">KJSPKG @ GitHub</a
+                        target="_blank">GitHub</a
+                    >
+                    &bull;
+                    <a
+                        href="/api/v1/docs/scalar"
+                        class="anchor no-underline"
+                        target="_blank">API Docs</a
                     >
                     &bull;
                     <a

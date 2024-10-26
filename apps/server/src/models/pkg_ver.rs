@@ -5,6 +5,7 @@ use crate::{
 use chrono::NaiveDateTime;
 use diesel::pg::Pg;
 
+/// A package version.
 #[derive(
     Debug,
     Clone,
@@ -26,21 +27,45 @@ use diesel::pg::Pg;
 #[diesel(belongs_to(Package, foreign_key = package))]
 #[diesel(check_for_backend(Pg))]
 pub struct PackageVersion {
+    /// The package version ID.
     pub id: i32,
+
+    /// The package ID.
     pub package: i32,
+
+    /// The display name of the version.
     pub name: String,
+
+    /// The version number.
     pub version_number: String,
+
+    /// The file ID in the bucket.
     #[serde(skip)]
     pub file_id: String,
+
+    /// An optional markdown-formatted changelog.
     pub changelog: Option<String>,
+
+    /// A list of KubeJS versions that this version works on.
     pub kubejs: Vec<Option<String>>,
+
+    /// A list of loaders this version works on.
     pub loaders: Vec<Option<String>>,
+
+    /// A list of Minecraft versions this works on.
     pub minecraft: Vec<Option<String>>,
+
+    /// The date this version was created.
     pub created_at: NaiveDateTime,
+
+    /// The date this version was last updated.
     pub updated_at: NaiveDateTime,
+
+    /// The number of downloads this version has.
     pub downloads: i32,
 }
 
+/// The initial data for creating a new package version in the database.
 #[derive(
     Debug,
     Clone,
@@ -62,17 +87,35 @@ pub struct PackageVersion {
 #[diesel(belongs_to(Package, foreign_key = package))]
 #[diesel(check_for_backend(Pg))]
 pub struct NewPackageVersion {
+    /// The package ID.
     pub package: i32,
+
+    /// The display name of the version.
     pub name: String,
+
+    /// The version number.
     pub version_number: String,
+
+    /// The file ID in the bucket.
     pub file_id: String,
+
+    /// An optional markdown-formatted changelog.
     pub changelog: Option<String>,
+
+    /// A list of KubeJS versions that this version works on.
     pub kubejs: Vec<Option<String>>,
+
+    /// A list of loaders this version works on.
     pub loaders: Vec<Option<String>>,
+
+    /// A list of Minecraft versions this works on.
     pub minecraft: Vec<Option<String>>,
+
+    /// The number of downloads this version has.
     pub downloads: i32,
 }
 
+/// A reference to a package version.
 #[derive(
     Debug,
     Clone,
@@ -94,11 +137,12 @@ pub struct NewPackageVersion {
 #[diesel(belongs_to(PackageVersion, foreign_key = value))]
 #[diesel(check_for_backend(Pg))]
 pub struct PackageVersionRef {
+    /// The package version ID.
     pub value: i32,
 }
 
-/// This is ONLY for api doc purposes. It isn't actually used internally.
-/// This is serialized as form data, each key representing a field.
+/// The initial data for creating a new package version.
+/// This should be formatted as "multipart/form-data".
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, ToSchema, ToResponse)]
 pub struct PackageVersionInit {
     /// The name of the package.
@@ -111,13 +155,15 @@ pub struct PackageVersionInit {
     pub changelog: Option<String>,
 
     /// A list of KubeJS versions that this version works on.
-    /// This should be a comma-separated list.
+    /// This should be a comma-separated list in the request.
     pub kubejs: String,
 
     /// A list of loaders this version works on.
+    /// This should be a comma-separated list in the request.
     pub loaders: String,
 
     /// A list of Minecraft versions this works on.
+    /// This should be a comma-separated list in the request.
     pub minecraft: String,
 
     /// The file content.

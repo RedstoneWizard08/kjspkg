@@ -10,7 +10,7 @@ readme.workspace = true
 
 [features]
 default = []
-shuttle = []
+shuttle = ["dep:openssl-sys", "dep:pq-sys"]
 
 [dependencies]
 anyhow.workspace = true
@@ -32,6 +32,8 @@ lazy_static.workspace = true
 log.workspace = true
 oauth2.workspace = true
 octocrab.workspace = true
+openssl-sys = { workspace = true, optional = true }
+pq-sys = { workspace = true, optional = true }
 random-string.workspace = true
 reqwest.workspace = true
 serde.workspace = true
@@ -47,6 +49,7 @@ url.workspace = true
 utoipa.workspace = true
 utoipa-rapidoc.workspace = true
 utoipa-redoc.workspace = true
+utoipa-scalar.workspace = true
 utoipa-swagger-ui.workspace = true
 uuid.workspace = true
 

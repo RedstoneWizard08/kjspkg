@@ -4,6 +4,7 @@ use crate::{
 };
 use diesel::pg::Pg;
 
+/// A package author.
 #[derive(
     Debug,
     Clone,
@@ -27,6 +28,9 @@ use diesel::pg::Pg;
 #[diesel(check_for_backend(Pg))]
 #[diesel(primary_key(package, user_id))]
 pub struct PackageAuthor {
+    /// The package ID.
     pub package: i32,
+
+    /// The user ID.
     pub user_id: i32,
 }

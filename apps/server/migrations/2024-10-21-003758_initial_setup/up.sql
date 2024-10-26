@@ -6,14 +6,14 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS user_tokens (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     value TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS packages (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    slug TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
     readme TEXT NOT NULL,
     description TEXT NOT NULL,
     views INTEGER NOT NULL DEFAULT 0,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS packages (
 
 CREATE TABLE IF NOT EXISTS package_versions (
     id SERIAL PRIMARY KEY,
-    package INTEGER NOT NULL REFERENCES packages(id),
+    package INTEGER NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     version_number TEXT NOT NULL,
     file_id TEXT NOT NULL, -- This is the UUID of the version's file.
@@ -57,20 +57,20 @@ update_updated_at_column();
 
 -- How to deal with diesel.rs shenanigains, part 1
 CREATE TABLE IF NOT EXISTS package_version_refs (
-    value INTEGER NOT NULL REFERENCES package_versions(id),
+    value INTEGER NOT NULL REFERENCES package_versions(id) ON DELETE CASCADE,
     PRIMARY KEY(value)
 );
 
 CREATE TABLE IF NOT EXISTS package_relations (
-    package INTEGER NOT NULL REFERENCES package_versions(id),
-    dependency INTEGER NOT NULL REFERENCES package_version_refs(value),
+    package INTEGER NOT NULL REFERENCES package_versions(id) ON DELETE CASCADE,
+    dependency INTEGER NOT NULL REFERENCES package_version_refs(value) ON DELETE CASCADE,
     -- The relation kind. 0 = dependency, 1 = incompatibility
     kind INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY(package, dependency, kind)
 );
 
 CREATE TABLE IF NOT EXISTS package_authors (
-    package INTEGER NOT NULL REFERENCES packages(id),
-    user_id INTEGER NOT NULL REFERENCES users(id),
+    package INTEGER NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY(package, user_id)
 );

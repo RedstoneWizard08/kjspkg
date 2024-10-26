@@ -1,6 +1,7 @@
 use crate::schema::{user_tokens, users};
 use diesel::pg::Pg;
 
+/// A user.
 #[derive(
     Debug,
     Clone,
@@ -20,11 +21,17 @@ use diesel::pg::Pg;
 #[diesel(table_name = users)]
 #[diesel(check_for_backend(Pg))]
 pub struct User {
+    /// The user's ID.
     pub id: i32,
+
+    /// The user's username.
     pub username: String,
+
+    /// The user's GitHub ID.
     pub github_id: i32,
 }
 
+/// A model for creating a new user in the database.
 #[derive(
     Debug,
     Clone,
@@ -44,10 +51,14 @@ pub struct User {
 #[diesel(table_name = users)]
 #[diesel(check_for_backend(Pg))]
 pub struct NewUser {
+    /// The user's username.
     pub username: String,
+
+    /// The user's GitHub ID.
     pub github_id: i32,
 }
 
+/// A user's token.
 #[derive(
     Debug,
     Clone,
@@ -69,11 +80,17 @@ pub struct NewUser {
 #[diesel(belongs_to(User))]
 #[diesel(check_for_backend(Pg))]
 pub struct UserToken {
+    /// The token's ID.
     pub id: i32,
+
+    /// The user's ID.
     pub user_id: i32,
+
+    /// The token's value.
     pub value: String,
 }
 
+/// A model for creating a new user token in the database.
 #[derive(
     Debug,
     Clone,
@@ -95,6 +112,9 @@ pub struct UserToken {
 #[diesel(belongs_to(User))]
 #[diesel(check_for_backend(Pg))]
 pub struct NewUserToken {
+    /// The user's ID.
     pub user_id: i32,
+
+    /// The token's value.
     pub value: String,
 }

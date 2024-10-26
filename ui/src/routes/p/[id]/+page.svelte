@@ -1,22 +1,16 @@
 <script lang="ts">
-    import { beforeNavigate } from "$app/navigation";
+    import { beforeNavigate, goto } from "$app/navigation";
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import type { LoadingState, PackageData, PackageVersion } from "$lib/types";
-    import {
-        fixLoaderName,
-        getLoaders,
-        getMinecraft,
-        markdown,
-        markdownInline,
-    } from "$lib/utils";
+    import { fixLoaderName, getLoaders, getMinecraft, markdown, markdownInline } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { onMount } from "svelte";
-    import { getPackage, getPackageVersions, updatePackage } from "$api";
+    import { deletePackage, getPackage, getPackageVersions, updatePackage } from "$api";
     import { getToastStore, getModalStore, ProgressRadial } from "@skeletonlabs/skeleton";
     import { base } from "$app/paths";
     import Version from "$components/ui/Version.svelte";
-    import { currentPackage, user } from "$lib/stores";
+    import { currentPackage, forceUpdatePackagesStore, user } from "$lib/stores";
     import { Carta, MarkdownEditor } from "carta-md";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
 
@@ -97,6 +91,20 @@
         versions = (await getPackageVersions(id)) ?? [];
     };
 
+    const onDeletePackage = async () => {
+        try {
+            await deletePackage(id);
+        } catch (e) {
+            toasts.trigger({
+                message: `Failed to delete package: ${e}`,
+                background: "variant-filled-error",
+            });
+        }
+
+        await forceUpdatePackagesStore();
+        goto("/");
+    };
+
     onMount(async () => {
         // openUploadModal();
 
@@ -129,7 +137,7 @@
 {:else if loadingState == "ready" && $currentPackage}
     {#if saving}
         <div
-            class="fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-primary-900 bg-opacity-25 text-white"
+            class="bg-primary-900 fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-opacity-25 text-white"
             in:fly={{ y: 20 }}
             out:fly={{ y: 20 }}
         >
@@ -143,7 +151,7 @@
                 in:fly={{ y: 20 }}
                 type="text"
                 bind:value={name}
-                class="input variant-form-material w-full border-primary-900"
+                class="input variant-form-material border-primary-900 w-full"
             />
         {:else}
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{name}</span>
@@ -178,8 +186,14 @@
 
         {#if canEdit}
             <button
+                onclick={onDeletePackage}
+                class="hover:variant-filled-error text-error-500 flex flex-row items-center justify-center rounded-full p-2 transition-all"
+            >
+                <TablerIcon name="trash" />
+            </button>
+            <button
                 onclick={toggleEditing}
-                class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
+                class="hover:variant-filled-primary flex flex-row items-center justify-center rounded-full p-2 transition-all"
             >
                 {#if editing}
                     <TablerIcon name="device-floppy" />
@@ -240,14 +254,14 @@
 
             {#each $currentPackage.authors as author}
                 <a
-                    class="card mb-2 flex flex-row items-center p-2 hover:variant-soft-primary"
+                    class="card hover:variant-soft-primary mb-2 flex flex-row items-center p-2"
                     href="{base}/s?q={author.username}"
                     in:fly={{ y: 20 }}
                 >
                     <img
                         src="https://avatars.githubusercontent.com/u/{author.github_id}"
                         alt="author's profile afirst child cssvatar"
-                        class="my-auto mr-4 aspect-square h-8 rounded-token"
+                        class="rounded-token my-auto mr-4 aspect-square h-8"
                     />
                     {author.username}
                 </a>
@@ -255,7 +269,7 @@
 
             {#if editing}
                 <button
-                    class="card flex w-full p-2 transition-all hover:variant-soft-primary"
+                    class="card hover:variant-soft-primary flex w-full p-2 transition-all"
                     in:fly={{ y: 20 }}
                     onclick={openAddingModal}
                 >
@@ -327,7 +341,7 @@
 
                 {#if editing}
                     <button
-                        class="variant-soft-secondary btn w-full transition-all hover:variant-soft-primary"
+                        class="variant-soft-secondary btn hover:variant-soft-primary w-full transition-all"
                         in:fly={{ y: 20 }}
                         onclick={openUploadModal}
                     >

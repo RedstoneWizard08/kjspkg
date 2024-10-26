@@ -1,3 +1,4 @@
+/// A manifest for a package.
 #[derive(
     Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, ToSchema, ToResponse, Serialize, Deserialize,
 )]

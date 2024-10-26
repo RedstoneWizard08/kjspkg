@@ -1,7 +1,12 @@
 <script lang="ts">
     import { _, locales } from "svelte-i18n";
-    import { AppBar } from "@skeletonlabs/skeleton";
-    import { currentScrollPosition, userPreferencesStore, currentSearchStore } from "$lib/stores";
+    import { AppBar, getModalStore } from "@skeletonlabs/skeleton";
+    import {
+        currentScrollPosition,
+        userPreferencesStore,
+        currentSearchStore,
+        user,
+    } from "$lib/stores";
     import { base } from "$app/paths";
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
@@ -14,6 +19,7 @@
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
 
     let inputElement: HTMLInputElement = $state(null!);
+    const modals = getModalStore();
 
     onMount(() => {
         $currentSearchStore = $page.route.id == "/s" ? ($page.url.searchParams.get("q") ?? "") : "";
@@ -64,6 +70,13 @@
             }),
         ] as ContextMenuItem[],
     });
+
+    const openCreateModal = () => {
+        modals.trigger({
+            type: "component",
+            component: "createPackage",
+        });
+    };
 </script>
 
 <AppBar
@@ -75,7 +88,7 @@
 >
     <svelte:fragment slot="lead">
         <a class="flex items-center gap-2" href="{base}/">
-            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
+            <img src="/kjspkg.png" alt="logo" class="rounded-token aspect-square w-8 min-w-8" />
             <span class="hidden lg:inline">KJSPKG Lookup</span>
         </a>
     </svelte:fragment>
@@ -85,7 +98,7 @@
             class="input-group input-group-divider w-full grid-cols-[1fr] lg:w-fit lg:grid-cols-[auto_1fr]"
             transition:fly={{ y: -40 }}
         >
-            <div class="hidden text-surface-400 lg:inline">
+            <div class="text-surface-400 hidden lg:inline">
                 <TablerIcon name="search" class="hidden lg:block" />
             </div>
 
@@ -106,6 +119,12 @@
 
     <svelte:fragment slot="trail">
         <span>
+            {#if $user}
+                <button class="btn-icon hover:variant-soft-primary" onclick={openCreateModal}>
+                    <TablerIcon name="upload" />
+                </button>
+            {/if}
+
             <button class="btn-icon hover:variant-soft-primary" use:contextMenu={langContextMenu}>
                 <TablerIcon name="world" />
             </button>

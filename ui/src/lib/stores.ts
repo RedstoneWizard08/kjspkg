@@ -20,6 +20,10 @@ export const userPreferencesStore = persisted<UserPreferences>("preferences", {
     compact: false,
 });
 
+export const forceUpdatePackagesStore = async () => {
+    packagesStore.set((await getPackages()) ?? []);
+};
+
 export const updatePackagesStore = async () => {
     if (get(packagesStore).length == 0) packagesStore.set((await getPackages()) ?? []);
 

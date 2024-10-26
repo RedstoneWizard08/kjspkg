@@ -14,6 +14,7 @@ use diesel::{
 };
 
 // TODO: Do something with this xD
+/// A relation between packages.
 #[derive(
     Debug,
     Clone,
@@ -37,11 +38,17 @@ use diesel::{
 #[diesel(check_for_backend(Pg))]
 #[diesel(primary_key(package, dependency, kind))]
 pub struct PackageRelation {
+    /// The package ID.
     pub package: i32,
+
+    /// The dependency version ID.
     pub dependency: i32,
+
+    /// The relation kind.
     pub kind: RelationKind,
 }
 
+/// The kind of relation between packages.
 #[repr(i32)]
 #[derive(
     Debug,
@@ -59,8 +66,11 @@ pub struct PackageRelation {
     ToResponse,
 )]
 pub enum RelationKind {
+    /// A dependency relation.
     #[default]
     Dependency = 0,
+
+    /// An incompatibility relation.
     Incompatibility = 1,
 }
 
