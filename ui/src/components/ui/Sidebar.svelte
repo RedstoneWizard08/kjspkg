@@ -22,7 +22,7 @@
 
 {#if !sidebarHidden}
     <div
-        class="hidden md:flex h-full w-96 flex-col gap-2 overflow-y-scroll border-surface-800 p-2 {$currentScrollPosition.y >
+        class="hidden h-full w-96 flex-col gap-2 overflow-y-scroll border-surface-800 p-2 md:flex {$currentScrollPosition.y >
         16
             ? 'border-r'
             : 'border-none'}"

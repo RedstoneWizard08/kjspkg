@@ -3,7 +3,7 @@ use crate::{
     db::pkg::get_full_package,
     schema::{package_authors, packages},
     state::AppState,
-    HttpResult, NewPackage, Package, PackageAuthor, PackageData,
+    NewPackage, Package, PackageAuthor, PackageData, Result,
 };
 use axum::{
     body::Body,
@@ -29,7 +29,7 @@ use diesel_async::RunQueryDsl;
     ),
 )]
 #[debug_handler]
-pub async fn list_handler(State(state): State<AppState>) -> HttpResult<Json<Vec<PackageData>>> {
+pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<PackageData>>> {
     let mut conn = state.pool.get().await?;
 
     let data = packages::table
@@ -69,7 +69,7 @@ pub async fn create_handler(
     headers: HeaderMap,
     State(state): State<AppState>,
     Json(body): Json<NewPackage>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
 

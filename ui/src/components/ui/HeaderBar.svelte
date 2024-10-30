@@ -1,140 +1,70 @@
 <script lang="ts">
-    import { _, locales, locale } from "svelte-i18n";
-    import { AppBar, getModalStore } from "@skeletonlabs/skeleton";
-    import {
-        currentScrollPosition,
-        userPreferencesStore,
-        currentSearchStore,
-        user,
-    } from "$lib/stores";
+    import { _ } from "svelte-i18n";
+    import { AppBar } from "@skeletonlabs/skeleton";
+    import { currentScrollPosition, currentSearchStore } from "$lib/stores";
     import { base } from "$app/paths";
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
-    import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
-    import IconBlank from "$components/icons/IconBlank.svelte";
     import IconAuth from "$components/auth/IconAuth.svelte";
     import { onMount } from "svelte";
-    import { replaceState } from "$app/navigation";
+    import { goto, replaceState } from "$app/navigation";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
-    import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
 
     let inputElement: HTMLInputElement = $state(null!);
-    const modals = getModalStore();
+    let active = $state(false);
 
     onMount(() => {
         $currentSearchStore = $page.route.id == "/s" ? ($page.url.searchParams.get("q") ?? "") : "";
     });
 
-    const langContextMenu = $derived({
-        initiator: "left" as const,
-        items: [
-            { type: "SEPARATOR", header: $_("menu.language") },
+    const updateQuery = async () => {
+        if ($page.route.id != "/s") {
+            await goto("/s", { keepFocus: true });
+        }
 
-            ...$locales.map((lang) => ({
-                type: "ITEM",
-                label: $_("name", { locale: lang }),
-                icon: $userPreferencesStore.locale == lang ? TablerIconCheck : IconBlank,
-                action: () => {
-                    $userPreferencesStore.locale = lang;
-                    $locale = lang;
-                },
-            })),
-        ] as ContextMenuItem[],
-    });
+        if ($currentSearchStore != "") $page.url.searchParams.set("q", $currentSearchStore);
+        else $page.url.searchParams.delete("q");
 
-    const themeContextMenu = $derived({
-        initiator: "left" as const,
-        items: [
-            { type: "SEPARATOR", header: $_("menu.theme") },
-
-            ...[
-                { label: "KJSPKG", name: "kjspkg" },
-                { label: "(lighter)", name: "kjspkg-lighter" },
-                { label: "(G_cat)", name: "kjspkg-gcat" },
-                {},
-                { label: "Wintry", name: "wintry" },
-                { label: "Crimson", name: "crimson" },
-                { label: "Serenity", name: "serenity" },
-            ].map(({ label, name }) => {
-                if (!label || !name) return { type: "SEPARATOR" };
-
-                return {
-                    type: "ITEM" as const,
-                    label,
-                    icon: $userPreferencesStore.theme == name ? TablerIconCheck : IconBlank,
-                    action: () => {
-                        document.documentElement.classList.add("color-animated");
-                        $userPreferencesStore.theme = name;
-                        document.body.dataset.theme = $userPreferencesStore.theme ?? "kjspkg";
-                    },
-                };
-            }),
-        ] as ContextMenuItem[],
-    });
-
-    const openCreateModal = () => {
-        modals.trigger({
-            type: "component",
-            component: "createPackage",
-        });
+        replaceState($page.url, $page.state);
     };
 </script>
 
 <AppBar
-    gridColumns="lg:grid-cols-3 grid-cols-[auto_1fr_auto]"
-    slotDefault="place-self-center"
+    gridColumns="grid-cols-[auto_1fr_auto]"
+    slotDefault="place-self-center !w-full"
     slotTrail="place-self-end"
     class="vt-none transition-colors"
     background={$currentScrollPosition.y > 16 ? "bg-surface-800/75" : "bg-transparent"}
 >
-    <svelte:fragment slot="lead">
+    {#snippet lead()}
         <a class="flex items-center gap-2" href="{base}/">
-            <img src="/kjspkg.png" alt="logo" class="rounded-token aspect-square w-8 min-w-8" />
+            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
             <span class="hidden lg:inline">KJSPKG Lookup</span>
         </a>
-    </svelte:fragment>
+    {/snippet}
 
-    {#if !$page.route.id || $page.route.id != "/stats"}
-        <div
-            class="input-group input-group-divider w-full grid-cols-[1fr] lg:w-fit lg:grid-cols-[auto_1fr]"
-            transition:fly={{ y: -40 }}
-        >
-            <div class="text-surface-400 hidden lg:inline">
-                <TablerIcon name="search" class="hidden lg:block" />
-            </div>
-
-            <input
-                type="search"
-                placeholder={$_("search.placeholder")}
-                bind:this={inputElement}
-                bind:value={$currentSearchStore}
-                onchange={() => {
-                    if ($currentSearchStore != "")
-                        $page.url.searchParams.set("q", $currentSearchStore);
-                    else $page.url.searchParams.delete("q");
-                    replaceState($page.url, $page.state);
-                }}
-            />
-        </div>
-    {/if}
-
-    <svelte:fragment slot="trail">
-        <span>
-            {#if $user}
-                <button class="btn-icon hover:variant-soft-primary" onclick={openCreateModal}>
-                    <TablerIcon name="upload" />
-                </button>
-            {/if}
-
-            <button class="btn-icon hover:variant-soft-primary" use:contextMenu={langContextMenu}>
-                <TablerIcon name="world" />
-            </button>
-
-            <button class="btn-icon hover:variant-soft-primary" use:contextMenu={themeContextMenu}>
-                <TablerIcon name="color-swatch" />
-            </button>
-        </span>
-
+    {#snippet trail()}
         <IconAuth />
-    </svelte:fragment>
+    {/snippet}
+
+    <div
+        class="input-group input-group-divider w-full grid-cols-[1fr] lg:grid-cols-[auto_1fr]"
+        transition:fly={{ y: -40 }}
+    >
+        <a href="/s" class="hidden text-surface-400 lg:inline">
+            <TablerIcon name="search" class="hidden lg:block" />
+        </a>
+
+        <input
+            type="search"
+            class="w-full"
+            placeholder={$_("search.placeholder")}
+            bind:this={inputElement}
+            bind:value={$currentSearchStore}
+            onfocus={() => (active = true)}
+            onblur={() => (active = false)}
+            oninput={updateQuery}
+            onchange={updateQuery}
+        />
+    </div>
 </AppBar>

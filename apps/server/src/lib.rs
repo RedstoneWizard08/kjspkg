@@ -1,3 +1,5 @@
+#![feature(type_alias_impl_trait)]
+
 #[macro_use]
 extern crate diesel;
 
@@ -17,6 +19,7 @@ pub(crate) mod api;
 pub(crate) mod auth;
 pub(crate) mod cli;
 pub(crate) mod db;
+pub(crate) mod env;
 pub(crate) mod error;
 pub(crate) mod glue;
 pub(crate) mod logger;
@@ -28,21 +31,19 @@ pub(crate) mod state;
 pub(crate) mod util;
 pub(crate) mod worker;
 
-use std::net::{IpAddr, SocketAddr};
-
-use axum::serve;
 pub use cli::*;
 pub use error::*;
-use glue::make_glue;
-use jsglue::{abort::register_exit_handler, util::is_debug};
 pub use logger::*;
 pub use models::*;
 
-use anyhow::Result;
+use axum::serve;
 use db::{create_connection, run_migrations};
+use glue::make_glue;
+use jsglue::{abort::register_exit_handler, util::is_debug};
 use routes::create_router;
 use shuttle_axum::ShuttleAxum;
 use state::AppState;
+use std::net::{IpAddr, SocketAddr};
 use tokio::{join, net::TcpListener};
 use worker::run_worker;
 
@@ -117,19 +118,24 @@ pub async fn create_shuttle_axum() -> ShuttleAxum {
 
     info!("Connecting to the database...");
 
-    let pool = create_connection(None).await?;
+    let pool = create_connection(None)
+        .await
+        .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Running migrations...");
 
-    run_migrations(&pool).await?;
+    run_migrations(&pool)
+        .await
+        .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Creating state...");
 
-    let state = AppState::new(pool.clone(), None, None, None, None, None)?;
+    let state = AppState::new(pool.clone(), None, None, None, None, None)
+        .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Creating glue...");
 
-    let glue = make_glue()?;
+    let glue = make_glue().map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Starting worker...");
 

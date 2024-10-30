@@ -26,6 +26,7 @@ lazy_static.workspace = true
 mime_guess.workspace = true
 once_cell.workspace = true
 regex.workspace = true
+thiserror.workspace = true
 tokio.workspace = true
 tokio-tungstenite.workspace = true
 tracing.workspace = true

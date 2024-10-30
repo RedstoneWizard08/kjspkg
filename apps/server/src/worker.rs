@@ -1,5 +1,4 @@
-use crate::{db::DbPool, schema::user_tokens, UserToken};
-use anyhow::Result;
+use crate::{db::DbPool, schema::user_tokens, Result, UserToken};
 use chrono::Utc;
 use diesel::{delete, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;

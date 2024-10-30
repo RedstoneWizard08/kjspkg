@@ -16,6 +16,12 @@ import layoutDashboardData from "tabler-icon:layout-dashboard";
 import plusData from "tabler-icon:plus";
 import trashData from "tabler-icon:trash";
 import uploadData from "tabler-icon:upload";
+import arrowLeftData from "tabler-icon:arrow-left";
+import loginData from "tabler-icon:login";
+import login2Data from "tabler-icon:login-2";
+import caretDownData from "tabler-icon:caret-down";
+import sunData from "tabler-icon:sun";
+import moonData from "tabler-icon:moon";
 
 export const icons = {
     // alert-triangle, brand-github, user, search, check, color-swatch, world, download, pencil, device-floppy, clear-all, layout-dashboard
@@ -34,6 +40,12 @@ export const icons = {
     plus: plusData,
     trash: trashData,
     upload: uploadData,
+    "arrow-left": arrowLeftData,
+    "login-2": login2Data,
+    login: loginData,
+    "caret-down": caretDownData,
+    sun: sunData,
+    moon: moonData,
 };
 
 export type IconName = keyof typeof icons;

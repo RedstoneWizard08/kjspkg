@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::CALLBACK_URL;
-use crate::{state::AppState, util::scheme::Scheme, HttpResult};
+use crate::{state::AppState, util::scheme::Scheme, Result};
 use axum::{
     body::Body,
     extract::{Host, State},
@@ -30,7 +30,7 @@ pub async fn login_handler(
     Host(host): Host,
     Scheme(scheme): Scheme,
     url: Uri,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let query = url::form_urlencoded::parse(url.query().unwrap_or_default().as_bytes())
         .into_owned()
         .collect::<HashMap<String, String>>();

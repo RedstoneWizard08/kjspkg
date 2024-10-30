@@ -3,7 +3,6 @@
     import "carta-md/default.css";
     import { currentScrollPosition, updateUserStore, userPreferencesStore } from "$lib/stores";
     import {
-        AppShell,
         Modal,
         Toast,
         storePopup,
@@ -17,7 +16,6 @@
     import { fly } from "svelte/transition";
     import HeaderBar from "$components/ui/HeaderBar.svelte";
     import ContextMenu from "$components/ui/ContextMenu.svelte";
-    import Sidebar from "$components/ui/Sidebar.svelte";
     import { page } from "$app/stores";
     import { setToken } from "$api";
     import AuthorAddModal from "$components/modals/AuthorAddModal.svelte";
@@ -73,6 +71,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Loading - KJSPKG Lookup</title>
+</svelte:head>
+
 <Toast position="br" max={8} />
 <ContextMenu />
 <Modal components={modalRegistry} />
@@ -92,17 +94,19 @@
         <HeaderBar />
     </header>
 
-    <div class="flex h-full w-full flex-auto overflow-hidden">
-        <aside class="overfloe-x-hidden hidden flex-none overflow-y-auto xl:block">
-            <Sidebar />
-        </aside>
-
-        <div
-            class="flex flex-1 flex-col overflow-x-hidden"
-            style:scrollbar-gutter="auto"
-            onscroll={handleScroll}
-        >
-            <main class="flex-auto">
+    <div
+        class="flex h-full w-full flex-col overflow-x-hidden"
+        style:scrollbar-gutter="auto"
+        onscroll={handleScroll}
+    >
+        <main class="flex-auto">
+            {#if $page.route.id == "/"}
+                <div class="container flex min-h-full w-full max-w-full flex-col">
+                    {#key data.href}
+                        {@render children?.()}
+                    {/key}
+                </div>
+            {:else}
                 <div
                     class="container mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4 md:p-10"
                 >
@@ -110,41 +114,39 @@
                         {@render children?.()}
                     {/key}
                 </div>
-            </main>
+            {/if}
+        </main>
 
-            <footer class="flex-none">
-                <span class="hidden md:inline">
-                    <a
-                        href="https://github.com/Modern-Modpacks/kjspkg"
-                        class="anchor no-underline"
-                        target="_blank">GitHub</a
-                    >
-                    &bull;
-                    <a href="/api/v1/docs/scalar" class="anchor no-underline" target="_blank"
-                        >API Docs</a
-                    >
-                    &bull;
-                    <a
-                        href="https://modernmodpacks.site"
-                        class="anchor no-underline"
-                        target="_blank">Modern Modpacks</a
-                    >
-                </span>
+        <footer class="flex w-full flex-row items-center justify-between p-2">
+            <span class="hidden md:inline">
+                <a
+                    href="https://github.com/Modern-Modpacks/kjspkg"
+                    class="anchor no-underline"
+                    target="_blank">GitHub</a
+                >
+                &bull;
+                <a href="/api/v1/docs/scalar" class="anchor no-underline" target="_blank"
+                    >API Docs</a
+                >
+                &bull;
+                <a href="https://modernmodpacks.site" class="anchor no-underline" target="_blank"
+                    >Modern Modpacks</a
+                >
+            </span>
 
-                <span class="mt-auto hidden text-sm opacity-50 md:inline">
-                    Website designed with love by <a
-                        href="https://github.com/tizu69"
-                        class="anchor no-underline"
-                        target="_blank">tizu69</a
-                    >
-                    and
-                    <a
-                        href="https://github.com/RedstoneWizard08"
-                        class="anchor no-underline"
-                        target="_blank">RedstoneWizard08</a
-                    > &lt;3
-                </span>
-            </footer>
-        </div>
+            <span class="mt-auto hidden text-sm opacity-50 md:inline">
+                Website designed with love by <a
+                    href="https://github.com/tizu69"
+                    class="anchor no-underline"
+                    target="_blank">tizu69</a
+                >
+                and
+                <a
+                    href="https://github.com/RedstoneWizard08"
+                    class="anchor no-underline"
+                    target="_blank">RedstoneWizard08</a
+                > &lt;3
+            </span>
+        </footer>
     </div>
 </div>

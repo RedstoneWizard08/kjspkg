@@ -1,4 +1,4 @@
-use crate::{db::user::get_user, state::AppState, HttpResult, User};
+use crate::{db::user::get_user, state::AppState, Result, User};
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -24,7 +24,7 @@ use axum::{
 pub async fn info_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     Ok(
         Response::builder().body(Body::new(serde_json::to_string_pretty(
             &get_user(id, &mut state.pool.get().await?).await?,

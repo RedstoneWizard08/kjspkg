@@ -1,8 +1,6 @@
-use anyhow::Result;
+use crate::{from_log_level, init_logger, start_app, Result};
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-
-use crate::{from_log_level, init_logger, start_app};
 
 #[derive(Debug, Clone, Parser)]
 #[command(version, about, long_about = None)]

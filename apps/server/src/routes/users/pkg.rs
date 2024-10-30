@@ -2,7 +2,7 @@ use crate::{
     db::{pkg::get_full_package, user::get_user},
     schema::package_authors,
     state::AppState,
-    HttpResult, PackageAuthor, PackageData,
+    PackageAuthor, PackageData, Result,
 };
 use axum::{
     body::Body,
@@ -31,7 +31,7 @@ use diesel_async::RunQueryDsl;
 pub async fn list_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user(id, &mut conn).await?;
 

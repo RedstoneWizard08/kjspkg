@@ -1,9 +1,6 @@
-use std::env;
-
-use anyhow::Result;
+use crate::{db::DbPool, Result};
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, TokenUrl};
-
-use crate::db::DbPool;
+use std::env;
 
 #[derive(Clone)]
 pub struct AppState {

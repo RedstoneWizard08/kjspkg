@@ -1,4 +1,4 @@
-use crate::{auth::get_user_from_req, state::AppState, HttpResult, User};
+use crate::{auth::get_user_from_req, state::AppState, Result, User};
 use axum::{body::Body, extract::State, http::HeaderMap, response::Response};
 use axum_extra::extract::CookieJar;
 
@@ -22,7 +22,7 @@ pub async fn me_handler(
     State(state): State<AppState>,
     jar: CookieJar,
     headers: HeaderMap,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     Ok(
         Response::builder().body(Body::new(serde_json::to_string_pretty(
             &get_user_from_req(&jar, &headers, &mut state.pool.get().await?).await?,

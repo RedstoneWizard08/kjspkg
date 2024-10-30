@@ -1,4 +1,4 @@
-use crate::{api::ApiDocs, state::AppState, HttpResult};
+use crate::{api::ApiDocs, state::AppState, Result};
 use axum::{extract::Query, routing::get, Router};
 use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
@@ -25,7 +25,7 @@ pub struct JsonQueryParams {
     ),
 )]
 #[debug_handler]
-pub async fn yaml_api() -> HttpResult<String> {
+pub async fn yaml_api() -> Result<String> {
     Ok(ApiDocs::openapi().to_yaml()?)
 }
 
@@ -44,9 +44,7 @@ pub async fn yaml_api() -> HttpResult<String> {
     ),
 )]
 #[debug_handler]
-pub async fn json_api(
-    Query(JsonQueryParams { pretty }): Query<JsonQueryParams>,
-) -> HttpResult<String> {
+pub async fn json_api(Query(JsonQueryParams { pretty }): Query<JsonQueryParams>) -> Result<String> {
     if pretty.unwrap_or(false) {
         Ok(ApiDocs::openapi().to_pretty_json()?)
     } else {

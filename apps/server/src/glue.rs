@@ -1,4 +1,4 @@
-use anyhow::Result;
+use crate::Result;
 use jsglue::{config::GlueConfig, framework::Framework, glue::Glue};
 
 #[cfg(debug_assertions)]

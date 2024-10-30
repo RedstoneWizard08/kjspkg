@@ -2,7 +2,7 @@ pub mod pkg;
 pub mod user;
 pub mod ver;
 
-use anyhow::Result;
+use crate::Result;
 use diesel_async::{
     pooled_connection::{
         deadpool::{Object, Pool},

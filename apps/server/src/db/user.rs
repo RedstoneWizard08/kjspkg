@@ -1,6 +1,5 @@
 use super::DbConn;
-use crate::{schema::users, User};
-use anyhow::Result;
+use crate::{schema::users, Result, User};
 use diesel::{
     ExpressionMethods, OptionalExtension, PgTextExpressionMethods, QueryDsl, SelectableHelper,
 };

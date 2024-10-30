@@ -1,4 +1,3 @@
-
 import type { CustomThemeConfig } from "@skeletonlabs/tw-plugin";
 
 export const gcatTheme: CustomThemeConfig = {

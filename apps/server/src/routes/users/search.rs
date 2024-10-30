@@ -1,4 +1,4 @@
-use crate::{db::user::search_users, state::AppState, HttpResult, User};
+use crate::{db::user::search_users, state::AppState, Result, User};
 use axum::{
     body::Body,
     extract::{Query, State},
@@ -29,7 +29,7 @@ pub struct SearchQuery {
 pub async fn search_handler(
     State(state): State<AppState>,
     Query(SearchQuery { q }): Query<SearchQuery>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     Ok(
         Response::builder().body(Body::new(serde_json::to_string_pretty(
             &search_users(q, &mut state.pool.get().await?).await?,

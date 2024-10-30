@@ -1,9 +1,8 @@
 use crate::{
     db::{DbConn, DbPool},
     schema::{user_tokens, users},
-    NewUserToken, User, UserToken,
+    AppError, NewUserToken, Result, User, UserToken,
 };
-use anyhow::{anyhow, Result};
 use axum::http::HeaderMap;
 use axum_extra::extract::CookieJar;
 use chrono::{DateTime, Utc};
@@ -70,16 +69,16 @@ pub async fn get_user_from_req(
             if let Some(value) = jar.get("kjspkg-auth-token") {
                 value.value().to_string()
             } else {
-                return Err(anyhow!("Could not find a token!"));
+                return Err(AppError::MissingToken);
             }
         }
     } else if let Some(value) = jar.get("kjspkg-auth-token") {
         value.value().to_string()
     } else {
-        return Err(anyhow!("Could not find a token!"));
+        return Err(AppError::MissingToken);
     };
 
     get_user_for_token(token, conn)
         .await?
-        .ok_or(anyhow!("Could not find that user!"))
+        .ok_or(AppError::UnknownUser)
 }

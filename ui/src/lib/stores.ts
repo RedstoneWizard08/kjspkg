@@ -75,5 +75,16 @@ export const updateUserStore = async () => {
     user.set(await getCurrentUser());
 };
 
+export const updateTheme = () => {
+    if (!browser) return;
+
+    if (get(userPreferencesStore).lightMode) {
+        document.documentElement.classList.remove("dark");
+    } else {
+        document.documentElement.classList.add("dark");
+    }
+};
+
 currentSearchStore.subscribe(updateFilteredPackages);
 userPreferencesStore.subscribe(updateFilteredPackages);
+userPreferencesStore.subscribe(updateTheme);

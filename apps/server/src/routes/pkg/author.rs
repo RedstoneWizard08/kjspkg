@@ -6,7 +6,7 @@ use crate::{
     },
     schema::{package_authors, users},
     state::AppState,
-    HttpResult, PackageAuthor, PackageData, User,
+    PackageAuthor, PackageData, Result, User,
 };
 use axum::{
     body::Body,
@@ -37,7 +37,7 @@ use diesel_async::RunQueryDsl;
 pub async fn list_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_package(id, &mut conn).await?;
 
@@ -89,7 +89,7 @@ pub async fn add_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
     body: String,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(id, &mut conn).await?;

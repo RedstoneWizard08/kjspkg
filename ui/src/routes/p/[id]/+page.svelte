@@ -127,7 +127,7 @@
 </script>
 
 <svelte:head>
-    <title>{$currentPackage?.name ?? "no-name"} - KJSPKG Lookup</title>
+    <title>{$currentPackage?.name ?? "Loading"} - KJSPKG Lookup</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -135,7 +135,7 @@
 {:else if loadingState == "ready" && $currentPackage}
     {#if saving}
         <div
-            class="bg-primary-900 fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-opacity-25 text-white"
+            class="fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-primary-900 bg-opacity-25 text-white"
             in:fly={{ y: 20 }}
             out:fly={{ y: 20 }}
         >
@@ -149,7 +149,7 @@
                 in:fly={{ y: 20 }}
                 type="text"
                 bind:value={name}
-                class="input variant-form-material border-primary-900 w-full"
+                class="input variant-form-material w-full border-primary-900"
             />
         {:else}
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{name}</span>
@@ -185,13 +185,13 @@
         {#if canEdit}
             <button
                 onclick={onDeletePackage}
-                class="hover:variant-filled-error text-error-500 flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                class="variant-glass-error flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-error"
             >
                 <TablerIcon name="trash" />
             </button>
             <button
                 onclick={toggleEditing}
-                class="hover:variant-filled-primary flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
                 {#if editing}
                     <TablerIcon name="device-floppy" />
@@ -254,14 +254,14 @@
 
             {#each $currentPackage.authors as author}
                 <a
-                    class="card hover:variant-soft-primary mb-2 flex flex-row items-center p-2"
-                    href="{base}/s?q={author.username}"
+                    class="card mb-2 flex flex-row items-center p-2 hover:variant-soft-primary"
+                    href="{base}/u/{author.username}"
                     in:fly={{ y: 20 }}
                 >
                     <img
                         src="https://avatars.githubusercontent.com/u/{author.github_id}"
                         alt="author's profile afirst child cssvatar"
-                        class="rounded-token my-auto mr-4 aspect-square h-8"
+                        class="my-auto mr-4 aspect-square h-8 rounded-token"
                     />
                     {author.username}
                 </a>
@@ -269,7 +269,7 @@
 
             {#if editing}
                 <button
-                    class="card hover:variant-soft-primary flex w-full p-2 transition-all"
+                    class="card flex w-full p-2 transition-all hover:variant-soft-primary"
                     in:fly={{ y: 20 }}
                     onclick={openAddingModal}
                 >
@@ -308,20 +308,6 @@
             {/if}
         </div>
 
-        <!-- <CodeBlock
-			language="Install package"
-			code={'kjspkg install ' + id}
-			background="variant-soft w-full"
-			buttonCopied="ok have fun"
-		/> -->
-
-        <!-- <div class="card hidden space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
-            <dt class="text-sm opacity-50">{$_("package.manage_package")}</dt>
-            <dd class="flex flex-col gap-1">
-                <ManagePackage name={pkg.slug ?? "no-name"} version={latest} link={pkg.issues} />
-            </dd>
-        </div> -->
-
         {#if sortedVersions.length > 0 || canEdit}
             <div class="card h-fit space-y-2 p-4 lg:col-span-2" in:fly|global={{ y: 20 }}>
                 <dt class="text-sm opacity-50">{$_("package.versions")}</dt>
@@ -341,7 +327,7 @@
 
                 {#if canEdit}
                     <button
-                        class="variant-soft-secondary btn hover:variant-soft-primary w-full transition-all"
+                        class="variant-soft-secondary btn w-full transition-all hover:variant-soft-primary"
                         in:fly={{ y: 20 }}
                         onclick={openUploadModal}
                     >

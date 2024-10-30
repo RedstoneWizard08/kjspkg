@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-    <title>{version?.name ?? "no-name"} - KJSPKG Lookup</title>
+    <title>{version?.name ?? "Loading"} - KJSPKG Lookup</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -71,7 +71,7 @@
 {:else if loadingState == "ready" && $currentPackage && version}
     {#if saving}
         <div
-            class="bg-primary-900 fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-opacity-25 text-white"
+            class="fixed left-0 right-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center bg-primary-900 bg-opacity-25 text-white"
             in:fly={{ y: 20 }}
             out:fly={{ y: 20 }}
         >
@@ -92,7 +92,7 @@
                 in:fly={{ y: 20 }}
                 type="text"
                 bind:value={name}
-                class="input variant-form-material border-primary-900 w-full"
+                class="input variant-form-material w-full border-primary-900"
             />
         {:else}
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{name}</span>
@@ -123,7 +123,7 @@
             {#if canEdit}
                 <button
                     onclick={toggleEditing}
-                    class="hover:variant-filled-primary mr-2 flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                    class="mr-2 flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
                 >
                     {#if editing}
                         <TablerIcon name="device-floppy" />
@@ -135,7 +135,7 @@
 
             <a
                 href="/api/v1/packages/{id}/versions/{ver}/download"
-                class="hover:variant-filled-primary flex flex-row items-center justify-center rounded-full p-2 transition-all"
+                class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
                 <TablerIcon name="download" />
             </a>

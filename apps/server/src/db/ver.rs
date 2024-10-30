@@ -1,6 +1,5 @@
 use super::DbConn;
-use crate::{schema::package_versions, PackageVersion};
-use anyhow::Result;
+use crate::{schema::package_versions, PackageVersion, Result};
 use diesel::{
     BoolExpressionMethods, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper,
 };

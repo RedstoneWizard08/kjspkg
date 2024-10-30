@@ -35,30 +35,32 @@
         transition:slide={{ axis: "y", duration: 300 }}
     >
         <div class="flex flex-col gap-1">
-            {#each $contextMenuStore.items as item, i}
-                {#if item.type == "SEPARATOR"}
-                    {#if i > 0}
-                        <hr />
-                    {/if}
-
-                    <dd class="px-2 pt-1 text-sm opacity-50" class:hidden={!item.header}>
-                        {item.header}
-                    </dd>
-                {:else if item.type == "ITEM"}
-                    <button
-                        onclick={async () => item.type == "ITEM" && (await item.action())}
-                        class="flex items-center gap-2 overflow-hidden whitespace-nowrap p-2 pl-3 pr-12 rounded-container-token hover:variant-soft-primary"
-                    >
-                        {#if item.icon}
-                            <svelte:component this={item.icon} />
+            {#key $contextMenuStore}
+                {#each $contextMenuStore.items as item, i}
+                    {#if item.type == "SEPARATOR"}
+                        {#if i > 0}
+                            <hr />
                         {/if}
 
-                        <span>{item.label}</span>
-                    </button>
-                {/if}
-            {:else}
-                <span class="p-2 text-sm opacity-50">no items</span>
-            {/each}
+                        <dd class="px-2 pt-1 text-sm opacity-50" class:hidden={!item.header}>
+                            {item.header}
+                        </dd>
+                    {:else if item.type == "ITEM"}
+                        <button
+                            onclick={async (ev) => item.type == "ITEM" && (await item.action(ev))}
+                            class="flex items-center gap-2 overflow-hidden whitespace-nowrap p-2 pl-3 pr-12 rounded-container-token hover:variant-soft-primary"
+                        >
+                            {#if item.icon}
+                                <item.icon />
+                            {/if}
+
+                            <span>{item.label}</span>
+                        </button>
+                    {/if}
+                {:else}
+                    <span class="p-2 text-sm opacity-50">No items... :(</span>
+                {/each}
+            {/key}
         </div>
     </div>
 {/if}

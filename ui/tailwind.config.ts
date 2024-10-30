@@ -15,7 +15,19 @@ const config = {
         join(require.resolve("@skeletonlabs/skeleton"), "../**/*.{html,js,svelte,ts}"),
     ],
     theme: {
-        extend: {},
+        extend: {
+            keyframes: {
+                "border-blink": {
+                    "0%": {
+                        "border-color": "transparent",
+                    },
+                },
+            },
+
+            animation: {
+                "border-blink": "border-blink 1s steps(2) infinite",
+            },
+        },
     },
     plugins: [
         forms,

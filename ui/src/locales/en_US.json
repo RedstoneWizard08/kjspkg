@@ -1,6 +1,8 @@
 {
     "name": "English",
 
+    "site.tagline": "Your home for KubeJS packages",
+
     "errors.something_went_wrong": "Something went wrong",
     "errors.package_not_found": "Here, have a cookie, if that makes you feel any better: 🍪",
     "errors.package_not_found.details": "Fun fact: You can use '@author:name' to view packages made by an author. What 'bout using '@details' to get technical details on each package?",
@@ -31,6 +33,10 @@
 
     "author.auth_required": "To access this page, you have to first authenticate yourself through GitHub.",
     "author.auth_required.login": "Log in",
+
+    "user.packages": "Packages",
+    "user.you": "You",
+    "user.admin": "Admin",
 
     "search.placeholder": "Search for packages",
     "search.package_singular": "package",

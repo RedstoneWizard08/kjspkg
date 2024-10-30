@@ -1,8 +1,14 @@
 import { type PopupSettings, storePopup } from "@skeletonlabs/skeleton";
-import { onDestroy } from "svelte";
-import { get, writable, type Writable } from "svelte/store";
+import { get } from "svelte/store";
 
-export function elementPopup(node: HTMLElement, args: PopupSettings) {
+export interface PopupControls {
+    open: () => void;
+    close: () => void;
+    isOpen: () => boolean;
+    destroy: () => void;
+}
+
+export function elementPopup(node: HTMLElement, args: PopupSettings): PopupControls {
     // Floating UI Modules
     const {
         computePosition,
@@ -263,6 +269,7 @@ export function elementPopup(node: HTMLElement, args: PopupSettings) {
                 `Event value of '${args.event}' is not supported. ${documentationLink}`,
             );
     }
+
     window.addEventListener("keydown", onWindowKeyDown, true);
 
     // Render popup on initialization
@@ -274,16 +281,22 @@ export function elementPopup(node: HTMLElement, args: PopupSettings) {
         setDomElements();
     });
 
-    return () => {
-        // Trigger Events
-        node.removeEventListener("click", toggle, true);
-        node.removeEventListener("mouseover", open, true);
-        node.removeEventListener("mouseleave", () => close(), true);
-        node.removeEventListener("focus", toggle, true);
-        node.removeEventListener("focus", open, true);
-        node.removeEventListener("blur", () => close(), true);
-        // Window Events
-        window.removeEventListener("click", onWindowClick, true);
-        window.removeEventListener("keydown", onWindowKeyDown, true);
+    return {
+        open,
+        close,
+        isOpen: () => popupState.open,
+
+        destroy: () => {
+            // Trigger Events
+            node.removeEventListener("click", toggle, true);
+            node.removeEventListener("mouseover", open, true);
+            node.removeEventListener("mouseleave", () => close(), true);
+            node.removeEventListener("focus", toggle, true);
+            node.removeEventListener("focus", open, true);
+            node.removeEventListener("blur", () => close(), true);
+            // Window Events
+            window.removeEventListener("click", onWindowClick, true);
+            window.removeEventListener("keydown", onWindowKeyDown, true);
+        },
     };
 }

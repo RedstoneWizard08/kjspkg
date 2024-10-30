@@ -27,7 +27,7 @@
     };
 
     const onChangeSlug = async () => {
-        slugError = !!await getPackage(slug);
+        slugError = !!(await getPackage(slug));
     };
 
     const submit = async (ev: Event) => {
@@ -98,7 +98,7 @@
 </script>
 
 {#if $modals[0]}
-    <div class="w-modal bg-secondary-700 relative rounded-lg p-8 shadow-xl">
+    <div class="w-modal relative rounded-lg bg-secondary-700 p-8 shadow-xl">
         <header class="text-2xl font-bold">{$_("modal.create_package.title")}</header>
 
         <form
@@ -128,7 +128,7 @@
             />
 
             {#if slugError}
-            <p class="text-error-500 mb-2">{$_("modal.create_package.error.slug_exists")}</p>
+                <p class="mb-2 text-error-500">{$_("modal.create_package.error.slug_exists")}</p>
             {/if}
 
             <input
@@ -184,12 +184,12 @@
 
         <footer class="modal-footer mt-4 flex flex-row items-center">
             <button
-                class="variant-soft-tertiary btn hover:variant-soft-primary mr-2 outline-none"
+                class="variant-soft-tertiary btn mr-2 outline-none hover:variant-soft-primary"
                 disabled={loading}
                 onclick={() => modals.close()}>{$_("action.cancel")}</button
             >
             <button
-                class="variant-primary btn hover:variant-filled-secondary flex flex-row items-center outline-none"
+                class="variant-primary btn flex flex-row items-center outline-none hover:variant-filled-secondary"
                 disabled={loading}
                 onclick={submit}
             >

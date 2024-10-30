@@ -10,6 +10,7 @@
         stroke?: number | string;
         class?: string;
         children?: Snippet;
+        rotated?: boolean;
         [key: string]: any;
     }
 
@@ -20,6 +21,7 @@
         size = 24,
         stroke = 2,
         class: klass,
+        rotated = false,
         children,
         ...rest
     }: Props = $props();
@@ -54,7 +56,8 @@
     {...rest}
     width={size}
     height={size}
-    class={`tabler-icon tabler-icon-${name} ${klass ?? ""}`}
+    class={`tabler-icon transition-all tabler-icon-${name} ${klass ?? ""}`}
+    class:rotate-180={rotated}
     {...type === "filled"
         ? {
               fill: color,

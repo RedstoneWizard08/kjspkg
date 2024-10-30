@@ -4,7 +4,7 @@ use crate::{
     schema::{package_authors, package_versions},
     state::AppState,
     util::pkg::verify_package,
-    HttpResult, NewPackageVersion, PackageAuthor, PackageVersion, PackageVersionInit,
+    NewPackageVersion, PackageAuthor, PackageVersion, PackageVersionInit, Result,
 };
 use anyhow::anyhow;
 use axum::{
@@ -62,7 +62,7 @@ pub struct PartialPackageVersion {
 pub async fn list_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_package(id, &mut conn).await?;
 
@@ -97,7 +97,7 @@ pub async fn list_handler(
 pub async fn info_handler(
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_package(package, &mut conn).await?;
     let ver = get_version(pkg.id, version, &mut conn).await?;
@@ -127,7 +127,7 @@ pub async fn info_handler(
 pub async fn download_handler(
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_package(package, &mut conn).await?;
     let ver = get_version(pkg.id, version, &mut conn).await?;
@@ -176,7 +176,7 @@ pub async fn create_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
     mut data: Multipart,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(id, &mut conn).await?;
@@ -342,7 +342,7 @@ pub async fn update_handler(
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
     Json(data): Json<PartialPackageVersion>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(package, &mut conn).await?;
@@ -414,7 +414,7 @@ pub async fn delete_handler(
     headers: HeaderMap,
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(package, &mut conn).await?;

@@ -3,7 +3,7 @@ use crate::{
     db::pkg::{get_full_package, get_package},
     schema::{package_authors, packages},
     state::AppState,
-    HttpResult, Package, PackageAuthor, PackageData,
+    Package, PackageAuthor, PackageData, Result,
 };
 use axum::{
     body::Body,
@@ -58,7 +58,7 @@ pub struct PartialPackage {
 pub async fn info_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_full_package(id, &mut conn).await?;
 
@@ -97,7 +97,7 @@ pub async fn update_handler(
     Path(id): Path<String>,
     State(state): State<AppState>,
     Json(data): Json<PartialPackage>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(id, &mut conn).await?;
@@ -156,7 +156,7 @@ pub async fn delete_handler(
     headers: HeaderMap,
     Path(id): Path<String>,
     State(state): State<AppState>,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let user = get_user_from_req(&jar, &headers, &mut conn).await?;
     let pkg = get_package(id, &mut conn).await?;

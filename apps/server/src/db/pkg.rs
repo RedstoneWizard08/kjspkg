@@ -1,9 +1,8 @@
 use super::DbConn;
 use crate::{
     schema::{package_authors, package_versions, packages, users},
-    Package, PackageAuthor, PackageData, PackageVersion, User,
+    Package, PackageAuthor, PackageData, PackageVersion, Result, User,
 };
-use anyhow::Result;
 use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 

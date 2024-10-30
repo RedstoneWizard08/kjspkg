@@ -48,7 +48,7 @@
 
 <a
     href="/p/{pkg}/v/{version.id}"
-    class="flex w-full items-center gap-2 p-2 text-left rounded-container-token hover:variant-soft-primary"
+    class="flex w-full items-center gap-2 p-2 text-left transition-all rounded-container-token hover:variant-soft-primary"
 >
     <TablerIcon name="download" />
     <span class="ml-1 flex-auto">
@@ -58,7 +58,7 @@
 
     {#if editing}
         <button
-            class="btn-ghost variant-ringed-error btn btn-sm transition-all hover:variant-filled-error"
+            class="btn-ghost variant-glass-error btn btn-sm transition-all hover:variant-filled-error"
             type="button"
             onclick={handleDelete}
             disabled={loading}

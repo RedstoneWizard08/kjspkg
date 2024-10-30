@@ -6,7 +6,7 @@ use crate::{
     schema::users,
     state::AppState,
     util::{create_github_client, scheme::Scheme},
-    HttpResult, NewUser, User,
+    NewUser, Result, User,
 };
 use axum::{
     body::Body,
@@ -43,7 +43,7 @@ pub async fn callback_handler(
     Host(host): Host,
     Scheme(scheme): Scheme,
     url: Uri,
-) -> HttpResult<Response> {
+) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let query = url::form_urlencoded::parse(url.query().unwrap().as_bytes())
         .into_owned()

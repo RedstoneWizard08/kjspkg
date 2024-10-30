@@ -1,6 +1,6 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
-    import { goto, replaceState } from "$app/navigation";
+    import { afterNavigate, goto, onNavigate, replaceState } from "$app/navigation";
     import { base } from "$app/paths";
     import {
         currentSearchStore,
@@ -28,19 +28,33 @@
         loadingState = (await updatePackagesStore()) ? "ready" : "failed";
         showDetails = ($page.url.searchParams.get("showDetails") ?? "false") == "true";
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
-        $currentSearchStore = $page.url.searchParams.get("q") ?? "";
 
         let largeScreen = matchMedia("(min-width: 1024px)").matches;
 
         window.onresize = () => {
             largeScreen = matchMedia("(min-width: 1024px)").matches;
         };
+
+        if (
+            $currentSearchStore == "" &&
+            $page.url.searchParams.has("q") &&
+            $page.url.searchParams.get("q") != ""
+        ) {
+            $currentSearchStore = $page.url.searchParams.get("q")!;
+        }
     });
 
-    $effect(() => {
+    const updateQuery = async () => {
         if ($currentSearchStore != "") $page.url.searchParams.set("q", $currentSearchStore);
         else $page.url.searchParams.delete("q");
+
         replaceState($page.url, $page.state);
+    };
+
+    afterNavigate((nav) => {
+        if (nav.to?.route.id == "/s") {
+            updateQuery();
+        }
     });
 </script>
 
@@ -69,7 +83,7 @@
 			{$userPreferencesStore.compact ? 'Show icons' : 'Hide icons'}
 		</span> -->
 
-        <span class="hidden md:inline">
+        <span class="md:inline">
             {$userPreferencesStore.compact
                 ? $_("search.use_view.list")
                 : $_("search.use_view.compact")}
