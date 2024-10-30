@@ -90,7 +90,7 @@
     "action.upload": "Fanum tax",
     "action.create": "Rizz up",
 
-    "error.prefix": "What the sigma:",
+    "errors.prefix": "What the sigma:",
 
     "modal.add_author.trigger": "Add sigmas",
     "modal.add_author.title": "Add a sigma",

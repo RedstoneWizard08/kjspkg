@@ -274,7 +274,7 @@
 
         {#if errorMessages.length > 0}
             <div class="card variant-filled-error mt-4 p-4">
-                <p class="w-full">{$_("error.prefix")}</p>
+                <p class="w-full">{$_("errors.prefix")}</p>
                 <ul class="ml-6 list-disc">
                     {#each errorMessages as message}
                         <li>{message}</li>

@@ -1,15 +1,10 @@
 {
     "name": "English",
-
     "site.tagline": "Your home for KubeJS packages",
 
+    "errors.prefix": "Error:",
     "errors.something_went_wrong": "Something went wrong",
-    "errors.package_not_found": "Here, have a cookie, if that makes you feel any better: 🍪",
-    "errors.package_not_found.details": "Fun fact: You can use '@author:name' to view packages made by an author. What 'bout using '@details' to get technical details on each package?",
     "errors.no_packages_published": "Looks like you don't have any approved packages published to KJSPKG. How sad!",
-    "errors.automatin_down": "Our statistics database seems to be down",
-    "errors.automatin_down.details": "Download and view counts might be missing. Please report this to",
-    "errors.automatin_down.server": "our Discord server",
     "errors.delete_version": "Failed to delete version!",
     "errors.delete_package": "Failed to delete package!",
 
@@ -17,19 +12,10 @@
     "menu.theme": "Theme",
 
     "list.by": "by",
-    "list.detailed.on_branch": "on branch",
-    "list.detailed.at_path": "at path",
-    "list.detailed.in_repo": "in repo",
     "list.download_singluar": "download",
     "list.download_plural": "downloads",
     "list.view_singular": "view",
     "list.view_plural": "views",
-
-    "author.owns": "owns",
-    "author.package_singular": "package",
-    "author.package_plural": "packages",
-    "author.you": "is you!",
-    "author.organizations": "Organizations",
 
     "author.auth_required": "To access this page, you have to first authenticate yourself through GitHub.",
     "author.auth_required.login": "Log in",
@@ -37,6 +23,16 @@
     "user.packages": "Packages",
     "user.you": "You",
     "user.admin": "Admin",
+
+    "action.cancel": "Cancel",
+    "action.add": "Add",
+    "action.upload": "Upload",
+    "action.create": "Create",
+
+    "loader.forge": "Forge",
+    "loader.fabric": "Fabric",
+    "loader.quilt": "Quilt",
+    "loader.neoforge": "NeoForge",
 
     "search.placeholder": "Search for packages",
     "search.package_singular": "package",
@@ -72,33 +68,16 @@
     "package.source": "Source Code",
     "package.issues": "Issue Tracker",
     "package.wiki": "Wiki",
-
     "package.versions": "Versions",
-    "package.version.action": "Select Action",
     "package.loaders_title": "Works on",
     "package.minecraft_title": "Minecraft versions",
+    "package.depends_on": "Depends on",
+    "package.incompatible_with": "Incompatible with",
+
     "package.version.changelog": "Changelog",
     "package.version.published": "Published on",
     "package.version.updated": "Updated on",
     "package.version.prefix": "Version Number:",
-
-    "package.depends_on": "Depends on",
-    "package.incompatible_with": "Incompatible with",
-    "package.dependency.kjs_package": "KJS package",
-    "package.dependency.external_mod": "external mod",
-    "package.dependency.mod_open_in": "Open in",
-
-    "loader.forge": "Forge",
-    "loader.fabric": "Fabric",
-    "loader.quilt": "Quilt",
-    "loader.neoforge": "NeoForge",
-
-    "action.cancel": "Cancel",
-    "action.add": "Add",
-    "action.upload": "Upload",
-    "action.create": "Create",
-
-    "error.prefix": "Error:",
 
     "modal.add_author.trigger": "Add People",
     "modal.add_author.title": "Add Author",
