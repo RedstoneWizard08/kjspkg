@@ -1,11 +1,11 @@
 import { browser } from "$app/environment";
 import { addMessages, init } from "svelte-i18n";
-import en_US from "$locales/en_US.json";
-import de_DE from "$locales/de_DE.json";
-import it_IT from "$locales/it_IT.json";
-import ru_RU from "$locales/ru_RU.json";
-import zh_TW from "$locales/zh_TW.json";
-import en_alpha from "$locales/en_alpha.json";
+import en_US from "$locales/en-US.json";
+import de_DE from "$locales/de-DE.json";
+import it_IT from "$locales/it-IT.json";
+import ru_RU from "$locales/ru-RU.json";
+import zh_TW from "$locales/zh-TW.json";
+import en_alpha from "$locales/en-alpha.json";
 
 const defaultLocale = "en_US";
 

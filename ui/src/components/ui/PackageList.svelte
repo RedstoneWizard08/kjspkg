@@ -51,18 +51,6 @@
         <dl class="my-auto">
             <dt class="mb-1 select-text font-bold">{pkg.name}</dt>
             <dd class="text-sm opacity-50">
-                <!-- {#if branch && showDetails}
-                    {$langKeyStore["list.detailed.on_branch"]}
-                    <span class="select-text">{branch.substring(1)}</span>
-                {/if}
-                {#if path && showDetails}
-                    {$langKeyStore["list.detailed.at_path"]}
-                    <span class="select-text">{path.substring(1)}</span>
-                {/if}
-                {#if name != repo && showDetails}
-                    {$langKeyStore["list.detailed.in_repo"]} <span class="select-text">{repo}</span>
-                {/if} -->
-
                 {#if showName}
                     {$_("list.by")} <span class="select-text">{pkg.authors[0].username}</span>
                 {/if}
