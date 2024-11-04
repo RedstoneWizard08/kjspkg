@@ -14,9 +14,9 @@
 
     "unifico": "glomdom/unifico@master",
 
-    "structurejs": "TheRealQuentin765/structureJSv2",
-    "cutscenejs": "TheRealQuentin765/cutscenes-kubejs",
-    "climate-compass": "TheRealQuentin765/climate-kubejs",
+    "structurejs": "Qualia765/structureJSv2",
+    "cutscenejs": "Qualia765/cutscenes-kubejs",
+    "climate-compass": "Qualia765/climate-kubejs",
 
     "boss-death-world-notification": "Mango-Minecraft-Project/Mango-KubeJScripts$scripts/World_Notification",
     "create-delight": "Mango-Minecraft-Project/Mango-KubeJScripts$scripts/Create_Delight",
