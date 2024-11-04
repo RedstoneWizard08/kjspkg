@@ -175,10 +175,12 @@ impl LegacyPackage {
 
         tar.maybe_append_dir_all("client_scripts", self.pkg_path().join("client_scripts"))?;
         tar.maybe_append_dir_all("setup_scripts", self.pkg_path().join("setup_scripts"))?;
+        tar.maybe_append_dir_all("startup_scripts", self.pkg_path().join("startup_scripts"))?;
         tar.maybe_append_dir_all("server_scripts", self.pkg_path().join("server_scripts"))?;
         tar.maybe_append_dir_all("public", self.pkg_path().join("public"))?;
         tar.maybe_append_dir_all("data", self.pkg_path().join("data"))?;
         tar.maybe_append_dir_all("assets", self.pkg_path().join("assets"))?;
+        tar.maybe_append_dir_all("config", self.pkg_path().join("config"))?;
         tar.maybe_append_dir_all("src", self.pkg_path().join("src"))?;
         // TODO: Add custom directories in kjspkg.json
 
