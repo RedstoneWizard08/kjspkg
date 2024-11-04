@@ -37,5 +37,5 @@ pub async fn main(
         std::env::set_var("SUPABASE_PACKAGES_BUCKET", supabase_packages_bucket);
     }
 
-    kjspkg::create_shuttle_axum().await
+    kjspkg_server::create_shuttle_axum().await
 }
