@@ -24,9 +24,9 @@ pub fn get_packages() -> Vec<LegacyPackage> {
     pkgs.push(package!("Gcat101"; + "gcatkjspkgs"; "lightlevel-spawning-backport"));
     pkgs.push(package!("Gcat101"; + "gcatkjspkgs"; "bad-apple"));
     pkgs.push(package!("glomdom"; "unifico"; @ "master"));
-    // pkgs.push(package!("TheRealQuentin765"; "structureJSv2"));
-    // pkgs.push(package!("TheRealQuentin765"; "cutscenes-kubejs"));
-    // pkgs.push(package!("TheRealQuentin765"; "climate-kubejs"));
+    pkgs.push(package!("structurejs"; = "Qualia765"; "structureJSv2"));
+    pkgs.push(package!("cutscenejs"; = "Qualia765"; "cutscenes-kubejs"));
+    pkgs.push(package!("climate-compass"; = "Qualia765"; "climate-kubejs"));
     pkgs.push(package!("EvanHsieh0415"; + "boss-death-world-notification"; = "Mango-Minecraft-Project"; "Mango-KubeJScripts"; "scripts/World_Notification"));
     pkgs.push(package!("EvanHsieh0415"; + "create-delight"; = "Mango-Minecraft-Project"; "Mango-KubeJScripts"; "scripts/Create_Delight"));
     pkgs.push(package!("gregicsifting"; = "Drackion"; "GregicSifting"));
