@@ -1,11 +1,4 @@
-use crate::{
-    auth::get_user_from_req,
-    db::{pkg::get_package, ver::get_version},
-    schema::{package_authors, package_versions},
-    state::AppState,
-    util::pkg::verify_package,
-    NewPackageVersion, PackageAuthor, PackageVersion, PackageVersionInit, Result,
-};
+use crate::{auth::get_user_from_req, state::AppState, util::pkg::verify_package, Result};
 use anyhow::anyhow;
 use axum::{
     body::Body,
@@ -15,6 +8,10 @@ use axum::{
     Json,
 };
 use axum_extra::extract::CookieJar;
+use db::{
+    get_package, get_version, package_authors, package_versions, NewPackageVersion, PackageAuthor,
+    PackageVersion, PackageVersionInit,
+};
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use reqwest::Client;

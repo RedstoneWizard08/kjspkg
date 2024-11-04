@@ -1,9 +1,10 @@
-use crate::{db::user::search_users, state::AppState, Result, User};
+use crate::{state::AppState, Result};
 use axum::{
     body::Body,
     extract::{Query, State},
     response::Response,
 };
+use db::{search_users, User};
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema, ToResponse)]
 pub struct SearchQuery {

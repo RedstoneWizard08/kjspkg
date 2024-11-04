@@ -1,5 +1,6 @@
-use crate::{db::DbPool, schema::user_tokens, Result, UserToken};
+use crate::Result;
 use chrono::Utc;
+use db::{user_tokens, DbPool, UserToken};
 use diesel::{delete, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use jsglue::abort::ABORT_HANDLES;

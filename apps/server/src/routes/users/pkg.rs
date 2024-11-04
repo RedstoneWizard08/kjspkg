@@ -1,16 +1,22 @@
-use crate::{
-    db::{pkg::get_full_package, user::get_user},
-    schema::package_authors,
-    state::AppState,
-    PackageAuthor, PackageData, Result,
-};
+use crate::{state::AppState, Result};
 use axum::{
-    body::Body,
     extract::{Path, State},
-    response::Response,
+    Json,
 };
+use chrono::Utc;
+use db::{get_full_package_sync, get_user, package_authors, PackageAuthor, PackageData};
 use diesel::{ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
+use parking_lot::Mutex;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use std::{collections::HashMap, sync::Arc};
+
+const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
+
+lazy_static! {
+    static ref USER_PACKAGES_CACHE: Arc<Mutex<HashMap<i32, (i64, Vec<PackageData>)>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+}
 
 /// Get User Packages
 ///
@@ -31,9 +37,17 @@ use diesel_async::RunQueryDsl;
 pub async fn list_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-) -> Result<Response> {
+) -> Result<Json<Vec<PackageData>>> {
     let mut conn = state.pool.get().await?;
     let user = get_user(id, &mut conn).await?;
+
+    if let Some((expires, data)) = USER_PACKAGES_CACHE.lock().get(&user.id) {
+        let now = Utc::now().timestamp_millis();
+
+        if *expires > now {
+            return Ok(Json(data.clone()));
+        }
+    }
 
     let pkg_refs = package_authors::table
         .filter(package_authors::user_id.eq(user.id))
@@ -41,11 +55,23 @@ pub async fn list_handler(
         .load(&mut conn)
         .await?;
 
-    let mut pkgs = Vec::new();
+    let local_pool = state.sync_pool.clone();
 
-    for item in pkg_refs {
-        pkgs.push(get_full_package(item.package.to_string(), &mut conn).await?);
-    }
+    let pkgs = pkg_refs
+        .par_iter()
+        .filter_map(move |v| {
+            let mut local_conn = local_pool.get().unwrap();
+            get_full_package_sync(v.package.to_string(), &mut local_conn).ok()
+        })
+        .collect::<Vec<_>>();
 
-    Ok(Response::builder().body(Body::new(serde_json::to_string_pretty(&pkgs)?))?)
+    USER_PACKAGES_CACHE.lock().insert(
+        user.id,
+        (
+            Utc::now().timestamp_millis() + CACHE_EXPIRY_MS,
+            pkgs.clone(),
+        ),
+    );
+
+    Ok(Json(pkgs))
 }

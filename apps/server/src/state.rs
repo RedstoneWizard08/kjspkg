@@ -1,24 +1,29 @@
-use crate::{db::DbPool, Result};
+use crate::Result;
+use db::{create_connection, DbPool, SyncDbPool};
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, TokenUrl};
 use std::env;
 
 #[derive(Clone)]
 pub struct AppState {
     pub pool: DbPool,
+    pub sync_pool: SyncDbPool,
     pub auth: BasicClient,
     pub supabase_url: String,
     pub supabase_key: String,
     pub packages_bucket: String,
+    pub db_url: Option<String>,
 }
 
 impl AppState {
     pub fn new(
         pool: DbPool,
+        sync_pool: SyncDbPool,
         client_id: Option<String>,
         client_secret: Option<String>,
         supabase_url: Option<String>,
         supabase_key: Option<String>,
         packages_bucket: Option<String>,
+        db_url: Option<String>,
     ) -> Result<Self> {
         let embedded_client_id = option_env!("GH_CLIENT_ID").map(|v| v.to_string());
         let embedded_client_secret = option_env!("GH_CLIENT_SECRET").map(|v| v.to_string());
@@ -60,10 +65,12 @@ impl AppState {
 
         Ok(Self {
             pool,
+            sync_pool,
             auth: Self::client(client_id, client_secret)?,
             supabase_url,
             supabase_key,
             packages_bucket,
+            db_url,
         })
     }
 
@@ -76,5 +83,10 @@ impl AppState {
                 "https://github.com/login/oauth/access_token".to_string(),
             )?),
         ))
+    }
+
+    #[allow(unused)]
+    pub async fn new_pool(&self) -> Result<DbPool> {
+        create_connection(self.db_url.clone()).await
     }
 }

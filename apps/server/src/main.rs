@@ -1,9 +1,9 @@
 #[cfg(not(feature = "shuttle"))]
 #[tokio::main]
-pub async fn main() -> kjspkg::Result<()> {
+pub async fn main() -> kjspkg_server::Result<()> {
     use clap::Parser;
 
-    kjspkg::Cli::parse().run().await
+    kjspkg_server::Cli::parse().run().await
 }
 
 #[cfg(feature = "shuttle")]

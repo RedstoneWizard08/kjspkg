@@ -1,9 +1,10 @@
-use crate::{db::user::get_user, state::AppState, Result, User};
+use crate::{state::AppState, Result};
 use axum::{
     body::Body,
     extract::{Path, State},
     response::Response,
 };
+use db::{get_user, User};
 
 /// Get User
 ///

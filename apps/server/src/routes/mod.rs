@@ -1,5 +1,6 @@
 pub mod api;
 pub mod auth;
+pub mod meta;
 pub mod pkg;
 pub mod users;
 
@@ -12,6 +13,7 @@ pub fn create_router(state: AppState, glue: Glue) -> Router {
         .nest("/api/v1/auth", auth::router(state.clone()))
         .nest("/api/v1/users", users::router(state.clone()))
         .nest("/api/v1/packages", pkg::router(state.clone()))
+        .nest("/api/v1/meta", meta::router(state.clone()))
         .layer(from_fn(logging_middleware))
         .with_state(state)
 }

@@ -1,12 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    auth::create_token,
     routes::auth::CALLBACK_URL,
-    schema::users,
     state::AppState,
     util::{create_github_client, scheme::Scheme},
-    NewUser, Result, User,
+    Result,
 };
 use axum::{
     body::Body,
@@ -17,6 +15,7 @@ use axum::{
     },
     response::Response,
 };
+use db::{create_token, users, NewUser, User};
 use diesel::{
     dsl::insert_into, update, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper,
 };

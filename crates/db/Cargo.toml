@@ -1,0 +1,29 @@
+[package]
+name = "db"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme.workspace = true
+
+[features]
+default = []
+shuttle = ["dep:openssl-sys", "dep:pq-sys"]
+
+[dependencies]
+app_core.workspace = true
+chrono.workspace = true
+diesel.workspace = true
+diesel-async.workspace = true
+diesel_async_migrations.workspace = true
+openssl-sys = { workspace = true, optional = true }
+pq-sys = { workspace = true, optional = true }
+random-string.workspace = true
+serde.workspace = true
+utoipa.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+openssl-sys.workspace = true
+pq-sys.workspace = true

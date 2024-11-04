@@ -96,3 +96,9 @@ export const createSlug = (input: string) => {
 
     return input.toLowerCase().replace(slugRegex, "-");
 };
+
+export const capText = (text: string, len: number) => {
+    if (text.length < len) return text;
+
+    return text.substring(0, len - 3) + "...";
+};

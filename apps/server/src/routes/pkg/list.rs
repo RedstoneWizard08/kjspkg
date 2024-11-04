@@ -1,10 +1,6 @@
-use crate::{
-    auth::get_user_from_req,
-    db::pkg::get_full_package,
-    schema::{package_authors, packages},
-    state::AppState,
-    NewPackage, Package, PackageAuthor, PackageData, Result,
-};
+use std::sync::Arc;
+
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{
     body::Body,
     extract::State,
@@ -13,8 +9,22 @@ use axum::{
     Json,
 };
 use axum_extra::extract::CookieJar;
+use chrono::Utc;
+use db::{
+    get_full_package, get_full_package_sync, package_authors, packages, NewPackage, Package,
+    PackageAuthor, PackageData,
+};
 use diesel::{insert_into, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
+use parking_lot::Mutex;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+
+const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
+
+lazy_static! {
+    static ref PACKAGE_LIST_CACHE: Arc<Mutex<Option<(i64, Vec<PackageData>)>>> =
+        Arc::new(Mutex::new(None));
+}
 
 /// List Packages
 ///
@@ -30,6 +40,14 @@ use diesel_async::RunQueryDsl;
 )]
 #[debug_handler]
 pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<PackageData>>> {
+    if let Some((expires, data)) = PACKAGE_LIST_CACHE.lock().clone() {
+        let now = Utc::now().timestamp_millis();
+
+        if expires > now {
+            return Ok(Json(data));
+        }
+    }
+
     let mut conn = state.pool.get().await?;
 
     let data = packages::table
@@ -37,11 +55,18 @@ pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<Pack
         .load(&mut conn)
         .await?;
 
-    let mut res = Vec::new();
+    let local_pool = state.sync_pool.clone();
 
-    for pkg in data {
-        res.push(get_full_package(pkg.id.to_string(), &mut conn).await?);
-    }
+    let res = data
+        .par_iter()
+        .filter_map(move |v| {
+            let mut local_conn = local_pool.get().unwrap();
+            get_full_package_sync(v.id.to_string(), &mut local_conn).ok()
+        })
+        .collect::<Vec<_>>();
+
+    *PACKAGE_LIST_CACHE.lock() =
+        Some((Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()));
 
     Ok(Json(res))
 }

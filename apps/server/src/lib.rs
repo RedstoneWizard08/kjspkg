@@ -1,7 +1,4 @@
 #[macro_use]
-extern crate diesel;
-
-#[macro_use]
 extern crate serde;
 
 #[macro_use]
@@ -13,37 +10,36 @@ extern crate axum;
 #[macro_use]
 extern crate utoipa;
 
+#[macro_use]
+extern crate lazy_static;
+
 pub(crate) mod api;
 pub(crate) mod auth;
 pub(crate) mod cli;
-pub(crate) mod db;
 pub(crate) mod env;
-pub(crate) mod error;
 pub(crate) mod glue;
 pub(crate) mod logger;
 pub(crate) mod middleware;
-pub(crate) mod models;
 pub(crate) mod routes;
-pub(crate) mod schema;
 pub(crate) mod state;
 pub(crate) mod util;
 pub(crate) mod worker;
 
 pub use cli::*;
-pub use error::*;
 pub use logger::*;
-pub use models::*;
 
+use app_core::AppError;
 use axum::serve;
-use db::{create_connection, run_migrations};
+use db::{create_connection, create_sync_connection, run_migrations};
 use glue::make_glue;
 use jsglue::{abort::register_exit_handler, util::is_debug};
 use routes::create_router;
-use shuttle_axum::ShuttleAxum;
 use state::AppState;
 use std::net::{IpAddr, SocketAddr};
 use tokio::{join, net::TcpListener};
 use worker::run_worker;
+
+pub type Result<T, E = AppError> = app_core::Result<T, E>;
 
 pub async fn start_app(cli: Cli) -> Result<()> {
     info!("Starting app...");
@@ -52,7 +48,8 @@ pub async fn start_app(cli: Cli) -> Result<()> {
 
     info!("Connecting to the database...");
 
-    let pool = create_connection(cli.db_url).await?;
+    let pool = create_connection(cli.db_url.clone()).await?;
+    let sync_pool = create_sync_connection(cli.db_url.clone())?;
 
     info!("Running migrations...");
 
@@ -62,11 +59,13 @@ pub async fn start_app(cli: Cli) -> Result<()> {
 
     let state = AppState::new(
         pool.clone(),
+        sync_pool,
         cli.github_client_id,
         cli.github_client_secret,
         cli.supabase_url,
         cli.supabase_key,
         cli.packages_bucket,
+        cli.db_url,
     )?;
 
     info!("Creating glue...");
@@ -109,7 +108,8 @@ pub async fn start_app(cli: Cli) -> Result<()> {
     Ok(())
 }
 
-pub async fn create_shuttle_axum() -> ShuttleAxum {
+#[cfg(feature = "shuttle")]
+pub async fn create_shuttle_axum() -> shuttle_axum::ShuttleAxum {
     info!("Starting app...");
 
     register_exit_handler()?;
@@ -120,6 +120,9 @@ pub async fn create_shuttle_axum() -> ShuttleAxum {
         .await
         .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
+    let sync_pool =
+        create_sync_connection(None).map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
+
     info!("Running migrations...");
 
     run_migrations(&pool)
@@ -128,7 +131,7 @@ pub async fn create_shuttle_axum() -> ShuttleAxum {
 
     info!("Creating state...");
 
-    let state = AppState::new(pool.clone(), None, None, None, None, None)
+    let state = AppState::new(pool.clone(), sync_pool, None, None, None, None, None, None)
         .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Creating glue...");

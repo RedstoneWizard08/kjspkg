@@ -1,4 +1,5 @@
 pub mod pkg;
+pub mod sanitize;
 pub mod scheme;
 
 use octocrab::Octocrab;

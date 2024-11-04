@@ -1,13 +1,4 @@
-use crate::{
-    auth::get_user_from_req,
-    db::{
-        pkg::{get_full_package, get_package},
-        user::get_user,
-    },
-    schema::{package_authors, users},
-    state::AppState,
-    PackageAuthor, PackageData, Result, User,
-};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -15,6 +6,10 @@ use axum::{
     response::Response,
 };
 use axum_extra::extract::CookieJar;
+use db::{
+    get_full_package, get_package, get_user, package_authors, users, PackageAuthor, PackageData,
+    User,
+};
 use diesel::{insert_into, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 

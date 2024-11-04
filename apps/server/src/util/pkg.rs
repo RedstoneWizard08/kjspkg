@@ -2,10 +2,9 @@ use std::io::{Cursor, Read};
 
 use anyhow::{anyhow, Result};
 use axum::body::Bytes;
+use db::PackageManifest;
 use flate2::read::GzDecoder;
 use tar::Archive;
-
-use crate::PackageManifest;
 
 pub fn verify_package(bytes: &Bytes) -> Result<()> {
     let mut data = GzDecoder::new(Cursor::new(bytes));

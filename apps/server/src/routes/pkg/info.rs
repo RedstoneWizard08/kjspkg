@@ -1,10 +1,4 @@
-use crate::{
-    auth::get_user_from_req,
-    db::pkg::{get_full_package, get_package},
-    schema::{package_authors, packages},
-    state::AppState,
-    Package, PackageAuthor, PackageData, Result,
-};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -13,6 +7,9 @@ use axum::{
     Json,
 };
 use axum_extra::extract::CookieJar;
+use db::{
+    get_full_package, get_package, package_authors, packages, Package, PackageAuthor, PackageData,
+};
 use diesel::{delete, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 

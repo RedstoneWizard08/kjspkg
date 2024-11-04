@@ -1,6 +1,7 @@
-use crate::{auth::get_user_from_req, state::AppState, Result, User};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{body::Body, extract::State, http::HeaderMap, response::Response};
 use axum_extra::extract::CookieJar;
+use db::User;
 
 /// Current User
 ///

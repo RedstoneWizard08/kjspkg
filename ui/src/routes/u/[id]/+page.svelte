@@ -45,7 +45,7 @@
             <img
                 src="https://avatars.githubusercontent.com/u/{user?.github_id}"
                 alt="author's profile"
-                class="mr-4 aspect-square h-16 rounded-token"
+                class="rounded-token mr-4 aspect-square h-16"
             />
 
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{user?.username}</span>
@@ -88,11 +88,35 @@
 
         {#each packages as pkg}
             <a
-                class="card mb-2 flex flex-row items-center justify-between p-4 hover:variant-soft-primary"
+                class="card hover:variant-soft-primary mb-2 hidden flex-row items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 md:flex"
                 href="{base}/p/{pkg.slug}"
                 in:fly={{ y: 20 }}
             >
-                <span>{pkg.description}</span>
+                <span class="w-[20%] overflow-hidden text-ellipsis font-bold">{pkg.name}</span>
+                <span class="w-[60%] overflow-hidden text-ellipsis">{pkg.description}</span>
+
+                <span class="text-sm opacity-50"
+                    ><span
+                        >{pkg.downloads}
+                        {pkg.downloads == 1
+                            ? $_("list.download_singluar")
+                            : $_("list.download_plural")}</span
+                    >
+                    &bull;
+                    <span
+                        >{pkg.views}
+                        {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
+                    ></span
+                >
+            </a>
+
+            <a
+                class="card hover:variant-soft-primary mb-2 flex flex-col items-start justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 md:hidden"
+                href="{base}/p/{pkg.slug}"
+                in:fly={{ y: 20 }}
+            >
+                <span class="font-bold">{pkg.name}</span>
+                <span class="w-full overflow-hidden text-ellipsis">{pkg.description}</span>
 
                 <span class="text-sm opacity-50"
                     ><span
