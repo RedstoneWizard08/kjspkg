@@ -17,7 +17,6 @@ diesel.workspace = true
 diesel-async.workspace = true
 dotenvy.workspace = true
 flate2.workspace = true
-futures.workspace = true
 git2.workspace = true
 glob.workspace = true
 itertools.workspace = true
