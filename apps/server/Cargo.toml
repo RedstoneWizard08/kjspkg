@@ -9,7 +9,7 @@ authors.workspace = true
 readme.workspace = true
 
 [[bin]]
-name = "server"
+name = "kjspkg-server"
 path = "src/main.rs"
 
 [features]
