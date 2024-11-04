@@ -45,7 +45,7 @@
             <img
                 src="https://avatars.githubusercontent.com/u/{user?.github_id}"
                 alt="author's profile"
-                class="rounded-token mr-4 aspect-square h-16"
+                class="mr-4 aspect-square h-16 rounded-token"
             />
 
             <span class="h2 font-bold" in:fly={{ y: 20 }}>{user?.username}</span>
@@ -88,7 +88,7 @@
 
         {#each packages as pkg}
             <a
-                class="card hover:variant-soft-primary mb-2 hidden flex-row items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 md:flex"
+                class="card mb-2 hidden flex-row items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 hover:variant-soft-primary md:flex"
                 href="{base}/p/{pkg.slug}"
                 in:fly={{ y: 20 }}
             >
@@ -111,7 +111,7 @@
             </a>
 
             <a
-                class="card hover:variant-soft-primary mb-2 flex flex-col items-start justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 md:hidden"
+                class="card mb-2 flex flex-col items-start justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 hover:variant-soft-primary md:hidden"
                 href="{base}/p/{pkg.slug}"
                 in:fly={{ y: 20 }}
             >

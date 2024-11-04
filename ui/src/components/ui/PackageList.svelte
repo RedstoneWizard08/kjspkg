@@ -5,6 +5,7 @@
     import { filteredStore } from "$lib/stores";
     import { flip } from "svelte/animate";
     import { fade, slide } from "svelte/transition";
+    import { formatDate } from "$lib/utils";
 
     interface Props {
         startFrom?: number;
@@ -68,6 +69,16 @@
                     {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
                 >
             </dd>
+            {#if showDetails}
+                <dd class="text-sm opacity-50">
+                    {$_("list.published")}
+                    <span class="select-text">{formatDate(new Date(pkg.created_at))}</span>
+                </dd>
+                <dd class="text-sm opacity-50">
+                    {$_("list.updated")}
+                    <span class="select-text">{formatDate(new Date(pkg.updated_at))}</span>
+                </dd>
+            {/if}
         </dl>
     </a>
 {/each}

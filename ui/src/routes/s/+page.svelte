@@ -22,11 +22,10 @@
 
     let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
-    let showDetails = $state(false);
+    const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
 
     onMount(async () => {
         loadingState = (await updatePackagesStore()) ? "ready" : "failed";
-        showDetails = ($page.url.searchParams.get("showDetails") ?? "false") == "true";
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
 
         let largeScreen = matchMedia("(min-width: 1024px)").matches;
@@ -131,7 +130,7 @@
             use:contextMenu={{
                 initiator: "left",
                 items: [
-                    ...["name", "author", "downloads", "views"].map(
+                    ...["name", "downloads", "views", "published", "updated"].map(
                         (name) =>
                             ({
                                 type: "ITEM",

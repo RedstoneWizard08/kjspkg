@@ -18,6 +18,10 @@ lazy_static! {
         Arc::new(Mutex::new(HashMap::new()));
 }
 
+pub fn clear_user_cache(id: i32) {
+    USER_PACKAGES_CACHE.lock().remove(&id);
+}
+
 /// Get User Packages
 ///
 /// Get a user's packages.

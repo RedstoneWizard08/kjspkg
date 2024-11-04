@@ -58,7 +58,9 @@ pub fn create_sync_connection(db_url: Option<String>) -> Result<SyncDbPool> {
             .unwrap_or_else(|| env::var("DATABASE_URL"))
     })?;
 
-    Ok(SyncPool::builder().build(ConnectionManager::<PgConnection>::new(db_url))?)
+    Ok(SyncPool::builder()
+        .test_on_check_out(true)
+        .build(ConnectionManager::<PgConnection>::new(db_url))?)
 }
 
 pub async fn run_migrations(pool: &DbPool) -> Result<()> {

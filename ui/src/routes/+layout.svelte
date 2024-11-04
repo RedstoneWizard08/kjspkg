@@ -133,8 +133,10 @@
                     >Modern Modpacks</a
                 >
                 &bull;
-                <a href="https://crowdin.com/editor/kjspkg" class="anchor no-underline" target="_blank"
-                    >Crowdin</a
+                <a
+                    href="https://crowdin.com/editor/kjspkg"
+                    class="anchor no-underline"
+                    target="_blank">Crowdin</a
                 >
             </span>
 

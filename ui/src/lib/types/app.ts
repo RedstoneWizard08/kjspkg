@@ -6,5 +6,5 @@ export interface UserPreferences {
     compact: boolean;
 }
 
-export type SortMode = "" | "name" | "downloads" | "views";
+export type SortMode = "" | "name" | "downloads" | "views" | "published" | "updated";
 export type LoadingState = "loading" | "ready" | "failed";

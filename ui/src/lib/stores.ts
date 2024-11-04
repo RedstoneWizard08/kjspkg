@@ -66,6 +66,28 @@ export const updateFilteredPackages = () => {
                 alphabetic.sort((a, b) => (a.views == b.views ? 0 : a.views < b.views ? 1 : -1)),
             );
             break;
+        case "published":
+            filteredStore.set(
+                alphabetic.sort((a, b) =>
+                    new Date(a.created_at) == new Date(b.created_at)
+                        ? 0
+                        : new Date(a.created_at) < new Date(b.created_at)
+                          ? 1
+                          : -1,
+                ),
+            );
+            break;
+        case "updated":
+            filteredStore.set(
+                alphabetic.sort((a, b) =>
+                    new Date(a.updated_at) == new Date(b.updated_at)
+                        ? 0
+                        : new Date(a.updated_at) < new Date(b.updated_at)
+                          ? 1
+                          : -1,
+                ),
+            );
+            break;
     }
 };
 

@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use crate::{auth::get_user_from_req, state::AppState, Result};
+use crate::{
+    auth::get_user_from_req, routes::users::pkg::clear_user_cache, state::AppState, Result,
+};
 use axum::{
     body::Body,
     extract::State,
@@ -11,8 +13,8 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use db::{
-    get_full_package, get_full_package_sync, package_authors, packages, NewPackage, Package,
-    PackageAuthor, PackageData,
+    get_full_package, get_full_package_sync, package_authors, packages, DbPool, NewPackage,
+    Package, PackageAuthor, PackageData, SyncDbPool,
 };
 use diesel::{insert_into, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -24,6 +26,25 @@ const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
 lazy_static! {
     static ref PACKAGE_LIST_CACHE: Arc<Mutex<Option<(i64, Vec<PackageData>)>>> =
         Arc::new(Mutex::new(None));
+}
+
+pub async fn refresh_list_cache(pool: DbPool, sync_pool: SyncDbPool) {
+    let data = packages::table
+        .select(Package::as_select())
+        .load(&mut pool.get().await.unwrap())
+        .await
+        .unwrap_or_default();
+
+    let res = data
+        .par_iter()
+        .filter_map(move |v| {
+            let mut local_conn = sync_pool.get().unwrap();
+            get_full_package_sync(v.id.to_string(), &mut local_conn).ok()
+        })
+        .collect::<Vec<_>>();
+
+    *PACKAGE_LIST_CACHE.lock() =
+        Some((Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()));
 }
 
 /// List Packages
@@ -125,6 +146,9 @@ pub async fn create_handler(
         })
         .execute(&mut conn)
         .await?;
+
+    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    clear_user_cache(user.id);
 
     Ok(Response::builder().body(Body::new(serde_json::to_string(
         &get_full_package(pkg.id.to_string(), &mut conn).await?,

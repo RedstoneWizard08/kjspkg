@@ -1,4 +1,6 @@
-use crate::{auth::get_user_from_req, state::AppState, Result};
+use crate::{
+    auth::get_user_from_req, routes::users::pkg::clear_user_cache, state::AppState, Result,
+};
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -12,6 +14,8 @@ use db::{
 };
 use diesel::{delete, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
+
+use super::list::refresh_list_cache;
 
 #[derive(
     Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, ToSchema, ToResponse, Serialize, Deserialize,
@@ -125,6 +129,9 @@ pub async fn update_handler(
         .get_result(&mut conn)
         .await?;
 
+    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    clear_user_cache(user.id);
+
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(
@@ -174,6 +181,9 @@ pub async fn delete_handler(
         .filter(packages::id.eq(pkg.id))
         .execute(&mut conn)
         .await?;
+
+    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    clear_user_cache(user.id);
 
     Ok(Response::builder().body(Body::new("Deleted package successfully!".to_string()))?)
 }
