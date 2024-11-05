@@ -1,6 +1,7 @@
 {
     "name": "Deutsch",
     "site.tagline": "Your home for KubeJS packages",
+    "site.browse": "Browse Packages",
     "errors.prefix": "Error:",
     "errors.something_went_wrong": "Etwas ist schiefgegangen",
     "errors.no_packages_published": "Sieht so aus, als hättest du keine Pakete im KJSPKG veröffentlicht. Wie traurig!",
