@@ -1,6 +1,7 @@
 {
     "name": "Español",
     "site.tagline": "La casa de los paquetes de KubeJS",
+    "site.browse": "Browse Packages",
     "errors.prefix": "Error:",
     "errors.something_went_wrong": "Something went wrong",
     "errors.no_packages_published": "Looks like you don't have any approved packages published to KJSPKG. How sad!",
