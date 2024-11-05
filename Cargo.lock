@@ -58,9 +58,9 @@ dependencies = [
 
 [[package]]
 name = "anstyle"
-version = "1.0.8"
+version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bec1de6f59aedf83baf9ff929c98f2ad654b97c9510f4e70cf6f661d49fd5b1"
+checksum = "55cc3b69f167a1ef2e161439aa98aed94e6028e5f9a59be9a6ffb47aef1651f9"
 
 [[package]]
 name = "anstyle-parse"
@@ -108,6 +108,7 @@ dependencies = [
  "jsglue",
  "octocrab",
  "reqwest 0.12.8",
+ "semver",
  "serde_json",
  "serde_yaml",
  "shuttle-runtime",
@@ -1630,6 +1631,7 @@ dependencies = [
 name = "kjspkg"
 version = "0.1.0"
 dependencies = [
+ "anstyle",
  "anyhow",
  "chrono",
  "clap",
@@ -1639,6 +1641,7 @@ dependencies = [
  "dotenvy",
  "flate2",
  "kjspkg-api",
+ "rand",
  "reqwest 0.12.8",
  "serde",
  "serde_json",
@@ -1692,6 +1695,7 @@ dependencies = [
  "random-string",
  "rayon",
  "reqwest 0.12.8",
+ "semver",
  "serde",
  "serde_json",
  "serde_yaml",

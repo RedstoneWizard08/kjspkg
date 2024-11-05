@@ -34,6 +34,7 @@ use utoipa::{
         crate::routes::pkg::ver::create_handler,
         crate::routes::pkg::ver::update_handler,
         crate::routes::pkg::ver::delete_handler,
+        crate::routes::pkg::ver::latest_handler,
         crate::routes::pkg::author::list_handler,
         crate::routes::pkg::author::add_handler,
         crate::routes::pkg::search::search_handler,

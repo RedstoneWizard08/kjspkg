@@ -15,6 +15,7 @@ use db::{
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use reqwest::Client;
+use semver::Version;
 use uuid::Uuid;
 
 #[derive(
@@ -102,6 +103,46 @@ pub async fn info_handler(
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(&ver)?))?)
+}
+
+/// Get Latest Package Version
+///
+/// Get information about the latest package version
+#[utoipa::path(
+    get,
+    path = "/api/v1/packages/{id}/versions/latest",
+    tag = "Versions",
+    responses(
+        (status = 200, description = "Found latest version!", body = PackageVersion),
+        (status = INTERNAL_SERVER_ERROR, description = "An internal error occured!"),
+    ),
+    params(
+        ("id" = String, Path, description = "The package that this version is for."),
+    ),
+)]
+#[debug_handler]
+pub async fn latest_handler(
+    Path(package): Path<String>,
+    State(state): State<AppState>,
+) -> Result<Response> {
+    let mut conn = state.pool.get().await?;
+    let pkg = get_package(package, &mut conn).await?;
+
+    let mut versions = package_versions::table
+        .filter(package_versions::package.eq(pkg.id))
+        .select(PackageVersion::as_select())
+        .load(&mut conn)
+        .await?;
+
+    versions.sort_by(|a, b| {
+        Version::parse(&a.version_number)
+            .unwrap()
+            .cmp(&Version::parse(&b.version_number).unwrap())
+    });
+
+    Ok(Response::builder()
+        .header("Content-Type", "application/json")
+        .body(Body::new(serde_json::to_string(&versions.last().unwrap())?))?)
 }
 
 /// Download Package Version
@@ -279,6 +320,7 @@ pub async fn create_handler(
     let minecraft = minecraft.unwrap();
     let file = file.unwrap();
 
+    Version::parse(&version_number)?;
     verify_package(&file)?;
 
     let file_id = Uuid::new_v4().to_string();

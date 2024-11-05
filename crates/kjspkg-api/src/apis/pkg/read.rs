@@ -32,4 +32,14 @@ impl PackageApi {
             .json()
             .await?)
     }
+
+    pub async fn latest_version(&self) -> Result<PackageVersion> {
+        Ok(self
+            .client
+            .get(self.url(format!("packages/{}/versions/latest", self.package))?)
+            .send()
+            .await?
+            .json()
+            .await?)
+    }
 }

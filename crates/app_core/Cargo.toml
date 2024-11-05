@@ -21,6 +21,7 @@ dotenvy.workspace = true
 jsglue.workspace = true
 octocrab.workspace = true
 reqwest.workspace = true
+semver.workspace = true
 serde_json.workspace = true
 serde_yaml.workspace = true
 shuttle-runtime = { workspace = true, optional = true }

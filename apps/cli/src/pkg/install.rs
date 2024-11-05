@@ -1,3 +1,4 @@
+use crate::manifest::{PackageInfo, ProjectManifest};
 use anyhow::Result;
 use copy_dir::copy_dir;
 use flate2::read::GzDecoder;
@@ -8,8 +9,6 @@ use std::{
     path::PathBuf,
 };
 use tar::Archive;
-
-use crate::manifest::{PackageInfo, ProjectManifest};
 
 pub const SCRIPT_DIRS: &[&str] = &["client_scripts", "server_scripts", "startup_scripts"];
 pub const ASSET_DIRS: &[&str] = &["assets", "data"];

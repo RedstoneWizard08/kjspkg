@@ -70,6 +70,9 @@ pub enum AppError {
     #[error(transparent)]
     DbInit(#[from] BuildError),
 
+    #[error(transparent)]
+    SemVer(#[from] semver::Error),
+
     #[error("Missing required token header or cookie!")]
     MissingToken,
 
