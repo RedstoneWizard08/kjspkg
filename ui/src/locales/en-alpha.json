@@ -1,6 +1,7 @@
 {
     "name": "Gen Alpha Slang",
     "site.tagline": "The site for RizzJS gyats",
+    "site.browse": "Browse Packages",
     "errors.prefix": "What the sigma:",
     "errors.something_went_wrong": "Something went sus",
     "errors.no_packages_published": "Looks like you don't have any sus packages published to KJSPKG. Ratio!",
