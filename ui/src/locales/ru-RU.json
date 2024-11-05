@@ -1,6 +1,7 @@
 {
     "name": "Русский",
     "site.tagline": "Ваш помощник по пакетам для KubeJS",
+    "site.browse": "Browse Packages",
     "errors.prefix": "Ошибка:",
     "errors.something_went_wrong": "Что-то пошло не так",
     "errors.no_packages_published": "Похоже, что вы ещё не опубликовали ни одного пакета в KJSPKG. Как грустно!",
