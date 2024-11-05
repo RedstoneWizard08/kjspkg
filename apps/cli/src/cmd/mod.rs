@@ -24,6 +24,8 @@ use uninstall::cmd_uninstall;
 use update::cmd_update;
 use update_all::cmd_update_all;
 
+use crate::ctx::CliContext;
+
 #[derive(Debug, Clone, Subcommand)]
 pub enum Commands {
     /// Install a package.
@@ -131,33 +133,33 @@ pub enum Commands {
 }
 
 impl Commands {
-    pub async fn run(self) -> Result<()> {
+    pub async fn run(self, cx: &CliContext) -> Result<()> {
         match self {
             Self::Install {
                 packages,
                 skip_missing,
                 update,
-            } => cmd_install(packages, skip_missing, update).await,
+            } => cmd_install(cx, packages, skip_missing, update).await,
             Self::Uninstall {
                 packages,
                 skip_missing,
-            } => cmd_uninstall(packages, skip_missing).await,
+            } => cmd_uninstall(cx, packages, skip_missing).await,
             Self::Update {
                 packages,
                 skip_missing,
-            } => cmd_update(packages, skip_missing).await,
-            Self::UpdateAll => cmd_update_all().await,
-            Self::List { format } => cmd_list(format).await,
-            Self::Info { package, json } => cmd_info(package, json).await,
-            Self::Fetch => cmd_fetch().await,
-            Self::ListRemote => cmd_list_remote().await,
-            Self::Search { query } => cmd_search(query).await,
+            } => cmd_update(cx, packages, skip_missing).await,
+            Self::UpdateAll => cmd_update_all(cx).await,
+            Self::List { format } => cmd_list(cx, format).await,
+            Self::Info { package, json } => cmd_info(cx, package, json).await,
+            Self::Fetch => cmd_fetch(cx).await,
+            Self::ListRemote => cmd_list_remote(cx).await,
+            Self::Search { query } => cmd_search(cx, query).await,
             Self::Init {
                 minecraft,
                 loader,
                 force,
-            } => cmd_init(minecraft, loader, force).await,
-            Self::Uninit { confirm } => cmd_uninit(confirm).await,
+            } => cmd_init(cx, minecraft, loader, force).await,
+            Self::Uninit { confirm } => cmd_uninit(cx, confirm).await,
         }
     }
 }

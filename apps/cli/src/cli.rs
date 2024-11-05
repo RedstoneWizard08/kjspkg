@@ -1,4 +1,4 @@
-use crate::{cmd::Commands, splash::AboutGetter, style::get_styles, AUTHORS};
+use crate::{cmd::Commands, ctx::get_ctx, splash::AboutGetter, style::get_styles, AUTHORS};
 use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -26,14 +26,17 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub async fn run(&self) -> Result<()> {
+    pub async fn run(self) -> Result<()> {
         if self.version {
             Self::print_version();
             return Ok(());
         }
 
-        if let Some(_cmd) = &self.command {
-            // TODO
+        if let Some(cmd) = self.command {
+            let cx = get_ctx()?;
+
+            cmd.run(&cx).await?;
+            cx.save()?;
         } else {
             Self::command().print_help()?;
         }

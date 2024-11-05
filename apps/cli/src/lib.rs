@@ -1,5 +1,6 @@
 pub mod cli;
 pub mod cmd;
+pub mod ctx;
 pub mod manifest;
 pub mod pkg;
 pub mod splash;

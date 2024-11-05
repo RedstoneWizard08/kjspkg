@@ -16,6 +16,7 @@ clap.workspace = true
 clap-verbosity-flag.workspace = true
 colored.workspace = true
 copy_dir.workspace = true
+dirs.workspace = true
 dotenvy.workspace = true
 flate2.workspace = true
 kjspkg-api.workspace = true

@@ -1,3 +1,4 @@
+use crate::ctx::CliContext;
 use anyhow::Result;
 use clap::ValueEnum;
 
@@ -10,6 +11,7 @@ pub enum ModLoader {
 }
 
 pub async fn cmd_init(
+    cx: &CliContext,
     minecraft: Option<String>,
     loader: Option<ModLoader>,
     force: bool,

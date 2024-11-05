@@ -19,7 +19,9 @@ pub const DEFAULT_API_BASE: &str = "https://kjspkg-uwqx.shuttle.app/api/v1";
 #[derive(Debug, Clone)]
 pub struct ApiClient {
     client: Client,
-    api_base: String,
+
+    pub api_base: String,
+    pub token: Option<String>,
 }
 
 impl ApiHelper for ApiClient {
@@ -40,20 +42,22 @@ impl ApiClient {
 
             Ok(ApiClient {
                 api_base: api_base.unwrap_or(DEFAULT_API_BASE.into()),
+                token: Some(key),
                 client: ClientBuilder::new().default_headers(headers).build()?,
             })
         } else {
             Ok(ApiClient {
                 api_base: api_base.unwrap_or(DEFAULT_API_BASE.into()),
+                token: key,
                 client: ClientBuilder::new().build()?,
             })
         }
     }
 
-    pub fn package(&self, pkg: String) -> PackageApi {
+    pub fn package(&self, pkg: impl AsRef<str>) -> PackageApi {
         PackageApi {
             api_base: self.api_base.clone(),
-            package: pkg,
+            package: pkg.as_ref().into(),
             client: self.client.clone(),
         }
     }

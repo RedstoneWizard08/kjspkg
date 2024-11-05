@@ -1,3 +1,4 @@
+use crate::ctx::CliContext;
 use anyhow::Result;
 use clap::ValueEnum;
 
@@ -10,6 +11,6 @@ pub enum ListOutputFormat {
     Text,
 }
 
-pub async fn cmd_list(format: ListOutputFormat) -> Result<()> {
+pub async fn cmd_list(cx: &CliContext, format: ListOutputFormat) -> Result<()> {
     Ok(())
 }
