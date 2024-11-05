@@ -46,13 +46,13 @@ pub async fn start_app(cli: Cli) -> Result<()> {
 
     register_exit_handler()?;
 
-    info!("Connecting to the database (sync pool)...");
-
-    let sync_pool = create_sync_connection(cli.db_url.clone())?;
-
     info!("Connecting to the database (async pool)...");
 
     let pool = create_connection(cli.db_url.clone()).await?;
+
+    info!("Connecting to the database (sync pool)...");
+
+    let sync_pool = create_sync_connection(cli.db_url.clone())?;
 
     info!("Running migrations...");
 

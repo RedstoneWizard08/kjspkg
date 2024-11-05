@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { _ } from "svelte-i18n";
+    import { _, locale } from "svelte-i18n";
     import { randFonts, randStretches, randStyles, randWeights, randVariants } from "$lib/font";
     import { onMount } from "svelte";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import ProjectScroller from "$components/ui/ProjectScroller.svelte";
 
     const fontChangeDuration = 500;
     const addCharDelay = 150;
-    const tagline = $_("site.tagline");
 
     let currentFonts = $state(randFonts(6));
     let currentStretches = $state(randStretches(6));
@@ -14,6 +14,7 @@
     let currentWeights = $state(randWeights(6));
     let currentVariants = $state(randVariants(6));
 
+    let tagline = $_("site.tagline");
     let adding = $state(true);
     let text = $state("");
 
@@ -53,6 +54,12 @@
         setTimeout(changeFont, fontChangeDuration);
         scheduleAddChar();
     });
+
+    locale.subscribe(() => {
+        tagline = $_("site.tagline");
+        text = "";
+        scheduleAddChar();
+    });
 </script>
 
 <svelte:head>
@@ -81,6 +88,8 @@
 
     <a href="/s" class="variant-filled-primary btn mt-16">
         <span><TablerIcon name="search" class="mr-2" /></span>
-        <span>Browse Packages</span>
+        <span>{$_("site.browse")}</span>
     </a>
+
+    <ProjectScroller />
 </div>

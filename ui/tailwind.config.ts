@@ -22,10 +22,19 @@ const config = {
                         "border-color": "transparent",
                     },
                 },
+                scroll: {
+                    from: {
+                        transform: "translateX(0)",
+                    },
+                    to: {
+                        transform: "translateX(calc(-100%))",
+                    },
+                },
             },
 
             animation: {
                 "border-blink": "border-blink 1s steps(2) infinite",
+                scroll: "scroll 60s linear infinite",
             },
         },
     },

@@ -39,7 +39,7 @@
     {#snippet lead()}
         <a class="flex items-center gap-2" href="{base}/">
             <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
-            <span class="hidden lg:inline">KJSPKG Lookup</span>
+            <span class="hidden lg:inline">KJSPKG</span>
         </a>
     {/snippet}
 

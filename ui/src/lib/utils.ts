@@ -102,3 +102,17 @@ export const capText = (text: string, len: number) => {
 
     return text.substring(0, len - 3) + "...";
 };
+
+export const splitToRows = <T>(data: T[], rows: number): T[][] => {
+    const out = [];
+    const cols = Math.floor(data.length / rows);
+
+    for (let i = 0; i < rows; i++) {
+        const items = i == rows - 1 ? data.length - cols * i : cols;
+        const start = Math.max(0, cols * i);
+
+        out.push(data.slice(start, Math.min(start + items, data.length - 1)));
+    }
+
+    return out;
+};

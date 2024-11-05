@@ -1,0 +1,76 @@
+<script lang="ts">
+    import { getPackages } from "$api";
+    import type { PackageData } from "$lib/types";
+    import { capText, splitToRows } from "$lib/utils";
+    import { onMount } from "svelte";
+
+    const rows = 3;
+    const rowElements: HTMLDivElement[] = [];
+
+    let projects: PackageData[] = $state([]);
+    let selected = $derived(splitToRows(projects, rows));
+
+    onMount(async () => {
+        const pkgs = await getPackages();
+
+        if (pkgs) {
+            projects = pkgs.length >= 30 ? pkgs.slice(0, 30) : pkgs;
+        }
+    });
+
+    const inHandler = (idx: number) => {
+        return () => {
+            const el = rowElements[idx];
+
+            if (el) {
+                el.style.animationPlayState = "paused";
+            }
+        };
+    };
+
+    const outHandler = (idx: number) => {
+        return () => {
+            const el = rowElements[idx];
+
+            if (el) {
+                el.style.animationPlayState = "running";
+            }
+        };
+    };
+</script>
+
+<div class="mt-16 flex flex-col space-y-4">
+    {#each selected as items, index}
+        <div class="hide-scrollbar flex w-screen select-none flex-row gap-6 overflow-scroll">
+            <div
+                class="flex min-w-full flex-shrink-0 animate-scroll gap-6"
+                bind:this={rowElements[index]}
+            >
+                {#each items as pkg}
+                    <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+                    <a
+                        class="flex cursor-pointer flex-row gap-4 rounded-xl border-[1px] border-surface-500 bg-surface-700 p-4 transition-all hover:bg-surface-500"
+                        href="/p/{pkg.slug}"
+                        onmouseover={inHandler(index)}
+                        onmouseleave={outHandler(index)}
+                    >
+                        <!-- <Avatar :src="project.icon_url" :alt="project.title" size="sm" loading="lazy" /> -->
+                        <img
+                            src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
+                            alt="author's profile avatar"
+                            class="my-auto mr-1 aspect-square h-10 rounded-token"
+                        />
+                        <div class="project-info flex flex-col">
+                            <span class="title font-bold">
+                                {pkg.name}
+                            </span>
+                            <span class="description">
+                                {capText(pkg.description, 40)}
+                            </span>
+                        </div>
+                    </a>
+                {/each}
+            </div>
+        </div>
+    {/each}
+</div>
