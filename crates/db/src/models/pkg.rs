@@ -47,6 +47,9 @@ pub struct Package {
     /// The package's view count.
     pub views: i32,
 
+    /// The amount of downloads a package has.
+    pub downloads: i32,
+
     /// An optional link to the package's source code.
     pub source: Option<String>,
 
@@ -145,4 +148,24 @@ pub struct PackageData {
 
     /// This package's authors.
     pub authors: Vec<User>,
+}
+
+impl Package {
+    pub fn with_authors(self, authors: Vec<User>) -> PackageData {
+        PackageData {
+            id: self.id,
+            name: self.name,
+            slug: self.slug,
+            readme: self.readme,
+            description: self.description,
+            source: self.source,
+            issues: self.issues,
+            wiki: self.wiki,
+            created_at: self.created_at,
+            updated_at: self.updated_at,
+            views: self.views,
+            downloads: self.downloads,
+            authors,
+        }
+    }
 }

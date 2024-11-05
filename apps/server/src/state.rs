@@ -1,12 +1,11 @@
 use crate::Result;
-use db::{create_connection, DbPool, SyncDbPool};
+use db::{create_connection, DbPool};
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, TokenUrl};
 use std::env;
 
 #[derive(Clone)]
 pub struct AppState {
     pub pool: DbPool,
-    pub sync_pool: SyncDbPool,
     pub auth: BasicClient,
     pub supabase_url: String,
     pub supabase_key: String,
@@ -17,7 +16,6 @@ pub struct AppState {
 impl AppState {
     pub fn new(
         pool: DbPool,
-        sync_pool: SyncDbPool,
         client_id: Option<String>,
         client_secret: Option<String>,
         supabase_url: Option<String>,
@@ -65,7 +63,6 @@ impl AppState {
 
         Ok(Self {
             pool,
-            sync_pool,
             auth: Self::client(client_id, client_secret)?,
             supabase_url,
             supabase_key,

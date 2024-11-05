@@ -36,6 +36,7 @@ use utoipa::{
         crate::routes::pkg::ver::delete_handler,
         crate::routes::pkg::author::list_handler,
         crate::routes::pkg::author::add_handler,
+        crate::routes::pkg::search::search_handler,
         crate::routes::meta::badge::version_handler,
     ),
     components(
@@ -59,6 +60,7 @@ use utoipa::{
             crate::routes::users::search::SearchQuery,
             crate::routes::pkg::info::PartialPackage,
             crate::routes::pkg::ver::PartialPackageVersion,
+            crate::routes::pkg::search::SearchQuery,
         ),
         responses(
             db::User,
@@ -80,6 +82,7 @@ use utoipa::{
             crate::routes::users::search::SearchQuery,
             crate::routes::pkg::info::PartialPackage,
             crate::routes::pkg::ver::PartialPackageVersion,
+            crate::routes::pkg::search::SearchQuery,
         ),
     ),
     tags(

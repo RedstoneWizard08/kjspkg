@@ -51,6 +51,7 @@ diesel::table! {
         wiki -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        downloads -> Int4,
     }
 }
 

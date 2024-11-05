@@ -30,7 +30,7 @@ pub use logger::*;
 
 use app_core::AppError;
 use axum::serve;
-use db::{create_connection, create_sync_connection, run_migrations};
+use db::{create_connection, run_migrations};
 use glue::make_glue;
 use jsglue::{abort::register_exit_handler, util::is_debug};
 use routes::create_router;
@@ -50,10 +50,6 @@ pub async fn start_app(cli: Cli) -> Result<()> {
 
     let pool = create_connection(cli.db_url.clone()).await?;
 
-    info!("Connecting to the database (sync pool)...");
-
-    let sync_pool = create_sync_connection(cli.db_url.clone())?;
-
     info!("Running migrations...");
 
     run_migrations(&pool).await?;
@@ -62,7 +58,6 @@ pub async fn start_app(cli: Cli) -> Result<()> {
 
     let state = AppState::new(
         pool.clone(),
-        sync_pool,
         cli.github_client_id,
         cli.github_client_secret,
         cli.supabase_url,
@@ -123,9 +118,6 @@ pub async fn create_shuttle_axum() -> shuttle_axum::ShuttleAxum {
         .await
         .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
-    let sync_pool =
-        create_sync_connection(None).map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
-
     info!("Running migrations...");
 
     run_migrations(&pool)
@@ -134,7 +126,7 @@ pub async fn create_shuttle_axum() -> shuttle_axum::ShuttleAxum {
 
     info!("Creating state...");
 
-    let state = AppState::new(pool.clone(), sync_pool, None, None, None, None, None, None)
+    let state = AppState::new(pool.clone(), None, None, None, None, None, None)
         .map_err(|v| Into::<shuttle_runtime::Error>::into(v))?;
 
     info!("Creating glue...");

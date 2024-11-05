@@ -4,11 +4,10 @@ use axum::{
     Json,
 };
 use chrono::Utc;
-use db::{get_full_package_sync, get_user, package_authors, PackageAuthor, PackageData};
-use diesel::{ExpressionMethods, QueryDsl, SelectableHelper};
+use db::{get_user, package_authors, packages, users, Package, PackageAuthor, PackageData, User};
+use diesel::{BelongingToDsl, ExpressionMethods, GroupedBy, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use parking_lot::Mutex;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::{collections::HashMap, sync::Arc};
 
 const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
@@ -53,29 +52,36 @@ pub async fn list_handler(
         }
     }
 
-    let pkg_refs = package_authors::table
+    let pkgs = package_authors::table
         .filter(package_authors::user_id.eq(user.id))
-        .select(PackageAuthor::as_select())
+        .inner_join(packages::table)
+        .select((PackageAuthor::as_select(), Package::as_select()))
         .load(&mut conn)
         .await?;
 
-    let local_pool = state.sync_pool.clone();
+    let pkgs = pkgs.iter().map(|(_, pkg)| pkg).collect::<Vec<_>>();
 
-    let pkgs = pkg_refs
-        .par_iter()
-        .filter_map(move |v| {
-            let mut local_conn = local_pool.get().unwrap();
-            get_full_package_sync(v.package.to_string(), &mut local_conn).ok()
+    let users: Vec<(PackageAuthor, User)> = PackageAuthor::belonging_to(&pkgs)
+        .inner_join(users::table)
+        .select((PackageAuthor::as_select(), User::as_select()))
+        .load(&mut conn)
+        .await
+        .unwrap();
+
+    let res = users
+        .grouped_by(&pkgs)
+        .into_iter()
+        .zip(pkgs)
+        .map(|(users, pkg)| {
+            pkg.clone()
+                .with_authors(users.iter().map(|(_, user)| user.clone()).collect())
         })
         .collect::<Vec<_>>();
 
     USER_PACKAGES_CACHE.lock().insert(
         user.id,
-        (
-            Utc::now().timestamp_millis() + CACHE_EXPIRY_MS,
-            pkgs.clone(),
-        ),
+        (Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()),
     );
 
-    Ok(Json(pkgs))
+    Ok(Json(res))
 }

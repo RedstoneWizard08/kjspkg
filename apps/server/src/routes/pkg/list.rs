@@ -13,13 +13,15 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use db::{
-    get_full_package, get_full_package_sync, package_authors, packages, DbPool, NewPackage,
-    Package, PackageAuthor, PackageData, SyncDbPool,
+    get_full_package, package_authors, packages, users, DbPool, NewPackage, Package, PackageAuthor,
+    PackageData, User,
 };
-use diesel::{insert_into, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
+use diesel::{
+    insert_into, BelongingToDsl, ExpressionMethods, GroupedBy, OptionalExtension, QueryDsl,
+    SelectableHelper,
+};
 use diesel_async::RunQueryDsl;
 use parking_lot::Mutex;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
 
@@ -28,19 +30,27 @@ lazy_static! {
         Arc::new(Mutex::new(None));
 }
 
-pub async fn refresh_list_cache(pool: DbPool, sync_pool: SyncDbPool) {
-    let data = packages::table
-        .select(Package::as_select())
-        .load(&mut pool.get().await.unwrap())
-        .await
-        .unwrap_or_default();
+pub async fn refresh_list_cache(pool: DbPool) {
+    let mut conn = pool.get().await.unwrap();
 
-    let res = data
-        .par_iter()
-        .filter_map(move |v| {
-            let mut local_conn = sync_pool.get().unwrap();
-            get_full_package_sync(v.id.to_string(), &mut local_conn).ok()
-        })
+    let pkgs: Vec<Package> = packages::table
+        .select(Package::as_select())
+        .load(&mut conn)
+        .await
+        .unwrap();
+
+    let users: Vec<(PackageAuthor, User)> = PackageAuthor::belonging_to(&pkgs)
+        .inner_join(users::table)
+        .select((PackageAuthor::as_select(), User::as_select()))
+        .load(&mut conn)
+        .await
+        .unwrap();
+
+    let res = users
+        .grouped_by(&pkgs)
+        .into_iter()
+        .zip(pkgs)
+        .map(|(users, pkg)| pkg.with_authors(users.iter().map(|(_, user)| user.clone()).collect()))
         .collect::<Vec<_>>();
 
     *PACKAGE_LIST_CACHE.lock() =
@@ -49,7 +59,7 @@ pub async fn refresh_list_cache(pool: DbPool, sync_pool: SyncDbPool) {
 
 /// List Packages
 ///
-/// List all available package
+/// List all available packages
 #[utoipa::path(
     get,
     path = "/api/v1/packages",
@@ -71,19 +81,22 @@ pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<Pack
 
     let mut conn = state.pool.get().await?;
 
-    let data = packages::table
+    let pkgs: Vec<Package> = packages::table
         .select(Package::as_select())
         .load(&mut conn)
         .await?;
 
-    let local_pool = state.sync_pool.clone();
+    let users: Vec<(PackageAuthor, User)> = PackageAuthor::belonging_to(&pkgs)
+        .inner_join(users::table)
+        .select((PackageAuthor::as_select(), User::as_select()))
+        .load(&mut conn)
+        .await?;
 
-    let res = data
-        .par_iter()
-        .filter_map(move |v| {
-            let mut local_conn = local_pool.get().unwrap();
-            get_full_package_sync(v.id.to_string(), &mut local_conn).ok()
-        })
+    let res = users
+        .grouped_by(&pkgs)
+        .into_iter()
+        .zip(pkgs)
+        .map(|(users, pkg)| pkg.with_authors(users.iter().map(|(_, user)| user.clone()).collect()))
         .collect::<Vec<_>>();
 
     *PACKAGE_LIST_CACHE.lock() =
@@ -147,7 +160,7 @@ pub async fn create_handler(
         .execute(&mut conn)
         .await?;
 
-    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
 
     Ok(Response::builder().body(Body::new(serde_json::to_string(

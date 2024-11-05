@@ -9,8 +9,8 @@ use axum::{
 };
 use axum_extra::extract::CookieJar;
 use db::{
-    get_package, get_version, package_authors, package_versions, NewPackageVersion, PackageAuthor,
-    PackageVersion, PackageVersionInit,
+    get_package, get_version, package_authors, package_versions, packages, NewPackageVersion,
+    Package, PackageAuthor, PackageVersion, PackageVersionInit,
 };
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -128,6 +128,13 @@ pub async fn download_handler(
     let mut conn = state.pool.get().await?;
     let pkg = get_package(package, &mut conn).await?;
     let ver = get_version(pkg.id, version, &mut conn).await?;
+
+    update(packages::table)
+        .filter(packages::id.eq(pkg.id))
+        .set(packages::downloads.eq(pkg.downloads + 1))
+        .returning(Package::as_returning())
+        .get_result(&mut conn)
+        .await?;
 
     let ver = update(package_versions::table)
         .filter(package_versions::id.eq(ver.id))

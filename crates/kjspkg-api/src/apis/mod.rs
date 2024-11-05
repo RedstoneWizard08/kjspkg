@@ -1,0 +1,60 @@
+mod common;
+mod pkg;
+mod users;
+mod ver;
+
+pub use pkg::*;
+pub use ver::*;
+
+pub(crate) use common::*;
+
+use anyhow::Result;
+use reqwest::{
+    header::{HeaderMap, HeaderValue},
+    Client, ClientBuilder,
+};
+
+pub const DEFAULT_API_BASE: &str = "https://kjspkg-uwqx.shuttle.app/api/v1";
+
+#[derive(Debug, Clone)]
+pub struct ApiClient {
+    client: Client,
+    api_base: String,
+}
+
+impl ApiHelper for ApiClient {
+    fn base(&self) -> &String {
+        &self.api_base
+    }
+}
+
+impl ApiClient {
+    pub fn new(api_base: Option<String>, key: Option<String>) -> Result<Self> {
+        if let Some(key) = key {
+            let mut headers = HeaderMap::new();
+
+            headers.insert(
+                "Authorization",
+                HeaderValue::from_str(&format!("Bearer {}", key))?,
+            );
+
+            Ok(ApiClient {
+                api_base: api_base.unwrap_or(DEFAULT_API_BASE.into()),
+                client: ClientBuilder::new().default_headers(headers).build()?,
+            })
+        } else {
+            Ok(ApiClient {
+                api_base: api_base.unwrap_or(DEFAULT_API_BASE.into()),
+                client: ClientBuilder::new().build()?,
+            })
+        }
+    }
+
+    pub fn package(&self, pkg: String) -> PackageApi {
+        PackageApi {
+            api_base: self.api_base.clone(),
+            package: pkg,
+            client: self.client.clone(),
+        }
+    }
+}

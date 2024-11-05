@@ -15,6 +15,7 @@ use diesel::pg::Pg;
     Hash,
     Serialize,
     Deserialize,
+    Identifiable,
     Queryable,
     Selectable,
     Insertable,

@@ -129,7 +129,7 @@ pub async fn update_handler(
         .get_result(&mut conn)
         .await?;
 
-    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
 
     Ok(Response::builder()
@@ -182,7 +182,7 @@ pub async fn delete_handler(
         .execute(&mut conn)
         .await?;
 
-    tokio::spawn(refresh_list_cache(state.pool, state.sync_pool));
+    tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
 
     Ok(Response::builder().body(Body::new("Deleted package successfully!".to_string()))?)

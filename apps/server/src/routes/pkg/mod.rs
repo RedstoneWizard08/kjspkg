@@ -1,6 +1,7 @@
 pub mod author;
 pub mod info;
 pub mod list;
+pub mod search;
 pub mod ver;
 
 use crate::state::AppState;
@@ -13,6 +14,7 @@ pub fn router(state: AppState) -> Router<AppState> {
     Router::new()
         .route("/", get(list::list_handler))
         .route("/", put(list::create_handler))
+        .route("/search", get(search::search_handler))
         .route("/:id", get(info::info_handler))
         .route("/:id", patch(info::update_handler))
         .route("/:id", delete(info::delete_handler))

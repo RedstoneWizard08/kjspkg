@@ -149,7 +149,7 @@ pub struct PackageVersionInit {
     pub name: String,
 
     /// The version number.
-    pub version_nummber: String,
+    pub version_number: String,
 
     /// An optional changelog.
     pub changelog: Option<String>,
