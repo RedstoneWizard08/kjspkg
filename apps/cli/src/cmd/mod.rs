@@ -10,11 +10,12 @@ pub mod uninstall;
 pub mod update;
 pub mod update_all;
 
-use anyhow::Result;
+use crate::{ctx::CliContext, manifest::ModLoader};
 use clap::Subcommand;
+use eyre::Result;
 use fetch::cmd_fetch;
 use info::cmd_info;
-use init::{cmd_init, ModLoader};
+use init::cmd_init;
 use install::cmd_install;
 use list::{cmd_list, ListOutputFormat};
 use list_remote::cmd_list_remote;
@@ -23,8 +24,6 @@ use uninit::cmd_uninit;
 use uninstall::cmd_uninstall;
 use update::cmd_update;
 use update_all::cmd_update_all;
-
-use crate::ctx::CliContext;
 
 #[derive(Debug, Clone, Subcommand)]
 pub enum Commands {

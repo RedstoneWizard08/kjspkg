@@ -1,6 +1,6 @@
 use super::{ApiHelper, VersionApi};
 use crate::models::{PackageVersion, PackageVersionUpdate};
-use anyhow::Result;
+use eyre::Result;
 
 impl VersionApi {
     pub async fn delete(&self) -> Result<()> {

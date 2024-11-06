@@ -4,7 +4,7 @@ mod write;
 use crate::models::{NewPackage, PackageWithData};
 
 use super::{ApiClient, ApiHelper, VersionApi};
-use anyhow::Result;
+use eyre::Result;
 use reqwest::Client;
 
 #[derive(Debug, Clone)]

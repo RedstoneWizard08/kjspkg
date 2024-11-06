@@ -1,6 +1,6 @@
 use super::{ApiHelper, PackageApi};
 use crate::models::{PackageVersion, PackageWithData, User};
-use anyhow::Result;
+use eyre::Result;
 
 impl PackageApi {
     pub async fn get(&self) -> Result<PackageWithData> {

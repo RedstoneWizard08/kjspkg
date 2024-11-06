@@ -1,6 +1,6 @@
 use crate::manifest::{PackageInfo, ProjectManifest};
-use anyhow::Result;
 use copy_dir::copy_dir;
+use eyre::Result;
 use flate2::read::GzDecoder;
 use sha1::{Digest, Sha1};
 use std::{

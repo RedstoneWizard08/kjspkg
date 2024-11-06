@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-    <title>Authentication Required - KJSPKG Lookup</title>
+    <title>Authentication Required - KJSPKG</title>
 </svelte:head>
 
 <div class="flex flex-1 flex-col items-center justify-center" transition:fly={{ y: 40 }}>

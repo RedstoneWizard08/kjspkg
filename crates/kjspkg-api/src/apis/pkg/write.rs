@@ -1,6 +1,6 @@
 use super::{ApiHelper, PackageApi};
 use crate::models::{NewPackageVersion, PackageUpdate, PackageVersion, PackageWithData, User};
-use anyhow::Result;
+use eyre::Result;
 use reqwest::multipart::Form;
 use std::io::Write;
 use tempfile::NamedTempFile;

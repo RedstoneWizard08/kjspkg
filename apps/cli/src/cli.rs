@@ -1,8 +1,11 @@
-use crate::{cmd::Commands, ctx::get_ctx, splash::AboutGetter, style::get_styles, AUTHORS};
-use anyhow::Result;
+use crate::{
+    cmd::Commands, ctx::get_ctx, splash::AboutGetter, style::get_styles, util::from_log_level,
+    AUTHORS,
+};
 use clap::{CommandFactory, Parser};
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use colored::Colorize;
+use eyre::Result;
 
 #[derive(Debug, Clone, Parser)]
 #[command(
@@ -27,6 +30,14 @@ pub struct Cli {
 
 impl Cli {
     pub async fn run(self) -> Result<()> {
+        tracing_subscriber::fmt::fmt()
+            .compact()
+            .without_time()
+            .with_file(false)
+            .with_target(false)
+            .with_max_level(from_log_level(self.verbose.log_level_filter()))
+            .init();
+
         if self.version {
             Self::print_version();
             return Ok(());

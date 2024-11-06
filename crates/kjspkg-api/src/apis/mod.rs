@@ -8,7 +8,7 @@ pub use ver::*;
 
 pub(crate) use common::*;
 
-use anyhow::Result;
+use eyre::Result;
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client, ClientBuilder,
@@ -52,6 +52,13 @@ impl ApiClient {
                 client: ClientBuilder::new().build()?,
             })
         }
+    }
+
+    pub fn instance_url(&self) -> String {
+        self.api_base
+            .trim_end_matches('/')
+            .trim_end_matches("/api/v1")
+            .into()
     }
 
     pub fn package(&self, pkg: impl AsRef<str>) -> PackageApi {

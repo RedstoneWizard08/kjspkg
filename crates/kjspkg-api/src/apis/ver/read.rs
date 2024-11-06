@@ -1,6 +1,6 @@
 use super::{ApiHelper, VersionApi};
 use crate::models::PackageVersion;
-use anyhow::Result;
+use eyre::Result;
 
 impl VersionApi {
     pub async fn get(&self) -> Result<PackageVersion> {

@@ -1,6 +1,6 @@
 use crate::ctx::CliContext;
-use anyhow::Result;
 use colored::Colorize;
+use eyre::Result;
 
 pub async fn cmd_info(cx: &CliContext, package: String, json: bool) -> Result<()> {
     let pkg_api = cx.api.package(package);

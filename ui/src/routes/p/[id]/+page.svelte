@@ -127,7 +127,7 @@
 </script>
 
 <svelte:head>
-    <title>{$currentPackage?.name ?? "Loading"} - KJSPKG Lookup</title>
+    <title>{$currentPackage?.name ?? "Loading"} - KJSPKG</title>
 </svelte:head>
 
 {#if loadingState == "loading"}

@@ -72,7 +72,7 @@
 </script>
 
 <svelte:head>
-    <title>Loading - KJSPKG Lookup</title>
+    <title>Loading - KJSPKG</title>
 </svelte:head>
 
 <Toast position="br" max={8} />

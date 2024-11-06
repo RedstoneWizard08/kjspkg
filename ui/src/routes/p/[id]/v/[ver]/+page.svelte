@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-    <title>{version?.name ?? "Loading"} - KJSPKG Lookup</title>
+    <title>{version?.name ?? "Loading"} - KJSPKG</title>
 </svelte:head>
 
 {#if loadingState == "loading"}

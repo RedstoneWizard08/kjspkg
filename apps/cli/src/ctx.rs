@@ -1,8 +1,7 @@
-use std::fs;
-
-use anyhow::{anyhow, Result};
+use eyre::{anyhow, Result};
 use kjspkg_api::ApiClient;
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Debug, Clone)]
 pub struct CliContext {

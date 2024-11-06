@@ -1,9 +1,0 @@
-fire
-requests
-psutil
-GitPython
-thefuzz
-python-Levenshtein
-toml
-esprima
-flatten_json

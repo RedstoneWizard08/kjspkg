@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-    <title>{user?.username ?? "Loading"} - KJSPKG Lookup</title>
+    <title>{user?.username ?? "Loading"} - KJSPKG</title>
 </svelte:head>
 
 {#if loadingState == "loading"}

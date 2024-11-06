@@ -1,6 +1,6 @@
 use super::{ApiClient, ApiHelper};
 use crate::models::{PackageWithData, User};
-use anyhow::Result;
+use eyre::Result;
 
 impl ApiClient {
     pub async fn current_user(&self) -> Result<User> {
