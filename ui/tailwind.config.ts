@@ -23,14 +23,11 @@ const config = {
                     },
                 },
                 scroll: {
-                    "0%": {
-                        // transform: "translateX(0)",
-                        left: "100%",
+                    from: {
+                        transform: "translateX(0)",
                     },
-                    "100%": {
-                        left: "0",
+                    to: {
                         transform: "translateX(-100%)",
-                        // transform: "translateX(calc(-100%))",
                     },
                 },
             },

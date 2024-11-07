@@ -5,6 +5,7 @@
     import { onMount } from "svelte";
 
     const rows = 3;
+    const maxPkgs = 30;
     const rowElements: HTMLDivElement[] = [];
 
     let projects: PackageData[] = $state([]);
@@ -14,7 +15,7 @@
         const pkgs = await getPackages();
 
         if (pkgs) {
-            projects = pkgs.length >= 30 ? pkgs.slice(0, 30) : pkgs;
+            projects = pkgs.length >= maxPkgs ? pkgs.slice(0, maxPkgs) : pkgs;
         }
     });
 
@@ -41,9 +42,9 @@
 
 <div class="mt-16 flex flex-col space-y-4">
     {#each selected as items, index}
-        <div class="hide-scrollbar flex w-screen select-none flex-row gap-6 overflow-scroll">
+        <div class="hide-scrollbar flex w-screen select-none flex-row gap-6 overflow-hidden whitespace-nowrap">
             <div
-                class="flex min-w-full flex-shrink-0 animate-scroll gap-6"
+                class="flex min-w-full flex-shrink-0 animate-scroll gap-6 whitespace-nowrap"
                 bind:this={rowElements[index]}
             >
                 {#each items as pkg}
