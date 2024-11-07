@@ -126,6 +126,7 @@ jobs:
           sudo apt-get -y install minisign
           yes '' | minisign -G
           mkdir bin
+          cp minisign.pub bin
 
           for target in ./artifacts/*; do
             targetname="$(basename "$target")"
@@ -138,6 +139,7 @@ jobs:
 
                 cp -v "$file" "$newpath"
                 yes '' | minisign -Sm "$newpath"
+                mv "$newpath.minisig" "$newpath.sig"
               else
                 newpath="$file-$targetname"
                 newpath="./bin/$(basename "$newpath")"
