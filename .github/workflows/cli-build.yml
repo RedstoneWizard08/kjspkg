@@ -90,7 +90,7 @@ jobs:
 
           mkdir bin
 
-          cp -v target/${{ matrix.target }}/debug/kjspkg bin/kjspkg-debug
+          # cp -v target/${{ matrix.target }}/debug/kjspkg bin/kjspkg-debug
           cp -v target/${{ matrix.target }}/release/kjspkg bin/kjspkg
 
       - name: Build (windows)
@@ -101,7 +101,7 @@ jobs:
 
           mkdir bin
 
-          cp -v target/${{ matrix.target }}/debug/kjspkg.exe bin/kjspkg-debug.exe
+          # cp -v target/${{ matrix.target }}/debug/kjspkg.exe bin/kjspkg-debug.exe
           cp -v target/${{ matrix.target }}/release/kjspkg.exe bin/kjspkg.exe
 
       - name: Upload artifacts
@@ -122,6 +122,9 @@ jobs:
       
       - name: Merge artifacts
         run: |
+          sudo apt-get update
+          sudo apt-get -y install minisign
+          yes '' | minisign -G
           mkdir bin
 
           for target in ./artifacts/*; do
@@ -134,11 +137,13 @@ jobs:
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
+                yes '' | minisign -Sm "$newpath"
               else
                 newpath="$file-$targetname"
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
+                yes '' | minisign -Sm "$newpath"
               fi
             done
           done
