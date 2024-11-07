@@ -5,6 +5,7 @@ pub mod install;
 pub mod list;
 pub mod list_remote;
 pub mod login;
+pub mod logout;
 pub mod pkg;
 pub mod search;
 pub mod uninit;
@@ -22,6 +23,7 @@ use install::cmd_install;
 use list::{cmd_list, ListOutputFormat};
 use list_remote::cmd_list_remote;
 use login::cmd_login;
+use logout::cmd_logout;
 use search::cmd_search;
 use uninit::cmd_uninit;
 use uninstall::cmd_uninstall;
@@ -145,6 +147,9 @@ pub enum Commands {
         #[arg(short, long)]
         instance: Option<String>,
     },
+
+    /// Log out from KJSPKG.
+    Logout,
 }
 
 impl Commands {
@@ -176,6 +181,7 @@ impl Commands {
             } => cmd_init(cx, minecraft, loader, force).await,
             Self::Uninit { confirm } => cmd_uninit(cx, confirm).await,
             Self::Login { instance } => cmd_login(cx, instance).await,
+            Self::Logout => cmd_logout(cx).await,
             Self::Package { command } => command.run(cx).await,
         }
     }
