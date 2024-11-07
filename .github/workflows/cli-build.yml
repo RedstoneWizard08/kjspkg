@@ -137,20 +137,24 @@ jobs:
               if [[ "$file" == *".exe" ]]; then
                 newpath="$file"
                 newpath="./bin/$(basename "$newpath")"
+                arpath="${file/\.exe/"-$targetname.zip"}"
+                arpath="./bin/$(basename "$arpath")"
 
                 cp -v "$file" "$newpath"
-                zip "$newpath.zip" "$newpath"
-                yes '' | ./minisign -Sm "$newpath.zip"
-                mv "$newpath.zip.minisig" "$newpath.zip.sig"
+                zip "$arpath" "$newpath"
+                yes '' | ./minisign -Sm "$arpath"
+                mv "$arpath.minisig" "$arpath.sig"
                 rm "$newpath"
               else
                 newpath="$file"
                 newpath="./bin/$(basename "$newpath")"
+                arpath="$file-$targetname.tgz"
+                arpath="./bin/$(basename "$arpath")"
 
                 cp -v "$file" "$newpath"
-                tar -czvf "$newpath.tgz" "$newpath"
-                yes '' | ./minisign -Sm "$newpath.tgz"
-                mv "$newpath.tgz.minisig" "$newpath.tgz.sig"
+                tar -czvf "$arpath" "$newpath"
+                yes '' | ./minisign -Sm "$arpath"
+                mv "$arpath.minisig" "$arpath.sig"
                 rm "$newpath"
               fi
             done
