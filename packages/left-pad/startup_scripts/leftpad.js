@@ -1,3 +1,5 @@
+// priority: 8000
+
 let cache = [
   '',
   ' ',
