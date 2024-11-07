@@ -122,9 +122,10 @@ jobs:
       
       - name: Merge artifacts
         run: |
-          sudo apt-get update
-          sudo apt-get -y install minisign
-          yes '' | minisign -G
+          curl https://github.com/jedisct1/minisign/releases/download/0.11/minisign-0.11-linux.tar.gz -L | \
+            tar -xz --strip-components 2 minisign-linux/$(uname -m)/minisign
+          
+          yes '' | ./minisign -G
           mkdir bin
           cp minisign.pub bin
 
@@ -138,14 +139,14 @@ jobs:
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
-                yes '' | minisign -Sm "$newpath"
+                yes '' | ./minisign -Sm "$newpath"
                 mv "$newpath.minisig" "$newpath.sig"
               else
                 newpath="$file-$targetname"
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
-                yes '' | minisign -Sm "$newpath"
+                yes '' | ./minisign -Sm "$newpath"
                 mv "$newpath.minisig" "$newpath.sig"
               fi
             done
