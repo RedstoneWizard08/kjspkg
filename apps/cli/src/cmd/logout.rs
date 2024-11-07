@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use crate::ctx::{CliContext, RawCliContext};
 use eyre::Result;
 

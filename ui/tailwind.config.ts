@@ -23,18 +23,21 @@ const config = {
                     },
                 },
                 scroll: {
-                    from: {
-                        transform: "translateX(0)",
+                    "0%": {
+                        // transform: "translateX(0)",
+                        left: "100%",
                     },
-                    to: {
-                        transform: "translateX(calc(-100%))",
+                    "100%": {
+                        left: "0",
+                        transform: "translateX(-100%)",
+                        // transform: "translateX(calc(-100%))",
                     },
                 },
             },
 
             animation: {
                 "border-blink": "border-blink 1s steps(2) infinite",
-                scroll: "scroll 60s linear infinite",
+                scroll: "scroll 60s infinite linear",
             },
         },
     },
