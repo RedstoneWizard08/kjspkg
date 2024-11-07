@@ -146,6 +146,7 @@ jobs:
 
                 cp -v "$file" "$newpath"
                 yes '' | minisign -Sm "$newpath"
+                mv "$newpath.minisig" "$newpath.sig"
               fi
             done
           done
