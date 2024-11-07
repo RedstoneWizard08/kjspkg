@@ -33,7 +33,7 @@
     gridColumns="grid-cols-[auto_1fr_auto]"
     slotDefault="place-self-center !w-full"
     slotTrail="place-self-end"
-    class="vt-none transition-colors"
+    class="vt-none transition-colors justify-center"
     background={$currentScrollPosition.y > 16 ? "bg-surface-800/75" : "bg-transparent"}
 >
     {#snippet lead()}

@@ -44,7 +44,17 @@ const config = {
         skeleton({
             themes: {
                 custom: [defaultTheme, lighterTheme, gcatTheme, serenityTheme],
-                preset: ["wintry", "crimson"],
+                preset: [
+                    "wintry",
+                    "crimson",
+                    "hamlindigo",
+                    "modern",
+                    "rocket",
+                    "sahara",
+                    "seafoam",
+                    "skeleton",
+                    "vintage",
+                ],
             },
         }),
     ],

@@ -70,12 +70,19 @@
 
             ...[
                 { label: "KJSPKG", name: "kjspkg" },
-                { label: "(lighter)", name: "kjspkg-lighter" },
-                { label: "(G_cat)", name: "kjspkg-gcat" },
+                { label: "KJSPKG Lighter", name: "kjspkg-lighter" },
+                { label: "G_cat", name: "kjspkg-gcat" },
                 {},
                 { label: "Wintry", name: "wintry" },
                 { label: "Crimson", name: "crimson" },
                 { label: "Serenity", name: "serenity" },
+                { label: "Hamlindigo", name: "hamlindigo" },
+                { label: "Modern", name: "modern" },
+                { label: "Rocket", name: "rocket" },
+                { label: "Sahara", name: "sahara" },
+                { label: "Seafoam", name: "seafoam" },
+                { label: "Skeleton", name: "skeleton" },
+                { label: "Vintage", name: "vintage" },
             ].map(({ label, name }) => {
                 if (!label || !name) return { type: "SEPARATOR" };
 
