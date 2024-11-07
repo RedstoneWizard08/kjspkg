@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
 KJSPKG_VERSION="${KJSPKG_VERSION:-latest}"
 
@@ -38,7 +38,11 @@ fi
 
 LOCAL_BINS="${LOCAL_BINS:-$HOME/.local/bin}"
 
-if ! [[ ":$PATH:" == *":$LOCAL_BIN:"* ]]; then
+[[ ! -d "$LOCAL_BINS" ]] && mkdir -p "$LOCAL_BINS"
+cp -f kjspkg "$LOCAL_BINS/"
+chmod +x "$LOCAL_BINS/kjspkg"
+
+if ! [[ ":$PATH:" == *":$LOCAL_BINS:"* ]]; then
     if [ -n "${CI:-}" ] && [ -n "${GITHUB_PATH:-}" ]; then
         echo "$LOCAL_BINS" >> "$GITHUB_PATH"
     else
