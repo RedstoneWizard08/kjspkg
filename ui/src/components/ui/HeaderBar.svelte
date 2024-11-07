@@ -38,7 +38,7 @@
 >
     {#snippet lead()}
         <a class="flex items-center gap-2" href="{base}/">
-            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
+            <img src="/kjspkg.png" alt="logo" class="rounded-token aspect-square w-8 min-w-8" />
             <span class="hidden lg:inline">KJSPKG</span>
         </a>
     {/snippet}
@@ -47,24 +47,34 @@
         <IconAuth />
     {/snippet}
 
-    <div
-        class="input-group input-group-divider w-full grid-cols-[1fr] lg:grid-cols-[auto_1fr]"
-        transition:fly={{ y: -40 }}
-    >
-        <a href="/s" class="hidden text-surface-400 lg:inline">
-            <TablerIcon name="search" class="hidden lg:block" />
-        </a>
+    <div class="flex flex-row items-center justify-start">
+        {#if !active}
+            <a
+                href="/s"
+                class="btn btn-primary transition-duration-300 variant-soft-secondary hover:variant-filled-secondary mr-4 flex flex-row items-center justify-center text-center transition-all"
+                transition:fly={{ x: 10, duration: 100 }}>Browse</a
+            >
+        {/if}
 
-        <input
-            type="search"
-            class="w-full"
-            placeholder={$_("search.placeholder")}
-            bind:this={inputElement}
-            bind:value={$currentSearchStore}
-            onfocus={() => (active = true)}
-            onblur={() => (active = false)}
-            oninput={updateQuery}
-            onchange={updateQuery}
-        />
+        <div
+            class="input-group input-group-divider w-full grid-cols-[1fr] transition-all lg:grid-cols-[auto_1fr]"
+            transition:fly={{ y: -40 }}
+        >
+            <a href="/s" class="text-surface-400 hidden lg:inline">
+                <TablerIcon name="search" class="hidden lg:block" />
+            </a>
+
+            <input
+                type="search"
+                class="w-full transition-all"
+                placeholder={$_("search.placeholder")}
+                bind:this={inputElement}
+                bind:value={$currentSearchStore}
+                onfocus={() => (active = true)}
+                onblur={() => (active = false)}
+                oninput={updateQuery}
+                onchange={updateQuery}
+            />
+        </div>
     </div>
 </AppBar>
