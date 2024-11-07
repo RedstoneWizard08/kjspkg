@@ -1,9 +1,8 @@
 mod read;
 mod write;
 
-use crate::models::{NewPackage, PackageWithData};
-
 use super::{ApiClient, ApiHelper, VersionApi};
+use crate::models::{NewPackage, PackageWithData};
 use eyre::Result;
 use reqwest::Client;
 

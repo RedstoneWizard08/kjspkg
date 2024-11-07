@@ -1,6 +1,7 @@
 use super::{ApiHelper, PackageApi};
 use crate::models::{PackageVersion, PackageWithData, User};
 use eyre::Result;
+use tokio::runtime::Handle;
 
 impl PackageApi {
     pub async fn get(&self) -> Result<PackageWithData> {
@@ -11,6 +12,17 @@ impl PackageApi {
             .await?
             .json()
             .await?)
+    }
+
+    pub fn get_sync(&self, rt: &Handle) -> Result<PackageWithData> {
+        Ok(rt.block_on(
+            rt.block_on(
+                self.client
+                    .get(self.url(format!("packages/{}", self.package))?)
+                    .send(),
+            )?
+            .json(),
+        )?)
     }
 
     pub async fn authors(&self) -> Result<Vec<User>> {
@@ -41,5 +53,16 @@ impl PackageApi {
             .await?
             .json()
             .await?)
+    }
+
+    pub fn latest_version_sync(&self, rt: &Handle) -> Result<PackageVersion> {
+        Ok(rt.block_on(
+            rt.block_on(
+                self.client
+                    .get(self.url(format!("packages/{}/versions/latest", self.package))?)
+                    .send(),
+            )?
+            .json(),
+        )?)
     }
 }

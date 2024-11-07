@@ -27,6 +27,12 @@ pub async fn cmd_publish(cx: &CliContext, force: bool) -> Result<()> {
     let path = cmd_pack(cx, force).await?;
     let data = fs::read(path)?;
     let manifest = PackageManifest::read(None)?;
+    let mut readme = String::new();
+    let readme_path = PathBuf::from("README.md");
+
+    if readme_path.exists() {
+        readme = fs::read_to_string(readme_path)?;
+    }
 
     let version = NewPackageVersion {
         name: manifest.version.clone(),
@@ -45,7 +51,7 @@ pub async fn cmd_publish(cx: &CliContext, force: bool) -> Result<()> {
         description: manifest.description,
         issues: None,
         name: manifest.name.clone(),
-        readme: String::new(), // TODO: Auto-detect readme
+        readme,
         slug: create_slug(&manifest.name),
         source: None,
         wiki: None,

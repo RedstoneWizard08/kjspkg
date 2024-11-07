@@ -43,7 +43,10 @@ impl ApiClient {
             Ok(ApiClient {
                 api_base: api_base.unwrap_or(DEFAULT_API_BASE.into()),
                 token: Some(key),
-                client: ClientBuilder::new().default_headers(headers).build()?,
+
+                client: ClientBuilder::new()
+                    .default_headers(headers.clone())
+                    .build()?,
             })
         } else {
             Ok(ApiClient {

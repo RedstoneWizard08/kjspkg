@@ -1,3 +1,4 @@
+use indicatif::ProgressStyle;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use tracing::level_filters::LevelFilter;
@@ -50,12 +51,29 @@ pub fn pad_long_string(s: String, padding: usize) -> String {
     out
 }
 
-pub fn parse_pkg_input(input: String) -> (String, Option<String>) {
-    let mut data = input.split("@");
+pub fn parse_pkg_input(input: impl AsRef<str>) -> (String, Option<String>) {
+    let mut data = input.as_ref().split("@");
 
     (data.next().unwrap().into(), data.next().map(|v| v.into()))
 }
 
 pub fn create_slug(input: impl AsRef<str>) -> String {
     SLUG_REGEX.replace_all(input.as_ref(), "-").to_string()
+}
+
+pub fn get_spinner_style() -> ProgressStyle {
+    ProgressStyle::default_spinner()
+        .tick_strings(&[
+            "[    ]", "[=   ]", "[==  ]", "[=== ]", "[====]", "[ ===]", "[  ==]", "[   =]",
+            "[    ]", "[   =]", "[  ==]", "[ ===]", "[====]", "[=== ]", "[==  ]", "[=   ]",
+        ])
+        .template("{spinner:.blue.bold} {msg:.cyan.bold}")
+        .unwrap()
+}
+
+pub fn get_bar_style() -> ProgressStyle {
+    ProgressStyle::default_bar()
+        .progress_chars("=- ")
+        .template("[{pos:.green}/{len:.blue}] [{bar:40.blue/cyan.dimmed}] {msg:.cyan.bold}")
+        .unwrap()
 }

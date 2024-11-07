@@ -1,11 +1,15 @@
-use std::process::exit;
+use std::{process::exit, time::Duration};
 
 use eyre::{eyre, Result};
+use indicatif::ProgressBar;
 use kjspkg_api::apis::DEFAULT_API_BASE;
 use tiny_http::Server;
 use url::Url;
 
-use crate::ctx::{CliContext, RawCliContext};
+use crate::{
+    ctx::{CliContext, RawCliContext},
+    util::get_spinner_style,
+};
 
 pub async fn cmd_login(_cx: &CliContext, instance: Option<String>) -> Result<()> {
     let api_base = if let Some(inst) = instance {
@@ -35,6 +39,11 @@ pub async fn cmd_login(_cx: &CliContext, instance: Option<String>) -> Result<()>
 
     info!("Server listening on port {}", port);
 
+    let pb = ProgressBar::new_spinner().with_style(get_spinner_style());
+
+    pb.enable_steady_tick(Duration::from_millis(100));
+    pb.set_message("Waiting for token...");
+
     'listen: loop {
         let req = server.recv()?;
         let url = req.url();
@@ -55,6 +64,8 @@ pub async fn cmd_login(_cx: &CliContext, instance: Option<String>) -> Result<()>
             }
         }
     }
+
+    pb.finish_and_clear();
 
     info!("Got a token: {}", token);
 

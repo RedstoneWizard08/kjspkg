@@ -1,9 +1,14 @@
-use crate::{ctx::CliContext, manifest::PackageManifest, util::tar::MaybeAppend};
+use crate::{
+    ctx::CliContext,
+    manifest::PackageManifest,
+    util::{get_spinner_style, tar::MaybeAppend},
+};
 use color_eyre::Section;
 use eyre::{eyre, Result};
 use flate2::{write::GzEncoder, Compression};
+use indicatif::ProgressBar;
 use inquire::Confirm;
-use std::{env::current_dir, fs::File, path::PathBuf};
+use std::{env::current_dir, fs::File, path::PathBuf, time::Duration};
 
 pub async fn cmd_pack(_cx: &CliContext, overwrite: bool) -> Result<PathBuf> {
     if !PathBuf::from("kjspkg.json").exists() {
@@ -11,6 +16,11 @@ pub async fn cmd_pack(_cx: &CliContext, overwrite: bool) -> Result<PathBuf> {
             eyre!("kjspkg.json does not exist!").suggestion("Maybe try running `kjspkg pkg init`?")
         );
     }
+
+    let pb = ProgressBar::new_spinner().with_style(get_spinner_style());
+
+    pb.enable_steady_tick(Duration::from_millis(100));
+    pb.set_message("Creating package tarball");
 
     let root = current_dir()?;
     let data = PackageManifest::read(None)?;
@@ -47,6 +57,8 @@ pub async fn cmd_pack(_cx: &CliContext, overwrite: bool) -> Result<PathBuf> {
     // TODO: Maybe we should just use walkdir and ignore .gitignore and .git?
 
     tar.maybe_append_named(root.join("kjspkg.json"), "kjspkg.json")?;
+
+    pb.finish_and_clear();
 
     Ok(path)
 }

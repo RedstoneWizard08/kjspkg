@@ -2,15 +2,18 @@ use colored::Colorize;
 use eyre::Result;
 use indexmap::IndexMap;
 use itertools::Itertools;
-use kjspkg_api::models::PackageWithData;
+use kjspkg_api::models::{PackageVersion, PackageWithData};
 
 use crate::{
     ctx::CliContext,
     util::{mul_char, pad_long_string},
 };
 
-pub async fn print_package(pkg: PackageWithData, cx: &CliContext) -> Result<()> {
-    let latest = cx.api.package(pkg.id.to_string()).latest_version().await;
+pub fn print_package(
+    pkg: PackageWithData,
+    latest: Option<PackageVersion>,
+    cx: &CliContext,
+) -> Result<()> {
     let mut info = IndexMap::new();
 
     info.insert("Package Name", pkg.name);
@@ -23,7 +26,7 @@ pub async fn print_package(pkg: PackageWithData, cx: &CliContext) -> Result<()> 
 
     info.insert("Author", pkg.authors.first().unwrap().username.clone());
 
-    if let Ok(latest) = latest {
+    if let Some(latest) = latest {
         info.insert(
             "Latest Version",
             format!(
