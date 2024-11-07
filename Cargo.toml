@@ -5,8 +5,8 @@ members = ["./apps/*", "./crates/*", "apps/cli", "apps/migrate", "crates/kjspkg-
 [workspace.package]
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/Modern-Modpacks/kjspkg"
-homepage = "https://github.com/Modern-Modpacks/kjspkg"
+repository = "https://github.com/RedstoneWizard08/kjspkg"
+homepage = "https://github.com/RedstoneWizard08/kjspkg"
 authors = ["RedstoneWizard08", "tizu69"]
 readme = "README.md"
 
