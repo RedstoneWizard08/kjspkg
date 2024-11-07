@@ -120,7 +120,7 @@
         <footer class="flex w-full flex-row items-center justify-between p-2">
             <span class="hidden md:inline">
                 <a
-                    href="https://github.com/Modern-Modpacks/kjspkg"
+                    href="https://github.com/RedstoneWizard08/kjspkg"
                     class="anchor no-underline"
                     target="_blank">GitHub</a
                 >

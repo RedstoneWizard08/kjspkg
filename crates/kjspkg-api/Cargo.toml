@@ -1,6 +1,7 @@
 [package]
 name = "kjspkg-api"
 version = "0.1.0"
+description = "A simple and ergonomic API client for KJSPKG."
 edition.workspace = true
 license.workspace = true
 repository.workspace = true

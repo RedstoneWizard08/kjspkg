@@ -88,8 +88,8 @@ utoipa-scalar = { version = "0.2.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "8.0.2", features = ["axum"] }
 uuid = { version = "1.11.0", features = ["v4"] }
 
-app_core = { path = "./crates/app_core" }
-axumite = { path = "./crates/axumite" }
-db = { path = "./crates/db" }
-jsglue = { path = "./crates/jsglue" }
-kjspkg-api = { path = "./crates/kjspkg-api" }
+app_core = { version = "0", path = "./crates/app_core" }
+axumite = { version = "0", path = "./crates/axumite" }
+db = { version = "0", path = "./crates/db" }
+jsglue = { version = "0", path = "./crates/jsglue" }
+kjspkg-api = { version = "0", path = "./crates/kjspkg-api" }
