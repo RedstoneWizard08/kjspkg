@@ -135,19 +135,21 @@ jobs:
 
             for file in $target/*; do
               if [[ "$file" == *".exe" ]]; then
-                newpath="${file/\.exe/"-$targetname.exe"}"
+                newpath="$file"
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
-                yes '' | ./minisign -Sm "$newpath"
-                mv "$newpath.minisig" "$newpath.sig"
+                tar -czvf "$newpath.tgz" "$newpath"
+                yes '' | ./minisign -Sm "$newpath.tgz"
+                mv "$newpath.tgz.minisig" "$newpath.tgz.sig"
               else
-                newpath="$file-$targetname"
+                newpath="$file"
                 newpath="./bin/$(basename "$newpath")"
 
                 cp -v "$file" "$newpath"
-                yes '' | ./minisign -Sm "$newpath"
-                mv "$newpath.minisig" "$newpath.sig"
+                tar -czvf "$newpath.tgz" "$newpath"
+                yes '' | ./minisign -Sm "$newpath.tgz"
+                mv "$newpath.tgz.minisig" "$newpath.tgz.sig"
               fi
             done
           done
