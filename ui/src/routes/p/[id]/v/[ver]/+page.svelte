@@ -12,6 +12,9 @@
     import { currentPackage, user } from "$lib/stores";
     import { beforeNavigate } from "$app/navigation";
     import { Carta, MarkdownEditor } from "carta-md";
+    import Version from "$components/ui/Version.svelte";
+
+    const maxVersions = 10;
 
     const id = $derived($page.params.id);
     const ver = $derived($page.params.ver);
@@ -157,9 +160,16 @@
         <div class="card p-4" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">{$_("package.minecraft_title")}</dt>
             <dd class="mt-2 flex flex-wrap gap-1">
-                {#each version.minecraft as item}
-                    <span class="variant-filled-primary badge select-text">{item}</span>
-                {/each}
+                {#if version.minecraft.length > maxVersions}
+                    {#each version.minecraft.slice(0, maxVersions) as item}
+                        <span class="variant-filled-primary badge select-text">{item}</span>
+                    {/each}
+                    <span class="variant-filled-primary badge select-text">...</span>
+                {:else}
+                    {#each version.minecraft as item}
+                        <span class="variant-filled-primary badge select-text">{item}</span>
+                    {/each}
+                {/if}
             </dd>
         </div>
 

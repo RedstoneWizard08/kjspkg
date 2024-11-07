@@ -21,3 +21,5 @@ Secrets*.toml
 ref
 cli/kubejs
 kubejs_test
+
+*.tgz

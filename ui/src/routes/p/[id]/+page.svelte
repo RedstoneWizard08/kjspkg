@@ -14,6 +14,8 @@
     import { Carta, MarkdownEditor } from "carta-md";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
 
+    const maxVersions = 10;
+
     const id = $derived($page.params.id);
     const toasts = getToastStore();
     const modals = getModalStore();
@@ -294,9 +296,20 @@
                 {/if}
                 {#if minecraft.length > 0}
                     <dd class="mt-2 flex flex-wrap gap-1">
-                        {#each minecraft as version}
-                            <span class="variant-filled-primary badge select-text">{version}</span>
-                        {/each}
+                        {#if minecraft.length > maxVersions}
+                            {#each minecraft.slice(0, maxVersions) as version}
+                                <span class="variant-filled-primary badge select-text"
+                                    >{version}</span
+                                >
+                            {/each}
+                            <span class="variant-filled-primary badge select-text">...</span>
+                        {:else}
+                            {#each minecraft as version}
+                                <span class="variant-filled-primary badge select-text"
+                                    >{version}</span
+                                >
+                            {/each}
+                        {/if}
                     </dd>
                 {/if}
             {:else}

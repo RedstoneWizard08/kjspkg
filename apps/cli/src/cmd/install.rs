@@ -10,8 +10,8 @@ use indicatif::{MultiProgress, ProgressBar};
 use itertools::Itertools;
 use parking_lot::RwLock;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use tokio::runtime::Handle;
 use std::{path::PathBuf, sync::Arc, time::Duration};
+use tokio::runtime::Handle;
 
 pub async fn cmd_install(
     cx: &CliContext,
@@ -65,7 +65,8 @@ pub async fn cmd_install(
                                     info.slug, version.version_number
                                 ));
 
-                                let file = api.version(version.id.to_string()).download_sync(&rt)?;
+                                let file =
+                                    api.version(version.id.to_string()).download_sync(&rt)?;
 
                                 install_package(
                                     info.slug,
@@ -96,7 +97,8 @@ pub async fn cmd_install(
                                     info.slug, version.version_number
                                 ));
 
-                                let file = api.version(version.id.to_string()).download_sync(&rt)?;
+                                let file =
+                                    api.version(version.id.to_string()).download_sync(&rt)?;
 
                                 install_package(
                                     info.slug,
