@@ -5,7 +5,7 @@ use kjspkg::cli::Cli;
 #[tokio::main]
 pub async fn main() -> Result<()> {
     color_eyre::install()?;
-    dotenvy::dotenv()?;
+    let _ = dotenvy::dotenv();
     Cli::parse().run().await?;
 
     Ok(())
