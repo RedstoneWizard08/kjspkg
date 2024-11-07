@@ -135,8 +135,7 @@ jobs:
 
             for file in $target/*; do
               if [[ "$file" == *".exe" ]]; then
-                newpath="$file"
-                newpath="./bin/$(basename "$newpath")"
+                newpath="$(basename "$file")"
                 arpath="${file/\.exe/"-$targetname.zip"}"
                 arpath="./bin/$(basename "$arpath")"
 
@@ -146,8 +145,7 @@ jobs:
                 mv "$arpath.minisig" "$arpath.sig"
                 rm "$newpath"
               else
-                newpath="$file"
-                newpath="./bin/$(basename "$newpath")"
+                newpath="$(basename "$file")"
                 arpath="$file-$targetname.tgz"
                 arpath="./bin/$(basename "$arpath")"
 
