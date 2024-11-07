@@ -1,6 +1,6 @@
 [package]
 name = "kjspkg"
-version = "0.2.0"
+version = "0.2.1"
 description = "An easy-to-use and ergonomic CLI for KJSPKG."
 edition.workspace = true
 license.workspace = true
@@ -43,3 +43,7 @@ tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 url.workspace = true
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.{ archive-format }"
+bin-dir = "{ bin }{ binary-ext }"
