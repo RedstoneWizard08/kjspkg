@@ -1,4 +1,4 @@
-use crate::{ctx::CliContext, manifest::ProjectManifest};
+use crate::{ctx::CliContext, manifest::ProjectManifest, util::parse_pkg_input};
 use color_eyre::Section;
 use eyre::{eyre, Result};
 use std::{fs, path::PathBuf};
@@ -17,6 +17,8 @@ pub async fn cmd_uninstall(
     let mut data = ProjectManifest::read(None)?;
 
     for pkg in packages {
+        let (pkg, _) = parse_pkg_input(pkg);
+
         match data.packages.get(&pkg) {
             Some(info) => {
                 info!("Uninstalling package \"{}\"...", info.name);

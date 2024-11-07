@@ -147,6 +147,7 @@ impl LegacyPackage {
             description: self.desc().unwrap_or_default(),
             kubejs: vec![], // TODO
             loaders: self.loaders().unwrap_or_default(),
+            minecraft: Vec::new(),     // TODO
             dependencies: vec![],      // TODO
             incompatibilities: vec![], // TODO
         }

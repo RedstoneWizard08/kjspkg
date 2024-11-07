@@ -21,11 +21,11 @@ impl ApiHelper for PackageApi {
 }
 
 impl PackageApi {
-    pub fn version(&self, ver: String) -> VersionApi {
+    pub fn version(&self, ver: impl AsRef<str>) -> VersionApi {
         VersionApi {
             api_base: self.api_base.clone(),
             package: self.package.clone(),
-            version: ver,
+            version: ver.as_ref().into(),
             client: self.client.clone(),
         }
     }

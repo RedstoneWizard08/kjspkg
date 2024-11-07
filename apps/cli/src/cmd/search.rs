@@ -1,4 +1,4 @@
-use crate::{ctx::CliContext, util::print_package};
+use crate::{ctx::CliContext, util::pkg::print_package};
 use eyre::Result;
 
 pub async fn cmd_search(cx: &CliContext, query: String) -> Result<()> {

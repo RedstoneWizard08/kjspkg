@@ -1,12 +1,13 @@
-use crate::ctx::CliContext;
-use colored::Colorize;
-use eyre::Result;
-use indexmap::IndexMap;
-use itertools::Itertools;
-use kjspkg_api::models::PackageWithData;
+use once_cell::sync::Lazy;
+use regex::Regex;
 use tracing::level_filters::LevelFilter;
 
+pub mod mc;
+pub mod pkg;
+pub mod tar;
 pub mod versions;
+
+pub const SLUG_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?m)[^a-z0-9_-]").unwrap());
 
 pub fn mul_char(ch: char, n: usize) -> String {
     let mut s = String::new();
@@ -49,63 +50,12 @@ pub fn pad_long_string(s: String, padding: usize) -> String {
     out
 }
 
-pub async fn print_package(pkg: PackageWithData, cx: &CliContext) -> Result<()> {
-    let latest = cx.api.package(pkg.id.to_string()).latest_version().await;
-    let mut info = IndexMap::new();
+pub fn parse_pkg_input(input: String) -> (String, Option<String>) {
+    let mut data = input.split("@");
 
-    info.insert("Package Name", pkg.name);
-    info.insert("Slug", pkg.slug.clone());
+    (data.next().unwrap().into(), data.next().map(|v| v.into()))
+}
 
-    info.insert(
-        "Web URL",
-        format!("{}/p/{}", cx.api.instance_url(), pkg.slug),
-    );
-
-    info.insert("Author", pkg.authors.first().unwrap().username.clone());
-
-    if let Ok(latest) = latest {
-        info.insert(
-            "Latest Version",
-            format!(
-                "{} {}{}{}",
-                latest.name,
-                "(".dimmed(),
-                latest.version_number.dimmed(),
-                ")".dimmed()
-            ),
-        );
-    } else {
-        info.insert("Latest Version", format!("{}", "None".dimmed()));
-    }
-
-    let longest = info.keys().max_by_key(|v| v.len()).unwrap().to_string();
-    let mut data_str = String::new();
-    let prefix = "  | ";
-
-    for (k, v) in info {
-        data_str.push_str(&format!(
-            "\n{}{}{} {}",
-            prefix,
-            k.purple(),
-            mul_char(' ', longest.len() - k.len()),
-            v.bold()
-        ));
-    }
-
-    let padded_prefix = format!("{}    ", prefix);
-    let padding = padded_prefix.len() * 2;
-
-    data_str.push_str(&format!(
-        "\n{}{}\n{}",
-        prefix,
-        "Description".purple(),
-        pad_long_string(pkg.description, padding)
-            .lines()
-            .map(|v| format!("{}{}", padded_prefix, v))
-            .join("\n")
-    ));
-
-    println!("\n{}\n", data_str);
-
-    Ok(())
+pub fn create_slug(input: impl AsRef<str>) -> String {
+    SLUG_REGEX.replace_all(input.as_ref(), "-").to_string()
 }

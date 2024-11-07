@@ -1,4 +1,7 @@
-use crate::{ctx::CliContext, manifest::ProjectManifest, pkg::install::install_package};
+use crate::{
+    ctx::CliContext, manifest::ProjectManifest, pkg::install::install_package,
+    util::parse_pkg_input,
+};
 use color_eyre::Section;
 use eyre::{eyre, Result};
 use itertools::Itertools;
@@ -19,6 +22,7 @@ pub async fn cmd_install(
     let mut data = ProjectManifest::read(None)?;
 
     for pkg in packages {
+        let (pkg, ver) = parse_pkg_input(pkg);
         let api = cx.api.package(&pkg);
 
         match api.get().await {
@@ -32,24 +36,47 @@ pub async fn cmd_install(
                     continue;
                 }
 
-                match api.latest_version().await {
-                    Ok(version) => {
-                        info!(
-                            "Installing package \"{}\" at version {}...",
-                            info.slug, version.version_number
-                        );
+                match ver {
+                    Some(ver) => match api.version(&ver).get().await {
+                        Ok(version) => {
+                            info!(
+                                "Installing package \"{}\" at version {}...",
+                                info.slug, version.version_number
+                            );
 
-                        let file = api.version(version.id.to_string()).download().await?;
+                            let file = api.version(version.id.to_string()).download().await?;
 
-                        install_package(info.slug, version.version_number, file, &mut data)?;
-                    }
+                            install_package(info.slug, version.version_number, file, &mut data)?;
+                        }
 
-                    Err(_) => {
-                        return Err(eyre!(
-                            "Could not find a version for package \"{}\"!",
-                            info.slug
-                        ));
-                    }
+                        Err(_) => {
+                            return Err(eyre!(
+                                "Could not find version \"{}\" for package \"{}\"!",
+                                ver,
+                                info.slug
+                            ));
+                        }
+                    },
+
+                    None => match api.latest_version().await {
+                        Ok(version) => {
+                            info!(
+                                "Installing package \"{}\" at version {}...",
+                                info.slug, version.version_number
+                            );
+
+                            let file = api.version(version.id.to_string()).download().await?;
+
+                            install_package(info.slug, version.version_number, file, &mut data)?;
+                        }
+
+                        Err(_) => {
+                            return Err(eyre!(
+                                "Could not find a version for package \"{}\"!",
+                                info.slug
+                            ));
+                        }
+                    },
                 }
             }
 

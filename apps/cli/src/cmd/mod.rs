@@ -4,6 +4,8 @@ pub mod init;
 pub mod install;
 pub mod list;
 pub mod list_remote;
+pub mod login;
+pub mod pkg;
 pub mod search;
 pub mod uninit;
 pub mod uninstall;
@@ -19,6 +21,7 @@ use init::cmd_init;
 use install::cmd_install;
 use list::{cmd_list, ListOutputFormat};
 use list_remote::cmd_list_remote;
+use login::cmd_login;
 use search::cmd_search;
 use uninit::cmd_uninit;
 use uninstall::cmd_uninstall;
@@ -79,7 +82,6 @@ pub enum Commands {
     },
 
     /// Print info about a package.
-    #[command(visible_aliases = ["pkg"])]
     Info {
         /// The package to print information about.
         #[arg(required = true)]
@@ -129,6 +131,20 @@ pub enum Commands {
         #[arg(short, long, action)]
         confirm: bool,
     },
+
+    /// Package-related commands.
+    #[command(visible_aliases = ["pkg"])]
+    Package {
+        #[command(subcommand)]
+        command: pkg::Commands,
+    },
+
+    /// Login to KJSPKG.
+    Login {
+        /// The base URL for a custom instance of KJSPKG.
+        #[arg(short, long)]
+        instance: Option<String>,
+    },
 }
 
 impl Commands {
@@ -159,6 +175,8 @@ impl Commands {
                 force,
             } => cmd_init(cx, minecraft, loader, force).await,
             Self::Uninit { confirm } => cmd_uninit(cx, confirm).await,
+            Self::Login { instance } => cmd_login(cx, instance).await,
+            Self::Package { command } => command.run(cx).await,
         }
     }
 }

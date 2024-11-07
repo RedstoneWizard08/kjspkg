@@ -21,6 +21,9 @@ pub struct PackageManifest {
     /// The loaders this package works on
     pub loaders: Vec<String>,
 
+    /// The Minecraft versions this package works on
+    pub minecraft: Vec<String>,
+
     /// This package's dependencies
     pub dependencies: Vec<String>,
 

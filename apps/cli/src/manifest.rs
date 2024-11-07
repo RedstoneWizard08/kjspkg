@@ -51,6 +51,37 @@ pub struct PackageInfo {
     pub files: Vec<String>,
 }
 
+/// A manifest for a package.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub struct PackageManifest {
+    /// The package name.
+    pub name: String,
+
+    /// The package author.
+    pub authors: Vec<String>,
+
+    /// The package version.
+    pub version: String,
+
+    /// The package description.
+    pub description: String,
+
+    /// The KubeJS versions this package works on.
+    pub kubejs: Vec<String>,
+
+    /// The loaders this package works on.
+    pub loaders: Vec<ModLoader>,
+
+    /// The Minecraft versions this package works on.
+    pub minecraft: Vec<String>,
+
+    /// This package's dependencies.
+    pub dependencies: Vec<String>,
+
+    /// This package's incompatibilities.
+    pub incompatibilities: Vec<String>,
+}
+
 impl ProjectManifest {
     pub fn new(root: impl Into<PathBuf>, minecraft: String, loader: ModLoader) -> Self {
         Self {
@@ -75,6 +106,23 @@ impl ProjectManifest {
         // I love Rust :D
         Ok(serde_json::from_str(&fs::read_to_string(
             dir.unwrap_or(current_dir()?).join("project.json"),
+        )?)?)
+    }
+}
+
+impl PackageManifest {
+    pub fn save(&self, dir: Option<PathBuf>) -> Result<()> {
+        fs::write(
+            dir.unwrap_or(current_dir()?).join("kjspkg.json"),
+            serde_json::to_string_pretty(self)?,
+        )?;
+
+        Ok(())
+    }
+
+    pub fn read(dir: Option<PathBuf>) -> Result<Self> {
+        Ok(serde_json::from_str(&fs::read_to_string(
+            dir.unwrap_or(current_dir()?).join("kjspkg.json"),
         )?)?)
     }
 }
