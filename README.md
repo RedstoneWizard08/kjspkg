@@ -3,6 +3,7 @@
 ![Crates.io Version](https://img.shields.io/crates/v/kjspkg?style=for-the-badge)
 ![Deployment Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/kjspkg/deploy.yml?branch=main&style=for-the-badge&label=Deployment)
 ![CLI Build Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/kjspkg/cli-build.yml?branch=main&style=for-the-badge&label=CLI%20Build)
+![Lines of Code](https://tokei.rs/b1/github/RedstoneWizard08/kjspkg?style=for-the-badge&label=Lines+Of+Code)
 
 A package manager & registry for KubeJS.
 
