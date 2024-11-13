@@ -13,22 +13,22 @@ jobs:
             windows: false
           - target: aarch64-unknown-linux-gnu
             windows: false
-        #   - target: arm-unknown-linux-gnueabi
-        #     windows: false
+          #   - target: arm-unknown-linux-gnueabi
+          #     windows: false
           - target: arm-unknown-linux-gnueabihf
             windows: false
           - target: x86_64-unknown-linux-musl
             windows: false
           - target: aarch64-unknown-linux-musl
             windows: false
-        #   - target: arm-unknown-linux-musleabi
-        #     windows: false
+          #   - target: arm-unknown-linux-musleabi
+          #     windows: false
           - target: arm-unknown-linux-musleabihf
             windows: false
-        #   - target: x86_64-apple-darwin
-        #     windows: false
-        #   - target: aarch64-apple-darwin
-        #     windows: false
+          #   - target: x86_64-apple-darwin
+          #     windows: false
+          #   - target: aarch64-apple-darwin
+          #     windows: false
           - target: x86_64-pc-windows-gnu
             windows: true
           - target: i686-pc-windows-gnu
@@ -119,12 +119,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
-      
+
       - name: Merge artifacts
         run: |
           curl https://github.com/jedisct1/minisign/releases/download/0.11/minisign-0.11-linux.tar.gz -L | \
             tar -xz --strip-components 2 minisign-linux/$(uname -m)/minisign
-          
+
           yes '' | ./minisign -G
           mkdir bin
           cp minisign.pub bin
@@ -157,9 +157,20 @@ jobs:
               fi
             done
           done
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: binaries
           path: bin/*
+
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly
+          name: "CLI Nightly Build $$"
+          prerelease: true
+          body: "Generated from CI build at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          files: ./bin/*
