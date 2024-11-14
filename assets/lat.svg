@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="156.5" height="28" role="img"
+    aria-label="APPROVED BY: LAT">
+    <title>APPROVED BY: LAT</title>
+    <g shape-rendering="crispEdges">
+        <rect width="108.75" height="28" fill="#480066" />
+        <rect x="108.75" width="47.75" height="28" fill="#c374e4" />
+    </g>
+    <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif"
+        text-rendering="geometricPrecision" font-size="100"><text transform="scale(.1)" x="543.75" y="175"
+            textLength="847.5" fill="#fff">APPROVED BY</text><text transform="scale(.1)" x="1326.25" y="175"
+            textLength="237.5" fill="#fff" font-weight="bold">LAT</text></g>
+</svg>
