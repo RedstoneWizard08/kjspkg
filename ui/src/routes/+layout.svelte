@@ -21,6 +21,8 @@
     import AuthorAddModal from "$components/modals/AuthorAddModal.svelte";
     import UploadVersionModal from "$components/modals/UploadVersionModal.svelte";
     import CreatePackageModal from "$components/modals/CreatePackageModal.svelte";
+    import { updateVersionsIfNeeded } from "$lib/mc";
+    import Drawers from "$components/ui/Drawers.svelte";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -53,6 +55,7 @@
         document.body.dataset.theme = $userPreferencesStore.theme ?? "kjspkg";
 
         await updateUserStore();
+        await updateVersionsIfNeeded();
     });
 
     beforeNavigate(() => (navigating = true));
@@ -77,6 +80,7 @@
 
 <Toast position="br" max={8} />
 <ContextMenu />
+<Drawers />
 <Modal components={modalRegistry} />
 
 {#if navigating}
@@ -123,6 +127,12 @@
                     href="https://github.com/RedstoneWizard08/kjspkg"
                     class="anchor no-underline"
                     target="_blank">GitHub</a
+                >
+                &bull;
+                <a
+                    href="https://github.com/RedstoneWizard08/kjspkg/wiki"
+                    class="anchor no-underline"
+                    target="_blank">Wiki</a
                 >
                 &bull;
                 <a href="/api/v1/docs/scalar" class="anchor no-underline" target="_blank"

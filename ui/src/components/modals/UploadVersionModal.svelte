@@ -15,9 +15,9 @@
     import { elementPopup, type PopupControls } from "$lib/ui/popups";
     import { goto } from "$app/navigation";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { rawMinecraftVersions } from "$lib/mc";
 
     const modals = getModalStore();
-    let minecraftVersions = $state<[string, boolean][]>([]);
 
     let name = $state("");
     let version_number = $state("");
@@ -42,21 +42,19 @@
         placement: "bottom",
     };
 
+    const minecraftVersions: [string, boolean][] = $derived(
+        ($rawMinecraftVersions?.versions || []).map((v: { id: string; type: string }) => [
+            v.id,
+            v.type == "release",
+        ]),
+    );
+
     const destroyHandlers: (() => void)[] = [];
     const releaseVersions = $derived(minecraftVersions.filter((v) => v[1]).map((v) => v[0]));
     const snapshotVersions = $derived(minecraftVersions.map((v) => v[0]));
     const shownMinecraftVersions = $derived(snapshots ? snapshotVersions : releaseVersions);
 
     onMount(async () => {
-        const manifest = await (
-            await fetch("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
-        ).json();
-
-        minecraftVersions = manifest.versions.map((v: { id: string; type: string }) => [
-            v.id,
-            v.type == "release",
-        ]);
-
         const el = document.querySelector("[data-ref=minecraftInputChip]") as HTMLElement | null;
 
         el?.addEventListener("focus", () => (minecraftOpen = true));

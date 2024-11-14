@@ -51,7 +51,7 @@
     };
 
     onMount(() => {
-        setTimeout(changeFont, fontChangeDuration);
+        // setTimeout(changeFont, fontChangeDuration); // Yeah ok no its not that cool
         scheduleAddChar();
     });
 
@@ -71,25 +71,37 @@
 >
     <!-- When you can't decide what font to use: -->
     <h2 class="flex flex-row items-center justify-center text-4xl">
-        {#each "KJSPKG" as letter, idx}
-            <span
+        {#each "KJSPKG" as letter}
+            <!-- <span
                 style:font-family={currentFonts[idx]}
                 style:font-style={currentStyles[idx]}
                 style:font-weight={currentWeights[idx]}
                 style:font-variant={currentVariants[idx]}
                 style:font-stretch={currentStretches[idx]}>{letter}</span
-            >
+            > -->
+            <span>{letter}</span>
         {/each}
+
+        <span class="variant-filled-primary badge ml-4">{$_("site.beta")}</span>
     </h2>
 
     <span class="mt-2 animate-border-blink border-r-2 pr-1 text-xl font-bold">
         {text}
     </span>
 
-    <a href="/s" class="variant-filled-primary btn mt-16">
-        <span><TablerIcon name="search" class="mr-2" /></span>
-        <span>{$_("site.browse")}</span>
-    </a>
+    <div
+        class="mt-16 flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0"
+    >
+        <a href="/s" class="variant-filled-primary btn">
+            <span><TablerIcon name="search" class="mr-2" /></span>
+            <span>{$_("site.browse")}</span>
+        </a>
+
+        <a href="/install" class="variant-filled-secondary btn">
+            <span><TablerIcon name="download" class="mr-2" /></span>
+            <span>{$_("site.install")}</span>
+        </a>
+    </div>
 
     <ProjectScroller />
 </div>

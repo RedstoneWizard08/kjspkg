@@ -2,16 +2,23 @@
     import { _ } from "svelte-i18n";
     import { getUser, getUserPackages } from "$api";
     import { page } from "$app/stores";
-    import type { LoadingState, PackageData, User } from "$lib/types";
+    import type { LoadingState, PackageData, SortMode, User } from "$lib/types";
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
-    import { base } from "$app/paths";
-    import { user as userStore } from "$lib/stores";
+    import { user as userStore, userPreferencesStore, sortPackages } from "$lib/stores";
     import { admins } from "$lib/data";
     import { getToastStore } from "@skeletonlabs/skeleton";
+    import PackageList from "$components/ui/PackageList.svelte";
+    import { guessSortMode } from "$lib/utils";
+    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
+    import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
+    import IconBlank from "$components/icons/IconBlank.svelte";
+    import { goto } from "$app/navigation";
 
     const id = $derived($page.params.id);
     const toasts = getToastStore();
+    const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
 
     let loadingState = $state<LoadingState>("loading");
     let user: User | undefined = $state(undefined);
@@ -19,9 +26,12 @@
 
     const downloads = $derived(packages.reduce((a, b) => a + b.downloads, 0));
     const views = $derived(packages.reduce((a, b) => a + b.views, 0));
+    const sortedPackages = $derived(sortPackages(packages, $userPreferencesStore.sortBy, false));
 
     onMount(async () => {
         loadingState = "loading";
+
+        $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
 
         try {
             user = await getUser(id);
@@ -34,7 +44,7 @@
 </script>
 
 <svelte:head>
-    <title>{user?.username ?? "Loading"} - KJSPKG</title>
+    <title>{user?.username ?? $_("site.loading")} - KJSPKG</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -86,53 +96,72 @@
     <div class="card p-4" in:fly={{ y: 20 }}>
         <dt class="mb-2 text-sm opacity-50">{$_("user.packages")}</dt>
 
-        {#each packages as pkg}
-            <a
-                class="card mb-2 hidden flex-row items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 hover:variant-soft-primary md:flex"
-                href="{base}/p/{pkg.slug}"
-                in:fly={{ y: 20 }}
+        <div class="flex flex-row items-center justify-between">
+            <button
+                class="variant-soft-secondary btn mb-4 w-fit hover:variant-filled-primary"
+                onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
             >
-                <span class="w-[20%] overflow-hidden text-ellipsis font-bold">{pkg.name}</span>
-                <span class="w-[60%] overflow-hidden text-ellipsis">{pkg.description}</span>
+                <TablerIcon name="layout-dashboard" class="mr-2" />
 
-                <span class="text-sm opacity-50"
-                    ><span
-                        >{pkg.downloads}
-                        {pkg.downloads == 1
-                            ? $_("list.download_singluar")
-                            : $_("list.download_plural")}</span
-                    >
-                    &bull;
-                    <span
-                        >{pkg.views}
-                        {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
-                    ></span
+                <span class="md:inline">
+                    {$userPreferencesStore.compact
+                        ? $_("search.use_view.list")
+                        : $_("search.use_view.compact")}
+                </span>
+            </button>
+
+            <div class="flex flex-wrap space-x-2">
+                <button
+                    class="anchor"
+                    use:contextMenu={{
+                        initiator: "left",
+                        items: [
+                            ...["name", "downloads", "views", "published", "updated"].map(
+                                (name) =>
+                                    ({
+                                        type: "ITEM",
+                                        label: $_(`search.sort_type.${name}`),
+                                        icon:
+                                            $userPreferencesStore.sortBy == name
+                                                ? TablerIconCheck
+                                                : IconBlank,
+                                        action: () =>
+                                            ($userPreferencesStore.sortBy = name as SortMode),
+                                    }) as ContextMenuItem,
+                            ),
+                            { type: "SEPARATOR" },
+                            {
+                                type: "ITEM",
+                                label: $_(`search.show_details`),
+                                icon: showDetails ? TablerIconCheck : IconBlank,
+                                action: () => {
+                                    if (showDetails) $page.url.searchParams.delete("showDetails");
+                                    else $page.url.searchParams.set("showDetails", "true");
+                                    goto(`?${$page.url.searchParams.toString()}`);
+                                },
+                            } as ContextMenuItem,
+                        ],
+                    }}
                 >
-            </a>
+                    {$userPreferencesStore.sortBy != ""
+                        ? `${$_("search.sorted_by")} ${$_(`search.sorted_by.${$userPreferencesStore.sortBy}`)}`
+                        : "Unsorted"}
+                </button>
+            </div>
+        </div>
 
-            <a
-                class="card mb-2 flex flex-col items-start justify-between overflow-hidden text-ellipsis whitespace-nowrap p-4 hover:variant-soft-primary md:hidden"
-                href="{base}/p/{pkg.slug}"
-                in:fly={{ y: 20 }}
-            >
-                <span class="font-bold">{pkg.name}</span>
-                <span class="w-full overflow-hidden text-ellipsis">{pkg.description}</span>
-
-                <span class="text-sm opacity-50"
-                    ><span
-                        >{pkg.downloads}
-                        {pkg.downloads == 1
-                            ? $_("list.download_singluar")
-                            : $_("list.download_plural")}</span
-                    >
-                    &bull;
-                    <span
-                        >{pkg.views}
-                        {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
-                    ></span
-                >
-            </a>
-        {/each}
+        <div
+            class="grid grid-cols-1 gap-2"
+            class:lg:grid-cols-2={!$userPreferencesStore.compact}
+            class:md:grid-cols-2={$userPreferencesStore.compact}
+            class:lg:grid-cols-3={$userPreferencesStore.compact}
+        >
+            <PackageList
+                {showDetails}
+                compact={$userPreferencesStore.compact}
+                packages={sortedPackages}
+            />
+        </div>
     </div>
 {:else if loadingState == "failed"}
     <!-- <p>Something went wrong (this package doesn't seem to exist)</p> -->

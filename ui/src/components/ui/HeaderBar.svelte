@@ -1,8 +1,7 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
-    import { AppBar } from "@skeletonlabs/skeleton";
+    import { AppBar, getDrawerStore } from "@skeletonlabs/skeleton";
     import { currentScrollPosition, currentSearchStore } from "$lib/stores";
-    import { base } from "$app/paths";
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
     import IconAuth from "$components/auth/IconAuth.svelte";
@@ -12,6 +11,7 @@
 
     let inputElement: HTMLInputElement = $state(null!);
     let active = $state(false);
+    const drawerStore = getDrawerStore();
 
     onMount(() => {
         $currentSearchStore = $page.route.id == "/s" ? ($page.url.searchParams.get("q") ?? "") : "";
@@ -27,19 +27,33 @@
 
         replaceState($page.url, $page.state);
     };
+
+    const openHomeDrawer = () => {
+        drawerStore.open({
+            id: "home",
+            bgDrawer: "bg-secondary-900 text-white",
+            width: "w-[300px]",
+            rounded: "rounded-none",
+        });
+    };
 </script>
 
 <AppBar
     gridColumns="grid-cols-[auto_1fr_auto]"
     slotDefault="place-self-center !w-full"
     slotTrail="place-self-end"
-    class="vt-none transition-colors justify-center"
+    class="vt-none justify-center transition-colors"
     background={$currentScrollPosition.y > 16 ? "bg-surface-800/75" : "bg-transparent"}
 >
     {#snippet lead()}
-        <a class="flex items-center gap-2" href="{base}/">
-            <img src="/kjspkg.png" alt="logo" class="rounded-token aspect-square w-8 min-w-8" />
+        <button type="button" onclick={openHomeDrawer} class="mr-2 flex items-center">
+            <TablerIcon name="menu-2" size="28" />
+        </button>
+
+        <a class="flex items-center gap-2" href="/">
+            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
             <span class="hidden lg:inline">KJSPKG</span>
+            <span class="variant-filled-secondary badge">{$_("site.beta")}</span>
         </a>
     {/snippet}
 
@@ -48,19 +62,11 @@
     {/snippet}
 
     <div class="flex flex-row items-center justify-start">
-        {#if !active}
-            <a
-                href="/s"
-                class="btn btn-primary transition-duration-300 variant-soft-secondary hover:variant-filled-secondary mr-4 flex flex-row items-center justify-center text-center transition-all"
-                transition:fly={{ x: 10, duration: 100 }}>Browse</a
-            >
-        {/if}
-
         <div
             class="input-group input-group-divider w-full grid-cols-[1fr] transition-all lg:grid-cols-[auto_1fr]"
             transition:fly={{ y: -40 }}
         >
-            <a href="/s" class="text-surface-400 hidden lg:inline">
+            <a href="/s" class="hidden text-surface-400 lg:inline">
                 <TablerIcon name="search" class="hidden lg:block" />
             </a>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
-    import { afterNavigate, goto, onNavigate, replaceState } from "$app/navigation";
+    import { afterNavigate, goto, replaceState } from "$app/navigation";
     import { base } from "$app/paths";
     import {
         currentSearchStore,
@@ -22,6 +22,7 @@
 
     let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
+
     const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
 
     onMount(async () => {
@@ -58,7 +59,7 @@
 </script>
 
 <svelte:head>
-    <title>{$currentSearchStore || "Search"} - KJSPKG</title>
+    <title>{$currentSearchStore || $_("search.title")} - KJSPKG</title>
 </svelte:head>
 
 <div class="mb-2 flex flex-wrap gap-2">
@@ -183,7 +184,11 @@
         class:md:grid-cols-2={$userPreferencesStore.compact}
         class:lg:grid-cols-3={$userPreferencesStore.compact}
     >
-        <PackageList {showDetails} compact={$userPreferencesStore.compact} />
+        <PackageList
+            {showDetails}
+            compact={$userPreferencesStore.compact}
+            packages={$filteredStore}
+        />
     </dl>
 {:else if loadingState == "failed"}
     <p>{$_("errors.something_went_wrong")}</p>

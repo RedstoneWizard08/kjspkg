@@ -44,6 +44,7 @@
         "@types/markdown-it-emoji": "^3.0.1",
         "@types/sprintf-js": "^1.1.4",
         "carta-md": "^4.6.1",
+        "highlight.js": "^11.10.0",
         "markdown-it": "^14.1.0",
         "markdown-it-emoji": "^3.0.0",
         "sprintf-js": "^1.1.3",

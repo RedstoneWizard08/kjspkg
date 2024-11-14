@@ -2,10 +2,10 @@
     import { _ } from "svelte-i18n";
     import { base } from "$app/paths";
     import { page } from "$app/stores";
-    import { filteredStore } from "$lib/stores";
     import { flip } from "svelte/animate";
     import { fade, slide } from "svelte/transition";
     import { formatDate } from "$lib/utils";
+    import type { PackageData } from "$lib/types";
 
     interface Props {
         startFrom?: number;
@@ -16,6 +16,7 @@
         showDetails?: boolean;
         showName?: boolean;
         select?: (id: number) => void | Promise<void>;
+        packages: PackageData[];
     }
 
     const {
@@ -27,10 +28,11 @@
         showDetails = true,
         showAvatar = true,
         select,
+        packages,
     }: Props = $props();
 </script>
 
-{#each [...$filteredStore].slice(startFrom, maxCount) as pkg, i (pkg)}
+{#each packages.slice(startFrom, maxCount) as pkg, i (pkg)}
     <a
         href={`${base}/p/${pkg.slug}`}
         class="card flex p-4 hover:variant-soft-primary"

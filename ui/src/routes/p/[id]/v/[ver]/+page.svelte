@@ -13,6 +13,7 @@
     import { beforeNavigate } from "$app/navigation";
     import { Carta, MarkdownEditor } from "carta-md";
     import Version from "$components/ui/Version.svelte";
+    import { tryAggregateVersions } from "$lib/vers";
 
     const maxVersions = 10;
 
@@ -63,10 +64,14 @@
     beforeNavigate(() => {
         $currentPackage = undefined;
     });
+
+    const aggVersions = $derived(
+        tryAggregateVersions((version as PackageVersion | undefined)?.minecraft ?? []),
+    );
 </script>
 
 <svelte:head>
-    <title>{version?.name ?? "Loading"} - KJSPKG</title>
+    <title>{version?.name ?? $_("site.loading")} - KJSPKG</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -160,13 +165,13 @@
         <div class="card p-4" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">{$_("package.minecraft_title")}</dt>
             <dd class="mt-2 flex flex-wrap gap-1">
-                {#if version.minecraft.length > maxVersions}
-                    {#each version.minecraft.slice(0, maxVersions) as item}
+                {#if aggVersions.length > maxVersions}
+                    {#each aggVersions.slice(0, maxVersions) as item}
                         <span class="variant-filled-primary badge select-text">{item}</span>
                     {/each}
                     <span class="variant-filled-primary badge select-text">...</span>
                 {:else}
-                    {#each version.minecraft as item}
+                    {#each aggVersions as item}
                         <span class="variant-filled-primary badge select-text">{item}</span>
                     {/each}
                 {/if}

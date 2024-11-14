@@ -8,6 +8,7 @@ use axum::{
     Json,
 };
 use axum_extra::extract::CookieJar;
+use chrono::Utc;
 use db::{
     get_package, get_version, package_authors, package_versions, packages, NewPackageVersion,
     Package, PackageAuthor, PackageVersion, PackageVersionInit,
@@ -172,14 +173,20 @@ pub async fn download_handler(
 
     update(packages::table)
         .filter(packages::id.eq(pkg.id))
-        .set(packages::downloads.eq(pkg.downloads + 1))
+        .set((
+            packages::downloads.eq(pkg.downloads + 1),
+            packages::updated_at.eq(pkg.updated_at),
+        ))
         .returning(Package::as_returning())
         .get_result(&mut conn)
         .await?;
 
     let ver = update(package_versions::table)
         .filter(package_versions::id.eq(ver.id))
-        .set(package_versions::downloads.eq(ver.downloads + 1))
+        .set((
+            package_versions::downloads.eq(ver.downloads + 1),
+            package_versions::updated_at.eq(ver.updated_at),
+        ))
         .returning(PackageVersion::as_returning())
         .get_result(&mut conn)
         .await?;
@@ -350,6 +357,14 @@ pub async fn create_handler(
         downloads: 0,
     };
 
+    update(packages::table)
+        .filter(packages::id.eq(pkg.id))
+        .set(packages::updated_at.eq(Utc::now().naive_utc()))
+        .returning(Package::as_returning())
+        .get_result(&mut conn)
+        .await
+        .unwrap();
+
     let ver = insert_into(package_versions::table)
         .values(&data)
         .returning(PackageVersion::as_returning())
@@ -425,6 +440,7 @@ pub async fn update_handler(
                 .minecraft
                 .map(|v| v.iter().map(|v| Some(v.clone())).collect::<Vec<_>>())
                 .unwrap_or(ver.minecraft)),
+            package_versions::updated_at.eq(Utc::now().naive_utc()),
         ))
         .returning(PackageVersion::as_select())
         .get_result(&mut conn)
