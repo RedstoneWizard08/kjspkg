@@ -24,7 +24,13 @@ Once you've run that, if `~/.local/bin` is in your `PATH`, it should be installe
 
 <details open>
 <summary>Via PowerShell script (Windows only)</summary>
-Coming soon!
+You can install the KJSPKG CLI with a handy script! Just run:
+
+```pwsh
+Set-ExecutionPolicy Unrestricted -Scope Process; iex (iwr "https://github.com/RedstoneWizard08/kjspkg/raw/main/install_cli.ps1").Content
+```
+
+Once you've run that, if `$HOME\.local\bin` is in your `Path`, it should be installed!
 </details>
 
 <details>
