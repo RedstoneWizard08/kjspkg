@@ -1,3 +1,9 @@
+kjspkg (0.3.3) jammy; urgency=medium
+
+  * Fixed build deps
+
+ -- Jacob Sapoznikow <jacob1coder@gmail.com>  Mon, 18 Nov 2024 08:08:44 +0000
+
 kjspkg (0.3.2) jammy; urgency=medium
 
   * Fixed distroseries issue

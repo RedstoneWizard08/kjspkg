@@ -9,4 +9,9 @@ set -euo pipefail
 DIR="$(dirname "$(realpath "$0")")"
 
 git rev-parse HEAD > "$DIR/commit.txt"
-debuild --no-lintian -us -uc
+
+if [[ "$SOURCE" = "1" ]]; then
+    debuild -S --lintian-opts --suppress-tags source-is-missing
+else
+    debuild -us -uc --lintian-opts --suppress-tags source-is-missing
+fi

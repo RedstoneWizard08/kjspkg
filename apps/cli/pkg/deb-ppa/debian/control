@@ -1,6 +1,6 @@
 Source: kjspkg
 Maintainer: Jacob Sapoznikow <jacob1coder@gmail.com>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), curl, wget, xz-utils, jq, clang, git
 Standards-Version: 3.9.3
 Section: utils
 
