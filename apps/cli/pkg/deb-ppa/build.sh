@@ -9,5 +9,4 @@ set -euo pipefail
 DIR="$(dirname "$(realpath "$0")")"
 
 git rev-parse HEAD > "$DIR/commit.txt"
-debuild --no-lintian -us -uc
-debuild --no-lintian -S
+debuild --no-lintian -S -us -uc
