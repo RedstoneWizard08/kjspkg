@@ -1,0 +1,51 @@
+# Maintainer: RedstoneWizard08 <jacob1coder@gmail.com>
+pkgname=kjspkg-cli
+pkgver=git
+pkgrel=1
+pkgdesc="An advanced package manager for KubeJS."
+url="https://github.com/RedstoneWizard08/kjspkg"
+arch="x86 x86_64 armv7 armhf aarch64"
+giturl="https://github.com/RedstoneWizard08/kjspkg"
+license="MIT"
+depends=""
+makedepends="git clang jq wget curl tar bash gzip xz"
+checkdepends=""
+install=""
+builddir="$srcdir/build"
+options="!check"
+
+BUILD_ARCH="${CARCH}"
+RUNTIME="musl"
+
+if [ "$BUILD_ARCH" = "armv7"* ]; then
+	BUILD_ARCH="arm"
+	RUNTIME="musleabihf"
+fi
+	
+TARGET="$BUILD_ARCH-unknown-linux-$RUNTIME"
+
+build() {
+	export RUSTUP_HOME="$srcdir/rustup"
+	export CARGO_HOME="$srcdir/cargo"
+	export PATH="$srcdir/cargo/bin:$PATH"
+
+	curl -fsSL https://sh.rustup.rs | sh -s - -q -y --no-modify-path
+	mkdir -p "$pkgdir/usr/bin"
+	curl -fsSL https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+	cargo binstall cargo-zigbuild -y --force
+	curl -fsSL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+	export PATH="$HOME/.zvm/self:$HOME/.zvm/bin:$PATH"
+	zvm install 0.13.0 --force
+	
+	[ ! -d "$builddir/source" ] && git clone --depth 1 -q -b main "$giturl" "$builddir/source"
+
+	cd "$builddir/source"
+	rustup target add "$TARGET"
+	cargo zigbuild --release --target "$TARGET" --bin kjspkg
+}
+
+package() {
+	mkdir -p "$pkgdir/usr/bin"
+	cp "$builddir/source/target/$TARGET/release/kjspkg" "$pkgdir/usr/bin/kjspkg"
+}
+

@@ -1,0 +1,5 @@
+Package: kjspkg-cli
+Version: git
+Maintainer: RedstoneWizard08 <https://github.com/RedstoneWizard08>
+Architecture:
+Description: An advanced package manager for KubeJS.

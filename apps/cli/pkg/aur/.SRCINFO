@@ -1,0 +1,23 @@
+pkgbase = kjspkg-cli
+	pkgdesc = An advanced package manager for KubeJS.
+	pkgver = git
+	pkgrel = 1
+	url = https://github.com/RedstoneWizard08/kjspkg.git
+	arch = x86_64
+	arch = i686
+    arch = aarch64
+    arch = armv7h
+	license = MIT
+	makedepends = rust
+	makedepends = git
+	makedepends = clang
+    makedepends = jq
+    makedepends = wget
+    makedepends = curl
+    makedepends = tar
+    makedepends = bash
+    makedepends = gzip
+	source = git+https://github.com/RedstoneWizard08/kjspkg.git
+	md5sums = SKIP
+
+pkgname = kjspkg-cli

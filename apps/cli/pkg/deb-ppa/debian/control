@@ -1,0 +1,12 @@
+Source: kjspkg
+Maintainer: Jacob Sapoznikow <jacob1coder@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Section: utils
+
+Package: kjspkg
+Priority: extra
+Architecture: amd64 i386 arm64 armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: An advanced package manager for KubeJS.
+ An advanced package manager for KubeJS for the ultimate DX.
