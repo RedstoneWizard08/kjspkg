@@ -1,4 +1,10 @@
-kjspkg (0.3.1) unstable; urgency=medium
+kjspkg (0.3.2) jammy; urgency=medium
+
+  * Fixed distroseries issue
+
+ -- Jacob Sapoznikow <jacob1coder@gmail.com>  Mon, 18 Nov 2024 07:59:33 +0000
+
+kjspkg (0.3.1) jammy; urgency=medium
 
   * Updated commits
   * Fixed things for releasing
@@ -6,7 +12,7 @@ kjspkg (0.3.1) unstable; urgency=medium
 
  -- Jacob Sapoznikow <jacob1coder@gmail.com>  Mon, 18 Nov 2024 07:48:17 +0000
 
-kjspkg (0.3.0) unstable; urgency=low
+kjspkg (0.3.0) jammy; urgency=low
 
   * Initial release.
 
