@@ -11,7 +11,8 @@ DIR="$(dirname "$(realpath "$0")")"
 
 if [[ ! -d "$DIR/source" ]]; then
     git clone -q -b main "$SOURCE" "$DIR/source"
-    cd "$DIR/source"
-    git checkout "$(cat "$DIR/commit.txt")"
-    cd ..
 fi
+
+cd "$DIR/source"
+git checkout "$(cat "$DIR/commit.txt")"
+cd ..
