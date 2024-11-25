@@ -46,14 +46,11 @@ pub struct PackageVersion {
     /// An optional markdown-formatted changelog.
     pub changelog: Option<String>,
 
-    /// A list of KubeJS versions that this version works on.
-    pub kubejs: Vec<Option<String>>,
-
     /// A list of loaders this version works on.
     pub loaders: Vec<Option<String>>,
 
-    /// A list of Minecraft versions this works on.
-    pub minecraft: Vec<Option<String>>,
+    /// A list of game versions this works on.
+    pub game_versions: Vec<Option<String>>,
 
     /// The date this version was created.
     pub created_at: NaiveDateTime,
@@ -102,14 +99,11 @@ pub struct NewPackageVersion {
     /// An optional markdown-formatted changelog.
     pub changelog: Option<String>,
 
-    /// A list of KubeJS versions that this version works on.
-    pub kubejs: Vec<Option<String>>,
-
     /// A list of loaders this version works on.
     pub loaders: Vec<Option<String>>,
 
-    /// A list of Minecraft versions this works on.
-    pub minecraft: Vec<Option<String>>,
+    /// A list of game versions this works on.
+    pub game_versions: Vec<Option<String>>,
 
     /// The number of downloads this version has.
     pub downloads: i32,
@@ -154,17 +148,13 @@ pub struct PackageVersionInit {
     /// An optional changelog.
     pub changelog: Option<String>,
 
-    /// A list of KubeJS versions that this version works on.
-    /// This should be a comma-separated list in the request.
-    pub kubejs: String,
-
     /// A list of loaders this version works on.
     /// This should be a comma-separated list in the request.
     pub loaders: String,
 
-    /// A list of Minecraft versions this works on.
+    /// A list of game versions this works on.
     /// This should be a comma-separated list in the request.
-    pub minecraft: String,
+    pub game_versions: String,
 
     /// The file content.
     pub file: Vec<u8>,

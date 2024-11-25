@@ -21,8 +21,9 @@
     import AuthorAddModal from "$components/modals/AuthorAddModal.svelte";
     import UploadVersionModal from "$components/modals/UploadVersionModal.svelte";
     import CreatePackageModal from "$components/modals/CreatePackageModal.svelte";
-    import { updateVersionsIfNeeded } from "$lib/mc";
+    import { updateGameVersionsIfNeeded } from "$lib/versions";
     import Drawers from "$components/ui/Drawers.svelte";
+    import { siteConfig } from "$lib/config";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -52,10 +53,10 @@
 
         if ($userPreferencesStore.lightMode) document.documentElement.classList.remove("dark");
 
-        document.body.dataset.theme = $userPreferencesStore.theme ?? "kjspkg";
+        document.body.dataset.theme = $userPreferencesStore.theme ?? siteConfig.defaultTheme;
 
         await updateUserStore();
-        await updateVersionsIfNeeded();
+        await updateGameVersionsIfNeeded();
     });
 
     beforeNavigate(() => (navigating = true));
@@ -75,7 +76,12 @@
 </script>
 
 <svelte:head>
-    <title>Loading - KJSPKG</title>
+    <title>Loading - {siteConfig.siteName}</title>
+    <meta property="og:title" content={siteConfig.siteName} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/favicon.png" />
+    <meta property="og:description" content={siteConfig.tagline} />
+    <!-- <meta name="theme-color" content={$theme} /> -->
 </svelte:head>
 
 <Toast position="br" max={8} />
@@ -124,13 +130,13 @@
         <footer class="flex w-full flex-row items-center justify-between p-2">
             <span class="hidden md:inline">
                 <a
-                    href="https://github.com/RedstoneWizard08/kjspkg"
+                    href="https://github.com/RedstoneWizard08/ModHost"
                     class="anchor no-underline"
                     target="_blank">GitHub</a
                 >
                 &bull;
                 <a
-                    href="https://github.com/RedstoneWizard08/kjspkg/wiki"
+                    href="https://github.com/RedstoneWizard08/ModHost/wiki"
                     class="anchor no-underline"
                     target="_blank">Wiki</a
                 >
@@ -139,24 +145,16 @@
                     >API Docs</a
                 >
                 &bull;
-                <a href="https://modernmodpacks.site" class="anchor no-underline" target="_blank"
-                    >Modern Modpacks</a
-                >
-                &bull;
                 <a
                     href="https://crowdin.com/editor/kjspkg"
                     class="anchor no-underline"
                     target="_blank">Crowdin</a
                 >
+                <!-- TODO: Move the crowdin's name to "ModHost" -->
             </span>
 
             <span class="mt-auto hidden text-sm opacity-50 md:inline">
-                Website designed with love by <a
-                    href="https://github.com/tizu69"
-                    class="anchor no-underline"
-                    target="_blank">tizu69</a
-                >
-                and
+                Website designed with love by
                 <a
                     href="https://github.com/RedstoneWizard08"
                     class="anchor no-underline"

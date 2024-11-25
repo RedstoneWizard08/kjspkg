@@ -1,12 +1,12 @@
 $ErrorActionPreference = "Stop"
 $tmpdir = $Env:TEMP
-$KJSPKG_VERSION = $Env:KJSPKG_VERSION
+$MODHOST_VERSION = $Env:MODHOST_VERSION
 
-if (-not $KJSPKG_VERSION) {
-    $KJSPKG_VERSION = 'latest'
+if (-not $MODHOST_VERSION) {
+    $MODHOST_VERSION = 'latest'
 }
 
-$base_url = "https://github.com/RedstoneWizard08/kjspkg/releases/$KJSPKG_VERSION/download/kjspkg-"
+$base_url = "https://github.com/RedstoneWizard08/ModHost/releases/$MODHOST_VERSION/download/modhost"
 $proc_arch = [Environment]::GetEnvironmentVariable("PROCESSOR_ARCHITECTURE", [EnvironmentVariableTarget]::Machine)
 
 if ($proc_arch -eq "AMD64") {
@@ -19,8 +19,8 @@ if ($proc_arch -eq "AMD64") {
 }
 
 $url = "$base_url$arch-pc-windows-gnu.zip"
-$extract_path = "$tmpdir\kjspkg-cli"
-$zip_path = "$tmpdir\kjspkg-cli.zip"
+$extract_path = "$tmpdir\modhost-cli"
+$zip_path = "$tmpdir\modhost-cli.zip"
 $local_bins = if ($Env:LOCAL_BINS -ne $null) { $Env:LOCAL_BINS } else { "$HOME\.local\bin" }
 
 if (!(Test-Path -Path "$local_bins" -PathType Container)) {
@@ -29,7 +29,7 @@ if (!(Test-Path -Path "$local_bins" -PathType Container)) {
 
 Invoke-WebRequest "$url" -OutFile "$zip_path"
 Expand-Archive -Force "$zip_path" "$extract_path"
-Copy-Item -Path "$extract_path\kjspkg.exe" -Destination "$local_bins\kjspkg.exe" -Force
+Copy-Item -Path "$extract_path\modhost.exe" -Destination "$local_bins\modhost.exe" -Force
 
 if ($Env:Path -split ";" -notcontains "$local_bins") {
     if (($Env:CI -ne $null) -and ($Env:GITHUB_PATH -ne $null)) {

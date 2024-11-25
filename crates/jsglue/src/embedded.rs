@@ -1,10 +1,10 @@
 use axum::{body::Body, debug_handler, extract::Request, response::Response, Extension};
 use hyper::{header::CONTENT_TYPE, StatusCode};
-use include_dir::Dir;
+use std::{fs, path::PathBuf};
 
 #[debug_handler]
 pub async fn handle_embedded(
-    Extension(dir): Extension<Dir<'static>>,
+    Extension(dir): Extension<PathBuf>,
     req: Request<Body>,
 ) -> Response<Body> {
     let path = req.uri().path();
@@ -17,42 +17,46 @@ pub async fn handle_embedded(
     };
 
     let path = path.trim_start_matches('/');
+    let file_path = dir.join(path);
+    let fallback_path = dir.join("fallback.html");
+    let not_found_path = dir.join("404.html");
+    let spa_path = dir.join("index.html");
 
     // Try the file
-    if let Some(file) = dir.get_file(path) {
+    if file_path.exists() {
         let mime = mime_guess::from_path(path).first().unwrap();
 
         return Response::builder()
             .status(StatusCode::OK)
             .header(CONTENT_TYPE, mime.to_string())
-            .body(Body::from(file.contents().to_vec()))
+            .body(Body::from(fs::read(file_path).unwrap()))
             .unwrap();
     }
 
     // Try a fallback page
-    if let Some(file) = dir.get_file("fallback.html") {
+    if fallback_path.exists() {
         return Response::builder()
             .status(StatusCode::OK)
             .header(CONTENT_TYPE, "text/html")
-            .body(Body::from(file.contents().to_vec()))
+            .body(Body::from(fs::read(fallback_path).unwrap()))
             .unwrap();
     }
 
     // Try a 404 page
-    if let Some(file) = dir.get_file("404.html") {
+    if not_found_path.exists() {
         return Response::builder()
             .status(StatusCode::NOT_FOUND)
             .header(CONTENT_TYPE, "text/html")
-            .body(Body::from(file.contents().to_vec()))
+            .body(Body::from(fs::read(not_found_path).unwrap()))
             .unwrap();
     }
 
     // Maybe it's an SPA?
-    if let Some(file) = dir.get_file("index.html") {
+    if spa_path.exists() {
         return Response::builder()
             .status(StatusCode::OK)
             .header(CONTENT_TYPE, "text/html")
-            .body(Body::from(file.contents().to_vec()))
+            .body(Body::from(fs::read(spa_path).unwrap()))
             .unwrap();
     }
 

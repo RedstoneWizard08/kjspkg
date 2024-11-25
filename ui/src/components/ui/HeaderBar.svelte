@@ -8,6 +8,7 @@
     import { onMount } from "svelte";
     import { goto, replaceState } from "$app/navigation";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { siteConfig } from "$lib/config";
 
     let inputElement: HTMLInputElement = $state(null!);
     let active = $state(false);
@@ -51,9 +52,12 @@
         </button>
 
         <a class="flex items-center gap-2" href="/">
-            <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
-            <span class="hidden lg:inline">KJSPKG</span>
-            <span class="variant-filled-secondary badge">{$_("site.beta")}</span>
+            <img src="/favicon.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
+            <span class="hidden lg:inline">{siteConfig.siteName}</span>
+
+            {#if siteConfig.showBeta}
+                <span class="variant-filled-secondary badge">{$_("site.beta")}</span>
+            {/if}
         </a>
     {/snippet}
 
@@ -73,7 +77,7 @@
             <input
                 type="search"
                 class="w-full transition-all"
-                placeholder={$_("search.placeholder")}
+                placeholder={$_(`search.placeholder.${siteConfig.type}`)}
                 bind:this={inputElement}
                 bind:value={$currentSearchStore}
                 onfocus={() => (active = true)}

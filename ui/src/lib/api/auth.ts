@@ -3,7 +3,7 @@ import type { User } from "$lib/types";
 import { persisted } from "svelte-persisted-store";
 import { get } from "svelte/store";
 
-const tokenStore = persisted<string | undefined>("kjspkg-auth-token", undefined);
+const tokenStore = persisted<string | undefined>("auth-token", undefined);
 
 export const setToken = (token?: string) => tokenStore.set(token);
 export const getToken = () => get(tokenStore);

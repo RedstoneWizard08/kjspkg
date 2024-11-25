@@ -42,7 +42,7 @@ where
         }
 
         cfg_if::cfg_if! {
-            if #[cfg(feature = "shuttle")] {
+            if #[cfg(not(debug_assertions))] {
                 Ok(Scheme("https".into()))
             } else {
                 Ok(Scheme("http".into()))

@@ -1,9 +1,9 @@
 import { get } from "svelte/store";
-import { rawMinecraftVersions } from "./mc";
+import { gameVersions } from "./versions";
 import { _ } from "svelte-i18n";
 
 export const tryAggregateVersions = (vers: string[]): string[] => {
-    const available = get(rawMinecraftVersions)?.versions;
+    const available = get(gameVersions) || [];
 
     if (!available) return vers;
 

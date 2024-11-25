@@ -3,7 +3,8 @@ import forms from "@tailwindcss/forms";
 import { skeleton } from "@skeletonlabs/tw-plugin";
 import { join } from "path";
 import type { Config } from "tailwindcss";
-import { defaultTheme } from "./src/themes/kjspkg";
+import { modhostTheme } from "./src/themes/modhost";
+import { kjspkgTheme } from "./src/themes/kjspkg";
 import { lighterTheme } from "./src/themes/kjspkg-lighter";
 import { gcatTheme } from "./src/themes/kjspkg-gcat";
 import { serenityTheme } from "./src/themes/serenity";
@@ -43,7 +44,7 @@ const config = {
         typography,
         skeleton({
             themes: {
-                custom: [defaultTheme, lighterTheme, gcatTheme, serenityTheme],
+                custom: [modhostTheme, kjspkgTheme, lighterTheme, gcatTheme, serenityTheme],
                 preset: [
                     "wintry",
                     "crimson",

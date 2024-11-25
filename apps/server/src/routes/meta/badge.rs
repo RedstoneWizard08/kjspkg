@@ -1,5 +1,8 @@
-use crate::{util::sanitize::HtmlSanitize, Result};
-use axum::{extract::Path, response::Response};
+use crate::{state::AppState, util::sanitize::HtmlSanitize, Result};
+use axum::{
+    extract::{Path, State},
+    response::Response,
+};
 
 // TODO: https://github.com/cgbur/badge-maker?
 
@@ -19,8 +22,16 @@ use axum::{extract::Path, response::Response};
     ),
 )]
 #[debug_handler]
-pub async fn version_handler(Path(version): Path<String>) -> Result<Response> {
-    let data = format!(include_str!("./version_badge.svg"), version = version).html_sanitize();
+pub async fn version_handler(
+    State(state): State<AppState>,
+    Path(version): Path<String>,
+) -> Result<Response> {
+    let data = format!(
+        include_str!("./version_badge.svg"),
+        version = version,
+        site = state.config.ui.app
+    )
+    .html_sanitize();
 
     Ok(Response::builder()
         .header("Content-Type", "image/svg+xml")

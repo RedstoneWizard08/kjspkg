@@ -2,6 +2,7 @@
     import { _ } from "svelte-i18n";
     import { Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { siteConfig } from "$lib/config";
 
     const drawerStore = getDrawerStore();
 
@@ -14,9 +15,16 @@
     {#if $drawerStore.id == "home"}
         <div class="flex flex-col p-4">
             <p class="flex items-center gap-2">
-                <img src="/kjspkg.png" alt="logo" class="aspect-square w-8 min-w-8 rounded-token" />
-                <span>KJSPKG</span>
-                <span class="variant-filled-secondary badge">{$_("site.beta")}</span>
+                <img
+                    src="/favicon.png"
+                    alt="logo"
+                    class="aspect-square w-8 min-w-8 rounded-token"
+                />
+                <span>{siteConfig.siteName}</span>
+
+                {#if siteConfig.showBeta}
+                    <span class="variant-filled-secondary badge">{$_("site.beta")}</span>
+                {/if}
             </p>
 
             <div class="mt-4 flex flex-col space-y-4">
@@ -36,15 +44,6 @@
                 >
                     <TablerIcon name="search" />
                     <span>{$_("search.browse")}</span>
-                </a>
-
-                <a
-                    href="/install"
-                    class="btn-primary transition-duration-300 variant-soft-primary btn mr-4 flex flex-row items-center justify-start outline-none transition-all hover:variant-filled-secondary"
-                    onclick={closeDrawer}
-                >
-                    <TablerIcon name="download" />
-                    <span>{$_("site.install")}</span>
                 </a>
             </div>
         </div>

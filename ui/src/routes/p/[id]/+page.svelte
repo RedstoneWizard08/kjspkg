@@ -3,7 +3,13 @@
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import type { LoadingState, PackageData, PackageVersion } from "$lib/types";
-    import { fixLoaderName, getLoaders, getMinecraft, markdown, markdownInline } from "$lib/utils";
+    import {
+        fixLoaderName,
+        getLoaders,
+        getGameVersions,
+        markdown,
+        markdownInline,
+    } from "$lib/utils";
     import { fly } from "svelte/transition";
     import { onMount } from "svelte";
     import { deletePackage, getPackage, getPackageVersions, updatePackage } from "$api";
@@ -14,6 +20,8 @@
     import { Carta, MarkdownEditor } from "carta-md";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { tryAggregateVersions } from "$lib/vers";
+    import { siteConfig } from "$lib/config";
+    import { copyText } from "$lib/clipboard";
 
     const maxVersions = 10;
 
@@ -34,7 +42,7 @@
     let saving = $state(false);
 
     const loaders = $derived(getLoaders(versions));
-    const minecraft = $derived(getMinecraft(versions));
+    const gameVersions = $derived(getGameVersions(versions));
 
     const hasRepo = $derived(repo != "");
     const hasIssues = $derived(issues != "");
@@ -99,13 +107,19 @@
             await deletePackage(id);
         } catch (e) {
             toasts.trigger({
-                message: `Failed to delete package: ${e}`,
+                message: `Failed to delete: ${e}`,
                 background: "variant-filled-error",
             });
         }
 
         await forceUpdatePackagesStore();
         goto("/");
+    };
+
+    const copyId = async () => {
+        if (!$currentPackage) return;
+
+        await copyText($currentPackage.id.toString(), toasts);
     };
 
     onMount(async () => {
@@ -128,11 +142,11 @@
         $currentPackage = undefined;
     });
 
-    const aggVersions = $derived(tryAggregateVersions(minecraft));
+    const aggVersions = $derived(tryAggregateVersions(gameVersions));
 </script>
 
 <svelte:head>
-    <title>{$currentPackage?.name ?? $_("site.loading")} - KJSPKG</title>
+    <title>{$currentPackage?.name ?? $_("site.loading")} - {siteConfig.siteName}</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -227,29 +241,40 @@
         <span class="input-group p-0">
             <input type="text" class="indent-2" placeholder="Wiki URL" bind:value={wiki} />
         </span>
-    {:else if hasRepo || hasIssues || hasWiki}
-        <span class="card p-4">
-            {#if hasRepo}
-                <a href={repo} class="anchor select-text no-underline" target="_blank">
-                    {$_("package.source")}
-                </a>
-            {/if}
-            {#if (hasRepo && hasIssues) || (hasRepo && hasWiki)}
-                &bull;
-            {/if}
-            {#if hasIssues}
-                <a href={issues} class="anchor select-text no-underline" target="_blank">
-                    {$_("package.issues")}
-                </a>
-            {/if}
-            {#if (hasIssues && hasWiki) || (hasRepo && hasWiki)}
-                &bull;
-            {/if}
-            {#if hasWiki}
-                <a href={wiki} class="anchor select-text no-underline" target="_blank">
-                    {$_("package.wiki")}
-                </a>
-            {/if}
+    {:else}
+        <span class="card flex flex-row items-center justify-between p-4">
+            <div class="flex flex-row items-center justify-start">
+                {#if hasRepo}
+                    <a href={repo} class="anchor select-text no-underline" target="_blank">
+                        {$_("package.source")}
+                    </a>
+                {/if}
+                {#if (hasRepo && hasIssues) || (hasRepo && hasWiki)}
+                    &nbsp;&bull;&nbsp;
+                {/if}
+                {#if hasIssues}
+                    <a href={issues} class="anchor select-text no-underline" target="_blank">
+                        {$_("package.issues")}
+                    </a>
+                {/if}
+                {#if (hasIssues && hasWiki) || (hasRepo && hasWiki)}
+                    &nbsp;&bull;&nbsp;
+                {/if}
+                {#if hasWiki}
+                    <a href={wiki} class="anchor select-text no-underline" target="_blank">
+                        {$_("package.wiki")}
+                    </a>
+                {/if}
+            </div>
+
+            <div class="flex flex-row items-center justify-end">
+                <span class="flex flex-row items-center justify-end">
+                    {$_(`id.${siteConfig.type}`)}&nbsp;
+                    <button class="anchor select-text no-underline" onclick={copyId}
+                        >{$currentPackage.id}</button
+                    >
+                </span>
+            </div>
         </span>
     {/if}
 
@@ -287,7 +312,7 @@
         <div class="card p-4" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">{$_("package.available_for")}</dt>
 
-            {#if loaders.length > 0 || minecraft.length > 0}
+            {#if loaders.length > 0 || gameVersions.length > 0}
                 {#if loaders.length > 0}
                     <dd class="mt-2 flex flex-wrap gap-1">
                         {#each loaders as loader}
@@ -297,7 +322,7 @@
                         {/each}
                     </dd>
                 {/if}
-                {#if minecraft.length > 0}
+                {#if gameVersions.length > 0}
                     <dd class="mt-2 flex flex-wrap gap-1">
                         {#if aggVersions.length > maxVersions}
                             {#each aggVersions.slice(0, maxVersions) as version}
@@ -354,7 +379,7 @@
             </div>
         {/if}
 
-        <section class="card h-fit p-4 lg:col-span-2" in:fly={{ y: 20 }}>
+        <section class="card h-fit p-6 lg:col-span-2" in:fly={{ y: 20 }}>
             <dt class="text-sm opacity-50">
                 {$_("package.readme_file")}
             </dt>
@@ -376,7 +401,7 @@
     <!-- <p>Something went wrong (this package doesn't seem to exist)</p> -->
     {(() => {
         toasts.trigger({
-            message: `Package Broken`,
+            message: `Mod/Package Broken`,
             hideDismiss: true,
             timeout: 5000,
             background: "variant-filled-error",

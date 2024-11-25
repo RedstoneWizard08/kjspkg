@@ -7,28 +7,37 @@
     import { onMount } from "svelte";
     import { getPackage, getPackageVersion, updateVersion } from "$api";
     import { getToastStore, ProgressRadial } from "@skeletonlabs/skeleton";
-    import ManagePackage from "$components/ui/ManagePackage.svelte";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { currentPackage, user } from "$lib/stores";
     import { beforeNavigate } from "$app/navigation";
     import { Carta, MarkdownEditor } from "carta-md";
-    import Version from "$components/ui/Version.svelte";
     import { tryAggregateVersions } from "$lib/vers";
+    import { siteConfig } from "$lib/config";
+    import { copyText } from "$lib/clipboard";
 
     const maxVersions = 10;
 
     const id = $derived($page.params.id);
     const ver = $derived($page.params.ver);
     const editor = new Carta();
+    const toasts = getToastStore();
 
     let editing = $state(false);
     let saving = $state(false);
+
+    let repo = $state("");
+    let issues = $state("");
+    let wiki = $state("");
 
     let loadingState: LoadingState = $state("loading");
     let version: PackageVersion | undefined = $state(undefined);
 
     let name = $state("");
     let changelog = $state<string | undefined>(undefined);
+
+    const hasRepo = $derived(repo != "");
+    const hasIssues = $derived(issues != "");
+    const hasWiki = $derived(wiki != "");
 
     const canEdit = $derived(
         $currentPackage &&
@@ -48,6 +57,18 @@
         editing = !editing;
     };
 
+    const copyPackageId = async () => {
+        if (!$currentPackage) return;
+
+        await copyText($currentPackage.id.toString(), toasts);
+    };
+
+    const copyVersionId = async () => {
+        if (!version) return;
+
+        await copyText(version.id.toString(), toasts);
+    };
+
     onMount(async () => {
         $currentPackage = await getPackage(id);
         version = await getPackageVersion(id, ver);
@@ -56,6 +77,9 @@
             name = version.name;
             changelog = version.changelog;
             loadingState = "ready";
+            repo = $currentPackage.source ?? "";
+            issues = $currentPackage.issues ?? "";
+            wiki = $currentPackage.wiki ?? "";
         } else {
             loadingState = "failed";
         }
@@ -66,12 +90,12 @@
     });
 
     const aggVersions = $derived(
-        tryAggregateVersions((version as PackageVersion | undefined)?.minecraft ?? []),
+        tryAggregateVersions((version as PackageVersion | undefined)?.game_versions ?? []),
     );
 </script>
 
 <svelte:head>
-    <title>{version?.name ?? $_("site.loading")} - KJSPKG</title>
+    <title>{version?.name ?? $_("site.loading")} - {siteConfig.siteName}</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -143,12 +167,57 @@
 
             <a
                 href="/api/v1/packages/{id}/versions/{ver}/download"
+                download={version.file_name}
                 class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
                 <TablerIcon name="download" />
             </a>
         </div>
     </div>
+
+    <span class="card flex flex-row items-center justify-between p-4">
+        <div class="flex flex-row items-center justify-start">
+            {#if hasRepo}
+                <a href={repo} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.source")}
+                </a>
+            {/if}
+            {#if (hasRepo && hasIssues) || (hasRepo && hasWiki)}
+                &nbsp;&bull;&nbsp;
+            {/if}
+            {#if hasIssues}
+                <a href={issues} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.issues")}
+                </a>
+            {/if}
+            {#if (hasIssues && hasWiki) || (hasRepo && hasWiki)}
+                &nbsp;&bull;&nbsp;
+            {/if}
+            {#if hasWiki}
+                <a href={wiki} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.wiki")}
+                </a>
+            {/if}
+        </div>
+
+        <div class="flex flex-row items-center justify-end">
+            <span class="flex flex-row items-center justify-end">
+                {$_(`id.${siteConfig.type}`)}&nbsp;
+                <button class="anchor select-text no-underline" onclick={copyPackageId}
+                    >{$currentPackage.id}</button
+                >
+            </span>
+
+            &nbsp;&bull;&nbsp;
+
+            <span class="flex flex-row items-center justify-end">
+                {$_("id.version")}&nbsp;
+                <button class="anchor select-text no-underline" onclick={copyVersionId}
+                    >{version.id}</button
+                >
+            </span>
+        </div>
+    </span>
 
     <div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
         <div class="card p-4" in:fly={{ y: 20 }}>
@@ -163,7 +232,7 @@
         </div>
 
         <div class="card p-4" in:fly={{ y: 20 }}>
-            <dt class="text-sm opacity-50">{$_("package.minecraft_title")}</dt>
+            <dt class="text-sm opacity-50">{$_("package.game_title")}</dt>
             <dd class="mt-2 flex flex-wrap gap-1">
                 {#if aggVersions.length > maxVersions}
                     {#each aggVersions.slice(0, maxVersions) as item}
@@ -179,29 +248,17 @@
         </div>
 
         <div class="card space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
-            <dt class="text-sm opacity-50">{$_("package.manage_package")}</dt>
-            <dd class="flex flex-col gap-1">
-                <ManagePackage
-                    name={$currentPackage.slug ?? "no-name"}
-                    {version}
-                    link={$currentPackage.issues}
-                />
-            </dd>
+            <dt class="text-sm opacity-50">{$_("package.version.published")}</dt>
+            <dd class="flex flex-col gap-1">{formatDate(new Date(version.created_at))}</dd>
         </div>
 
-        <div class="flex flex-col space-y-2 md:block" in:fly={{ y: 20 }}>
-            <div class="card space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
-                <dt class="text-sm opacity-50">{$_("package.version.published")}</dt>
-                <dd class="flex flex-col gap-1">{formatDate(new Date(version.created_at))}</dd>
-            </div>
-            <div class="card space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
-                <dt class="text-sm opacity-50">{$_("package.version.updated")}</dt>
-                <dd class="flex flex-col gap-1">{formatDate(new Date(version.updated_at))}</dd>
-            </div>
+        <div class="card space-y-2 p-4 md:block" in:fly={{ y: 20 }}>
+            <dt class="text-sm opacity-50">{$_("package.version.updated")}</dt>
+            <dd class="flex flex-col gap-1">{formatDate(new Date(version.updated_at))}</dd>
         </div>
 
         {#if changelog || editing}
-            <section class="card h-fit p-4 lg:col-span-2" in:fly={{ y: 20 }}>
+            <section class="card h-fit p-6 lg:col-span-2" in:fly={{ y: 20 }}>
                 <dt class="text-sm opacity-50">
                     {$_("package.version.changelog")}
                 </dt>
@@ -224,7 +281,7 @@
     <!-- <p>Something went wrong (this package doesn't seem to exist)</p> -->
     {(() => {
         getToastStore().trigger({
-            message: `Package Broken`,
+            message: `Mod/Package Broken`,
             hideDismiss: true,
             timeout: 5000,
             background: "variant-filled-error",

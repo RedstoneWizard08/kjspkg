@@ -16,13 +16,13 @@ pub async fn get_user_from_req(
         if val.starts_with("Bearer ") {
             value.to_str()?.trim_start_matches("Bearer ").to_string()
         } else {
-            if let Some(value) = jar.get("kjspkg-auth-token") {
+            if let Some(value) = jar.get("auth-token") {
                 value.value().to_string()
             } else {
                 return Err(AppError::MissingToken);
             }
         }
-    } else if let Some(value) = jar.get("kjspkg-auth-token") {
+    } else if let Some(value) = jar.get("auth-token") {
         value.value().to_string()
     } else {
         return Err(AppError::MissingToken);

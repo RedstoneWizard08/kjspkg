@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     ffi::OsStr,
     process::{ExitStatus, Stdio},
 };
@@ -53,7 +54,12 @@ pub fn read_lines(child: &mut Child, framework: Framework) {
     });
 }
 
-pub async fn start_client<T>(dir: T, mut cmd: Vec<T>, framework: Framework) -> ExitStatus
+pub async fn start_client<T>(
+    dir: T,
+    mut cmd: Vec<T>,
+    framework: Framework,
+    env: &HashMap<String, String>,
+) -> ExitStatus
 where
     T: AsRef<OsStr>,
 {
@@ -65,6 +71,7 @@ where
 
     let mut cmd = Command::new(exec.as_ref())
         .args(cmd)
+        .envs(env)
         .current_dir(dir.as_ref())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())

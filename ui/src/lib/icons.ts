@@ -24,6 +24,7 @@ import sunData from "tabler-icon:sun";
 import moonData from "tabler-icon:moon";
 import homeData from "tabler-icon:home";
 import menu2Data from "tabler-icon:menu-2";
+import loader2Data from "tabler-icon:loader-2";
 
 export const icons = {
     // alert-triangle, brand-github, user, search, check, color-swatch, world, download, pencil, device-floppy, clear-all, layout-dashboard
@@ -50,6 +51,7 @@ export const icons = {
     moon: moonData,
     home: homeData,
     "menu-2": menu2Data,
+    "loader-2": loader2Data,
 };
 
 export type IconName = keyof typeof icons;

@@ -6,6 +6,7 @@
     import { createSlug } from "$lib/utils";
     import { goto } from "$app/navigation";
     import { forceUpdatePackagesStore } from "$lib/stores";
+    import { siteConfig } from "$lib/config";
 
     const modals = getModalStore();
 
@@ -36,25 +37,25 @@
         errorMessages = [];
 
         if (name == "") {
-            errorMessages.push($_("modal.create_package.error.name"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.name`));
         }
 
         if (slug == "") {
-            errorMessages.push($_("modal.create_package.error.slug"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.slug`));
         }
 
         if (description == "") {
-            errorMessages.push($_("modal.create_package.error.description"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.description`));
         }
 
         if (readme == "") {
-            errorMessages.push($_("modal.create_package.error.readme"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.readme`));
         }
 
         const existing = await getPackage(slug);
 
         if (existing) {
-            errorMessages.push($_("modal.create_package.error.slug_exists"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.slug_exists`));
         }
 
         if (errorMessages.length > 0) {
@@ -78,10 +79,10 @@
             res = await createPackage(data);
 
             if (!res) {
-                throw new Error($_("modal.create_package.error.api"));
+                throw new Error($_(`modal.create.${siteConfig.type}.error.api`));
             }
         } catch (err) {
-            errorMessages.push($_("modal.create_package.error.api"));
+            errorMessages.push($_(`modal.create.${siteConfig.type}.error.api`));
             loading = false;
             return;
         }
@@ -98,8 +99,8 @@
 </script>
 
 {#if $modals[0]}
-    <div class="w-modal relative rounded-lg bg-secondary-700 p-8 shadow-xl">
-        <header class="text-2xl font-bold">{$_("modal.create_package.title")}</header>
+    <div class="w-modal relative rounded-lg bg-surface-700 p-8 shadow-xl">
+        <header class="text-2xl font-bold">{$_(`modal.create.${siteConfig.type}.title`)}</header>
 
         <form
             class="modal-form mt-4 rounded-md border border-transparent p-4"
@@ -109,7 +110,7 @@
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.name")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.name`)}
                 disabled={loading}
                 bind:value={name}
                 oninput={onChangeName}
@@ -120,7 +121,7 @@
                 class:mb-0={slugError}
                 class:!border-error-500={slugError}
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.slug")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.slug`)}
                 disabled={loading}
                 bind:value={slug}
                 oninput={onChangeSlug}
@@ -128,13 +129,15 @@
             />
 
             {#if slugError}
-                <p class="mb-2 text-error-500">{$_("modal.create_package.error.slug_exists")}</p>
+                <p class="mb-2 text-error-500">
+                    {$_(`modal.create.${siteConfig.type}.error.slug_exists`)}
+                </p>
             {/if}
 
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.description")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.description`)}
                 disabled={loading}
                 bind:value={description}
             />
@@ -142,7 +145,7 @@
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.source")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.source`)}
                 disabled={loading}
                 bind:value={source}
             />
@@ -150,7 +153,7 @@
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.issues")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.issues`)}
                 disabled={loading}
                 bind:value={issues}
             />
@@ -158,14 +161,14 @@
             <input
                 class="input variant-form-material mb-2 rounded-lg"
                 type="text"
-                placeholder={$_("modal.create_package.placeholder.wiki")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.wiki`)}
                 disabled={loading}
                 bind:value={wiki}
             />
 
             <textarea
                 class="input variant-form-material mt-2 h-48 w-full rounded-lg"
-                placeholder={$_("modal.create_package.placeholder.readme")}
+                placeholder={$_(`modal.create.${siteConfig.type}.placeholder.readme`)}
                 disabled={loading}
                 bind:value={readme}
             ></textarea>

@@ -19,6 +19,7 @@
     import PackageList from "$components/ui/PackageList.svelte";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
+    import { siteConfig } from "$lib/config";
 
     let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
@@ -59,7 +60,9 @@
 </script>
 
 <svelte:head>
-    <title>{$currentSearchStore || $_("search.title")} - KJSPKG</title>
+    <title
+        >{$currentSearchStore || $_(`search.title.${siteConfig.type}`)} - {siteConfig.siteName}</title
+    >
 </svelte:head>
 
 <div class="mb-2 flex flex-wrap gap-2">
@@ -98,7 +101,7 @@
     <h1 class="h3">
         {#if !$currentSearchStore}
             {@html vsprintf($_("search.found_plural"), [$filteredStore.length])}
-            {$_("search.package_plural")}
+            {$_(`search.plural.${siteConfig.type}`)}
         {:else}
             {@html vsprintf(
                 $filteredStore.length == 1
@@ -109,8 +112,8 @@
 
             <a href="{base}/s" class="anchor no-underline">
                 {$filteredStore.length == 1
-                    ? $_("search.package_singular")
-                    : $_("search.package_plural")}
+                    ? $_(`search.singular.${siteConfig.type}`)
+                    : $_(`search.plural.${siteConfig.type}`)}
             </a>
 
             {#if $currentSearchStore != ""}
@@ -176,7 +179,7 @@
         {/each}
     </dl>
 {:else if loadingState == "ready" && $filteredStore.length == 0}
-    <p class="text-center opacity-50">{$_("errors.no_packages_published")}</p>
+    <p class="text-center opacity-50">{$_(`errors.none_published.${siteConfig.type}`)}</p>
 {:else if loadingState == "ready"}
     <dl
         class="grid grid-cols-1 gap-2"

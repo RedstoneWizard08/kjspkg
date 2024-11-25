@@ -1,8 +1,0 @@
-*.log
-/*.build
-/*.buildinfo
-/*.changes
-/*.deb
-/*.dsc
-/*.tar.gz
-/*.upload

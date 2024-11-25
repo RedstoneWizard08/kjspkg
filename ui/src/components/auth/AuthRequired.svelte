@@ -3,10 +3,11 @@
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import { siteConfig } from "$lib/config";
 </script>
 
 <svelte:head>
-    <title>Authentication Required - KJSPKG</title>
+    <title>Authentication Required - {siteConfig.siteName}</title>
 </svelte:head>
 
 <div class="flex flex-1 flex-col items-center justify-center" transition:fly={{ y: 40 }}>

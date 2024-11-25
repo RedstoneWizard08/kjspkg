@@ -86,8 +86,14 @@ html.dark .shiki span {
 
     /* --------- */
 
+    .style-markdown a > img[alt="modhost-available"] {
+        animation: availableBadge 2s infinite ease-out;
+        animation-delay: 1s;
+        animation-iteration-count: 1;
+    }
+
     .style-markdown a > img[alt="kjspkg-available"] {
-        animation: kjspkgBadge 2s infinite ease-out;
+        animation: availableBadge 2s infinite ease-out;
         animation-delay: 1s;
         animation-iteration-count: 1;
     }
@@ -97,7 +103,7 @@ html.dark .shiki span {
     }
 }
 
-@keyframes kjspkgBadge {
+@keyframes availableBadge {
     0% {
         filter: hue-rotate(0deg);
     }

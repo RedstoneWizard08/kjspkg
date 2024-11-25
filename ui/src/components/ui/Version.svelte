@@ -5,6 +5,7 @@
     import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { deleteVersion } from "$api";
     import { getToastStore } from "@skeletonlabs/skeleton";
+    import { downloadFile } from "$lib/download";
 
     interface Props {
         version: PackageVersion;
@@ -16,6 +17,8 @@
     const { version, pkg, editing, onDelete }: Props = $props();
 
     let loading = $state(false);
+    let downloading = $state(false);
+    let done = $state(false);
 
     const handleDelete = async (ev: Event) => {
         ev.preventDefault();
@@ -34,7 +37,7 @@
         } catch (e) {
             getToastStore().trigger({
                 background: "variant-filled-error",
-                message: $_("errors.delete_version"),
+                message: $_("errors.delete.version"),
             });
 
             loading = false;
@@ -44,13 +47,49 @@
 
         loading = false;
     };
+
+    let doneTimeout: number | undefined;
+
+    const directDownload = async (ev: Event) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        downloading = true;
+
+        await downloadFile(
+            `/api/v1/packages/${pkg}/versions/${version.id}/download`,
+            version.file_name,
+        );
+
+        downloading = false;
+        done = true;
+
+        if (doneTimeout) clearTimeout(doneTimeout);
+
+        doneTimeout = setTimeout(() => {
+            done = false;
+        }, 1000) as any;
+    };
 </script>
 
 <a
     href="/p/{pkg}/v/{version.id}"
     class="flex w-full items-center gap-2 p-2 text-left transition-all rounded-container-token hover:variant-soft-primary"
 >
-    <TablerIcon name="download" />
+    <button
+        type="button"
+        class="variant-soft-primary btn p-2 transition-all hover:variant-soft-success"
+        onclick={directDownload}
+    >
+        {#if done}
+            <TablerIcon name="check" />
+        {:else if downloading}
+            <TablerIcon name="loader-2" class="animate-spin" />
+        {:else}
+            <TablerIcon name="download" />
+        {/if}
+    </button>
+
     <span class="ml-1 flex-auto">
         <dt class="select-text font-bold">{version.name}</dt>
         <dd class="text-sm opacity-50">{formatDate(new Date(version.created_at))}</dd>

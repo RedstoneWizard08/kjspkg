@@ -1,5 +1,5 @@
 [package]
-name = "kjspkg-server"
+name = "modhost"
 version = "0.1.0"
 edition.workspace = true
 license.workspace = true
@@ -8,17 +8,10 @@ homepage.workspace = true
 authors.workspace = true
 readme.workspace = true
 
-[[bin]]
-name = "kjspkg-server"
-path = "src/main.rs"
-
-[features]
-default = []
-shuttle = ["db/shuttle", "app_core/shuttle"]
-
 [dependencies]
 anyhow.workspace = true
-app_core.workspace = true
+app-core.workspace = true
+app-config.workspace = true
 axum.workspace = true
 axum-core.workspace = true
 axum-extra.workspace = true
@@ -27,12 +20,14 @@ chrono.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
 colored.workspace = true
+ctrlc.workspace = true
 db.workspace = true
 diesel.workspace = true
 diesel-async.workspace = true
 diesel_async_migrations.workspace = true
 dotenvy.workspace = true
 flate2.workspace = true
+include_dir.workspace = true
 jsglue.workspace = true
 lazy_static.workspace = true
 log.workspace = true
@@ -42,13 +37,13 @@ parking_lot.workspace = true
 random-string.workspace = true
 rayon.workspace = true
 reqwest.workspace = true
+rust-s3.workspace = true
 semver.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_yaml.workspace = true
-shuttle-axum.workspace = true
-shuttle-runtime.workspace = true
 tar.workspace = true
+tempfile.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tracing.workspace = true
@@ -60,3 +55,4 @@ utoipa-redoc.workspace = true
 utoipa-scalar.workspace = true
 utoipa-swagger-ui.workspace = true
 uuid.workspace = true
+zip.workspace = true

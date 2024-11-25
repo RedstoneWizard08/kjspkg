@@ -1,8 +1,0 @@
-*.log
-*.pkg.tar.gz
-kjspkg
-pkg
-src
-logpipe*
-PKGBUILD
-*.log.*

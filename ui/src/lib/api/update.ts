@@ -108,9 +108,8 @@ export const createVersion = async (
     const formData = new FormData();
 
     formData.set("name", data.name);
-    formData.set("kubejs", data.kubejs.join(","));
     formData.set("loaders", data.loaders.join(","));
-    formData.set("minecraft", data.minecraft.join(","));
+    formData.set("game_versions", data.game_versions.join(","));
     formData.set("version_number", data.version_number);
 
     if (data.changelog) formData.set("changelog", data.changelog);

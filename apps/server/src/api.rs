@@ -6,8 +6,8 @@ use utoipa::{
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "KJSPKG API",
-        description = "The KJSPKG REST API.",
+        title = "ModHost API",
+        description = "The ModHost REST API.",
 
         license(
             name = "MIT",
@@ -39,6 +39,7 @@ use utoipa::{
         crate::routes::pkg::author::add_handler,
         crate::routes::pkg::search::search_handler,
         crate::routes::meta::badge::version_handler,
+        crate::routes::meta::vers::game_versions_handler,
     ),
     components(
         schemas(
@@ -62,6 +63,7 @@ use utoipa::{
             crate::routes::pkg::info::PartialPackage,
             crate::routes::pkg::ver::PartialPackageVersion,
             crate::routes::pkg::search::SearchQuery,
+            crate::routes::meta::vers::GameVersion,
         ),
         responses(
             db::User,
@@ -84,6 +86,7 @@ use utoipa::{
             crate::routes::pkg::info::PartialPackage,
             crate::routes::pkg::ver::PartialPackageVersion,
             crate::routes::pkg::search::SearchQuery,
+            crate::routes::meta::vers::GameVersion,
         ),
     ),
     tags(

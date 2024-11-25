@@ -1,81 +1,20 @@
-# KJSPKG
+# ModHost
 
 ![Contributions](./assets/contributions.svg)
-![Approved by Lat](./assets/lat.svg)
-![Crates.io Version](https://img.shields.io/crates/v/kjspkg?style=for-the-badge)
-![Deployment Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/kjspkg/deploy.yml?branch=main&style=for-the-badge&label=Deployment)
-![CLI Build Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/kjspkg/cli-build.yml?branch=main&style=for-the-badge&label=CLI%20Build)
-![Lines of Code](https://tokei.rs/b1/github/RedstoneWizard08/kjspkg?style=for-the-badge&label=Lines+Of+Code)
+![Crates.io Version](https://img.shields.io/crates/v/modhost-api?style=for-the-badge)
+![Deployment Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/ModHost/deploy.yml?branch=main&style=for-the-badge&label=Deployment)
+![CLI Build Status](https://img.shields.io/github/actions/workflow/status/RedstoneWizard08/ModHost/cli-build.yml?branch=main&style=for-the-badge&label=CLI%20Build)
+![Lines of Code](https://tokei.rs/b1/github/RedstoneWizard08/ModHost?style=for-the-badge&label=Lines+Of+Code)
 
-A package manager & registry for KubeJS.
+A simple, open-source, and self-hostable place to host mods for any game!
 
-## CLI Installation
+## Logo?
 
-<details open>
-<summary>Via script (Linux/MacOS only)</summary>
-You can install the KJSPKG CLI with a handy script! Just run:
+Yeah, the logo is a BIG work-in-progress. If you have a better one or concept, feel free to let me know!
 
-```sh
-curl -fsSL https://github.com/RedstoneWizard08/kjspkg/raw/main/install_cli.sh | bash
-```
+## What happened to the CLI?
 
-Once you've run that, if `~/.local/bin` is in your `PATH`, it should be installed!
-</details>
-
-<details open>
-<summary>Via PowerShell script (Windows only)</summary>
-You can install the KJSPKG CLI with a handy script! Just run:
-
-```pwsh
-Set-ExecutionPolicy Unrestricted -Scope Process; iex (iwr "https://github.com/RedstoneWizard08/kjspkg/raw/main/install_cli.ps1").Content
-```
-
-Once you've run that, if `$HOME\.local\bin` is in your `Path`, it should be installed!
-</details>
-
-<details>
-<summary>With `cargo-binstall`</summary>
-To install the KJSPKG CLI with `cargo-binstall`, you need to run:
-
-```sh
-cargo binstall kjspkg
-```
-
-As long as `~/.cargo/bin` is in your `PATH`, the CLI (`kjspkg`) should be available!
-</details>
-
-<details>
-<summary>With `cargo install`</summary>
-You can also install the KJSPKG CLI using `cargo install`, compiling it from the latest version on [crates.io](https://crates.io/crates/kjspkg)! Just run:
-
-```sh
-cargo install kjspkg
-```
-
-As long as `~/.cargo/bin` is in your `PATH`, the CLI (`kjspkg`) should be available!
-Note that this option requires Rust to be installed: https://rustup.rs/
-</details>
-
-<details>
-<summary>From source</summary>
-If you want the most bleeding-edge unreleased version of the CLI, you can install it from source:
-
-```sh
-# For Linux/MacOS
-git clone https://github.com/RedstoneWizard08/kjspkg
-cd kjspkg
-cargo build --release -p kjspkg
-cp target/release/kjspkg /path/to/your/bin/dir/kjspkg
-```
-
-```pwsh
-# For Windows
-git clone https://github.com/RedstoneWizard08/kjspkg
-cd kjspkg
-cargo build --release -p kjspkg
-cp target/release/kjspkg.exe C:\path\to\your\bin\dir\kjspkg.exe
-```
-
-Note that this requires `git`, rust, and for Windows, MSVC to be installed.
-</details>
-
+I made the decision to remove ModHost's CLI as it's no longer in scope for the project.
+Due to the complexity of managing multiple different mod formats and installation methods,
+I felt it would be best to leave that up to whoever is deploying it, as the API library is
+solid enough and it's relatively easy to make one in most languages.

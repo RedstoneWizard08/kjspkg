@@ -1,0 +1,212 @@
+module modhost.ModHost
+
+import "@toml/toml.pkl"
+
+/// ModHost's configuration.
+class AppConfig {
+    /// Server configuration.
+    server: ServerConfig
+
+    /// PostgreSQL database configuration.
+    postgres: PostgresConfig
+
+    /// User authentication provider configuration.
+    auth: AuthConfigs
+
+    /// File storage (S3) configuration.
+    storage: StorageConfig
+
+    /// UI (frontend) configuration.
+    ui: UIConfig
+}
+
+/// Server configuration.
+class ServerConfig {
+    /// The host the server will listen on.
+    /// Defaults to `"127.0.0.1"`.
+    host: String = "127.0.0.1"
+
+    /// The port the server will listen on.
+    /// Defaults to `4000`.
+    port: Int = 4000
+}
+
+/// Database (PostgreSQL) configuration.
+class PostgresConfig {
+    /// The host of the PostgreSQL database.
+    /// Defaults to `"127.0.0.1"`.
+    host: String = "127.0.0.1"
+
+    /// The port of the PostgreSQL database.
+    /// Defaults to `5432`.
+    port: Int = 5432
+
+    /// The username for connecting to the database.
+    /// Defaults to `"modhost"`.
+    user: String = "modhost"
+
+    /// The password (if there is one) for connecting to the database.
+    /// Defaults to `null`.
+    pass: String? = null
+
+    /// The database name.
+    /// Defaults to "modhost".
+    database: String = "modhost"
+}
+
+/// A configuration for an OAuth2 provider.
+class OAuth2Config {
+    /// The client ID for this OAuth2 provider.
+    client_id: String
+    
+    /// The client secret for this OAuth2 provider.
+    client_secret: String
+}
+
+/// Configuration for user authentication.
+class AuthConfigs {
+    /// The GitHub OAuth2 provider.
+    github: OAuth2Config
+}
+
+/// S3 (storage) access configuration.
+class S3Config {
+    /// The S3 region.
+    region: String
+
+    /// The S3 endpoint.
+    endpoint: String
+    
+    /// The S3 access key (or key ID).
+    access_key: String
+
+    /// The S3 secret key.
+    secret_key: String
+}
+
+/// S3 (storage) buckets configuration.
+class BucketsConfig {
+    /// The name/ID of the bucket for packages.
+    packages: String
+}
+
+/// Storage (S3) configuration.
+class StorageConfig {
+    /// S3 access configuration.
+    s3: S3Config
+
+    /// S3 buckets configuration.
+    buckets: BucketsConfig
+}
+
+/// UI configuration for packages.
+class UIPackagesConfig {
+    /// The kind of package we are hosting.
+    /// Defaults to `"Mods"`.
+    kind: String(this == "Mods" || this == "Packages") = "Mods"
+
+    /// The file formats accepted.
+    /// Defaults to `[".zip", ".tgz", ".tar.gz", ".txz", ".tar.xz"]`.
+    file_formats: List<String> = List(
+        ".zip",
+        ".tgz",
+        ".tar.gz",
+        ".txz",
+        ".tar.xz"
+    )
+}
+
+/// UI configuration for the game we are hosting mods for.
+class UIGameConfig {
+    /// The display name for beta versions.
+    /// Defaults to `"Beta"`.
+    beta_name: String(this == "Beta" || this == "Snapshot")
+}
+
+/// Favicon configuration.
+class FaviconConfig {
+    /// The URL to download the favicon ICO from. Can be "default".
+    /// Defaults to `"default"`.
+    ico: String = "default"
+
+    /// The URL to download the favicon PNG from. Can be "default".
+    /// Defaults to `"default"`.
+    png: String = "default"
+}
+
+/// UI configuration.
+class UIConfig {
+    /// The app name.
+    /// Defaults to `"ModHost"`.
+    app: String = "ModHost"
+
+    /// The tagline shown on the home page.
+    /// Defaults to `"Your home for game mods"`
+    tagline: String = "Your home for game mods"
+
+    /// Whether to show the beta chip next to the app name.
+    /// Defaults to `true`.
+    show_beta: Boolean = true
+
+    /// The default theme to apply if unset when a user loads the page.
+    /// Defaults to `"modhost"`.
+    default_theme: String = "modhost"
+
+    /// Favicon configuration.
+    favicon: FaviconConfig = new {}
+
+    /// UI configuration for packages.
+    packages: UIPackagesConfig = new {}
+    
+    /// UI configuration for the game we are hosting mods for.
+    game: UIGameConfig = new {}
+}
+
+class RealStorageConfig {
+    s3_region: String
+    s3_endpoint: String
+    s3_access_key: String
+    s3_secret_key: String
+    packages_bucket: String
+}
+
+class RealUIConfig {
+    app: String
+    tagline: String
+    show_beta: Boolean
+    package_kind: String(this == "Mods" || this == "Packages")
+    default_theme: String
+    game_beta_name: String(this == "Beta" || this == "Snapshot")
+    package_file_formats: List<String>
+    favicon_ico: String
+    favicon_png: String
+}
+
+function fixStorageConfig(cfg: StorageConfig): RealStorageConfig = new {
+    s3_region = cfg.s3.region
+    s3_endpoint = cfg.s3.endpoint
+    s3_access_key = cfg.s3.access_key
+    s3_secret_key = cfg.s3.secret_key
+    packages_bucket = cfg.buckets.packages
+}
+
+function fixUIConfig(cfg: UIConfig): RealUIConfig = new {
+    app = cfg.app
+    tagline = cfg.tagline
+    show_beta = cfg.show_beta
+    package_kind = cfg.packages.kind
+    default_theme = cfg.default_theme
+    game_beta_name = cfg.game.beta_name
+    package_file_formats = cfg.packages.file_formats
+    favicon_ico = cfg.favicon.ico
+    favicon_png = cfg.favicon.png
+}
+
+mh_converters: Mapping<Class | String, (unknown) -> Any> = new {
+    [StorageConfig] = (cfg) -> fixStorageConfig(cfg)
+    [UIConfig] = (cfg) -> fixUIConfig(cfg)
+}
+
+function renderer(): toml.Renderer = new {
+    converters = mh_converters
+}

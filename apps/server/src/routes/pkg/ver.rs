@@ -1,4 +1,4 @@
-use crate::{auth::get_user_from_req, state::AppState, util::pkg::verify_package, Result};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use anyhow::anyhow;
 use axum::{
     body::Body,
@@ -15,7 +15,6 @@ use db::{
 };
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
-use reqwest::Client;
 use semver::Version;
 use uuid::Uuid;
 
@@ -33,13 +32,10 @@ pub struct PartialPackageVersion {
     pub changelog: Option<String>,
 
     #[serde(default)]
-    pub kubejs: Option<Vec<String>>,
-
-    #[serde(default)]
     pub loaders: Option<Vec<String>>,
 
     #[serde(default)]
-    pub minecraft: Option<Vec<String>>,
+    pub game_versions: Option<Vec<String>>,
 }
 
 /// List Package Versions
@@ -166,7 +162,7 @@ pub async fn latest_handler(
 pub async fn download_handler(
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
-) -> Result<Response> {
+) -> Result<Vec<u8>> {
     let mut conn = state.pool.get().await?;
     let pkg = get_package(package, &mut conn).await?;
     let ver = get_version(pkg.id, version, &mut conn).await?;
@@ -191,15 +187,19 @@ pub async fn download_handler(
         .get_result(&mut conn)
         .await?;
 
-    let url = format!(
-        "{}/storage/v1/object/{}/{}.tgz",
-        state.supabase_url, state.packages_bucket, ver.file_id
-    );
+    // let url = format!(
+    //     "{}/storage/v1/object/{}/{}.tgz",
+    //     state.supabase_url, state.packages_bucket, ver.file_id
+    // );
 
-    Ok(Response::builder()
-        .header("Location", url)
-        .status(StatusCode::TEMPORARY_REDIRECT)
-        .body(Body::empty())?)
+    let bytes = state
+        .bucket
+        .get_object(format!("/{}.tgz", ver.file_id))
+        .await?
+        .into_bytes()
+        .to_vec();
+
+    Ok(bytes)
 }
 
 /// Upload Package Version
@@ -248,9 +248,8 @@ pub async fn create_handler(
     let mut name = None;
     let mut version_number = None;
     let mut changelog = None;
-    let mut kubejs = None;
     let mut loaders = None;
-    let mut minecraft = None;
+    let mut game_versions = None;
     let mut file = None;
 
     while let Ok(Some(field)) = data.next_field().await {
@@ -261,16 +260,6 @@ pub async fn create_handler(
             "name" => name = Some(field.text().await?),
             "version_number" => version_number = Some(field.text().await?),
             "changelog" => changelog = Some(field.text().await?),
-            "kubejs" => {
-                kubejs = Some(
-                    field
-                        .text()
-                        .await?
-                        .split(",")
-                        .map(|v| Some(v.to_string()))
-                        .collect::<Vec<_>>(),
-                )
-            }
             "loaders" => {
                 loaders = Some(
                     field
@@ -281,8 +270,8 @@ pub async fn create_handler(
                         .collect::<Vec<_>>(),
                 )
             }
-            "minecraft" => {
-                minecraft = Some(
+            "game_versions" => {
+                game_versions = Some(
                     field
                         .text()
                         .await?
@@ -304,16 +293,12 @@ pub async fn create_handler(
         Err(anyhow!("Missing field: 'version_number'"))?;
     }
 
-    if kubejs.is_none() {
-        Err(anyhow!("Missing field: 'kubejs'"))?;
-    }
-
     if loaders.is_none() {
         Err(anyhow!("Missing field: 'loaders'"))?;
     }
 
-    if minecraft.is_none() {
-        Err(anyhow!("Missing field: 'minecraft'"))?;
+    if game_versions.is_none() {
+        Err(anyhow!("Missing field: 'game_versions'"))?;
     }
 
     if file.is_none() {
@@ -322,28 +307,32 @@ pub async fn create_handler(
 
     let name = name.unwrap();
     let version_number = version_number.unwrap();
-    let kubejs = kubejs.unwrap();
     let loaders = loaders.unwrap();
-    let minecraft = minecraft.unwrap();
+    let game_versions = game_versions.unwrap();
     let file = file.unwrap();
 
     Version::parse(&version_number)?;
-    verify_package(&file)?;
+    // verify_package(&file)?; // Skip for now, TODO!
 
     let file_id = Uuid::new_v4().to_string();
     let file_name = format!("{}.tgz", file_id);
 
-    let url = format!(
-        "{}/storage/v1/object/{}/{}",
-        state.supabase_url, state.packages_bucket, file_name
-    );
+    // let url = format!(
+    //     "{}/storage/v1/object/{}/{}",
+    //     state.supabase_url, state.packages_bucket, file_name
+    // );
 
-    Client::new()
-        .post(url)
-        .header("Authorization", format!("Bearer {}", state.supabase_key))
-        .body(file)
-        .send()
+    state
+        .bucket
+        .put_object(format!("/{}", file_name), &file)
         .await?;
+
+    // Client::new()
+    //     .post(url)
+    //     .header("Authorization", format!("Bearer {}", state.supabase_key))
+    //     .body(file)
+    //     .send()
+    //     .await?;
 
     let data = NewPackageVersion {
         package: pkg.id,
@@ -351,9 +340,8 @@ pub async fn create_handler(
         version_number,
         file_id,
         changelog,
-        kubejs,
         loaders,
-        minecraft,
+        game_versions,
         downloads: 0,
     };
 
@@ -428,18 +416,14 @@ pub async fn update_handler(
             package_versions::version_number.eq(data.version_number.unwrap_or(ver.version_number)),
             package_versions::changelog
                 .eq(data.changelog.map(|v| Some(v)).unwrap_or(ver.changelog)),
-            package_versions::kubejs.eq(data
-                .kubejs
-                .map(|v| v.iter().map(|v| Some(v.clone())).collect::<Vec<_>>())
-                .unwrap_or(ver.kubejs)),
             package_versions::loaders.eq(data
                 .loaders
                 .map(|v| v.iter().map(|v| Some(v.clone())).collect::<Vec<_>>())
                 .unwrap_or(ver.loaders)),
-            package_versions::minecraft.eq(data
-                .minecraft
+            package_versions::game_versions.eq(data
+                .game_versions
                 .map(|v| v.iter().map(|v| Some(v.clone())).collect::<Vec<_>>())
-                .unwrap_or(ver.minecraft)),
+                .unwrap_or(ver.game_versions)),
             package_versions::updated_at.eq(Utc::now().naive_utc()),
         ))
         .returning(PackageVersion::as_select())

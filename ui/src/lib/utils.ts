@@ -40,23 +40,11 @@ export const getLoaders = (versions: PackageVersion[]) => {
     return data;
 };
 
-export const getMinecraft = (versions: PackageVersion[]) => {
+export const getGameVersions = (versions: PackageVersion[]) => {
     const data: string[] = [];
 
     for (const version of versions) {
-        for (const item of version.minecraft) {
-            if (!data.includes(item)) data.push(item);
-        }
-    }
-
-    return data;
-};
-
-export const getKubeJS = (versions: PackageVersion[]) => {
-    const data: string[] = [];
-
-    for (const version of versions) {
-        for (const item of version.kubejs) {
+        for (const item of version.game_versions) {
             if (!data.includes(item)) data.push(item);
         }
     }

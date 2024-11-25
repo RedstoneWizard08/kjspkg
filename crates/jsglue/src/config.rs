@@ -1,7 +1,6 @@
-use derive_builder::Builder;
-use include_dir::Dir;
-
 use crate::framework::Framework;
+use derive_builder::Builder;
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, Clone, PartialEq, Builder)]
 #[builder(setter(into))]
@@ -12,13 +11,17 @@ pub struct GlueConfig {
     #[builder(setter(custom))]
     pub base: Option<String>,
 
-    pub dir: Option<Dir<'static>>,
+    #[builder(default)]
+    pub dir: Option<PathBuf>,
 
     #[builder(setter(custom))]
     pub project: Option<String>,
 
     #[builder(setter(custom))]
     pub cmd: Vec<String>,
+
+    #[builder(default)]
+    pub env: HashMap<String, String>,
 }
 
 impl GlueConfig {

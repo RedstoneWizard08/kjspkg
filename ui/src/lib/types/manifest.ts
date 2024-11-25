@@ -22,10 +22,10 @@ export interface PackageManifest {
     description: string;
 
     /**
-     * A list of KubeJS versions this package works on.
+     * A list of game versions this package works on.
      * Can be `["all"]`.
      */
-    kubejs: string[];
+    game_versions: string[];
 
     /**
      * A list of loaders this package works on.

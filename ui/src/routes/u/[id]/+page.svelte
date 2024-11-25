@@ -15,6 +15,7 @@
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import IconBlank from "$components/icons/IconBlank.svelte";
     import { goto } from "$app/navigation";
+    import { siteConfig } from "$lib/config";
 
     const id = $derived($page.params.id);
     const toasts = getToastStore();
@@ -44,7 +45,7 @@
 </script>
 
 <svelte:head>
-    <title>{user?.username ?? $_("site.loading")} - KJSPKG</title>
+    <title>{user?.username ?? $_("site.loading")} - {siteConfig.siteName}</title>
 </svelte:head>
 
 {#if loadingState == "loading"}
@@ -94,7 +95,7 @@
     </div>
 
     <div class="card p-4" in:fly={{ y: 20 }}>
-        <dt class="mb-2 text-sm opacity-50">{$_("user.packages")}</dt>
+        <dt class="mb-2 text-sm opacity-50">{$_(`user.${siteConfig.type}`)}</dt>
 
         <div class="flex flex-row items-center justify-between">
             <button

@@ -1,10 +1,9 @@
-use axum::{routing::get, Extension, Router};
-use include_dir::Dir;
-
 use crate::{
     embedded::handle_embedded, framework::Framework, handler::fallback_handler, state::ProxyState,
     ws::route::websocket_handler,
 };
+use axum::{routing::get, Extension, Router};
+use std::path::PathBuf;
 
 /// Register the proxy handler.
 /// Accepts a base and a router.
@@ -24,7 +23,7 @@ where
     router.fallback(fallback_handler).layer(Extension(state))
 }
 
-pub fn register_embedded<T>(dir: Dir<'static>, router: Router<T>) -> Router<T>
+pub fn register_embedded<T>(dir: PathBuf, router: Router<T>) -> Router<T>
 where
     T: Clone + Send + Sync + 'static,
 {

@@ -15,53 +15,50 @@
     import { elementPopup, type PopupControls } from "$lib/ui/popups";
     import { goto } from "$app/navigation";
     import TablerIcon from "$components/icons/TablerIcon.svelte";
-    import { rawMinecraftVersions } from "$lib/mc";
+    import { siteConfig } from "$lib/config";
+    import { gameVersions as allGameVersions } from "$lib/versions";
 
     const modals = getModalStore();
 
     let name = $state("");
     let version_number = $state("");
     let changelog = $state("");
-    let kubejs: string[] = $state([]);
     let loaders: ModLoader[] = $state([]);
-    let minecraft: string[] = $state([]);
+    let versions: string[] = $state([]);
     let files = $state<FileList>();
 
     let loading = $state(false);
     let snapshots = $state(false);
-    let minecraftOpen = $state(false);
+    let versionsOpen = $state(false);
     let errorMessages = $state<string[]>([]);
 
-    let minecraftChips = $state("");
-    let minecraftInput: InputChip = $state(null!);
+    let versionChips = $state("");
+    let versionsInput: InputChip = $state(null!);
     let popup: PopupControls | undefined = $state(undefined);
 
-    const minecraftAutocomplete: PopupSettings = {
+    const versionsAutocomplete: PopupSettings = {
         event: "focus-click",
-        target: "minecraftAutocomplete",
+        target: "versionsAutocomplete",
         placement: "bottom",
     };
 
-    const minecraftVersions: [string, boolean][] = $derived(
-        ($rawMinecraftVersions?.versions || []).map((v: { id: string; type: string }) => [
-            v.id,
-            v.type == "release",
-        ]),
+    const gameVersions: [string, boolean][] = $derived(
+        ($allGameVersions || []).map((v: { id: string; beta: boolean }) => [v.id, !v.beta]),
     );
 
     const destroyHandlers: (() => void)[] = [];
-    const releaseVersions = $derived(minecraftVersions.filter((v) => v[1]).map((v) => v[0]));
-    const snapshotVersions = $derived(minecraftVersions.map((v) => v[0]));
-    const shownMinecraftVersions = $derived(snapshots ? snapshotVersions : releaseVersions);
+    const releaseVersions = $derived(gameVersions.filter((v) => v[1]).map((v) => v[0]));
+    const betaVersions = $derived(gameVersions.map((v) => v[0]));
+    const shownGameVersions = $derived(snapshots ? betaVersions : releaseVersions);
 
     onMount(async () => {
-        const el = document.querySelector("[data-ref=minecraftInputChip]") as HTMLElement | null;
+        const el = document.querySelector("[data-ref=versionInputChip]") as HTMLElement | null;
 
-        el?.addEventListener("focus", () => (minecraftOpen = true));
-        el?.addEventListener("blur", () => (minecraftOpen = false));
+        el?.addEventListener("focus", () => (versionsOpen = true));
+        el?.addEventListener("blur", () => (versionsOpen = false));
 
         if (el) {
-            popup = elementPopup(el, minecraftAutocomplete);
+            popup = elementPopup(el, versionsAutocomplete);
 
             destroyHandlers.push(popup.destroy);
         }
@@ -90,8 +87,8 @@
             errorMessages.push($_("modal.upload_version.error.loaders"));
         }
 
-        if (minecraft.length == 0) {
-            errorMessages.push($_("modal.upload_version.error.minecraft"));
+        if (versions.length == 0) {
+            errorMessages.push($_("modal.upload_version.error.game"));
         }
 
         if (!file) {
@@ -103,14 +100,12 @@
             return;
         }
 
-        // TODO: KubeJS version input
         const data: PackageVersionInit = {
             name,
             version_number,
             changelog: changelog == "" ? undefined : changelog,
-            kubejs,
             loaders,
-            minecraft,
+            game_versions: versions,
         };
 
         const fileData = await file!.arrayBuffer();
@@ -145,7 +140,7 @@
 
 {#if $modals[0]}
     <div
-        class="w-modal relative max-h-[96vh] !overflow-scroll rounded-lg bg-secondary-700 p-8 shadow-xl"
+        class="w-modal relative max-h-[96vh] !overflow-scroll rounded-lg bg-surface-700 p-8 shadow-xl"
     >
         <header class="text-2xl font-bold">{$_("modal.upload_version.title")}</header>
 
@@ -177,7 +172,7 @@
                 {#each allLoaders as loader}
                     <button
                         type="button"
-                        class="chip mx-2 text-base !outline-none {loaders.includes(loader)
+                        class="chip mx-1 text-base !outline-none {loaders.includes(loader)
                             ? 'variant-filled-primary'
                             : 'variant-soft'}"
                         onclick={() => toggleLoader(loader)}>{fixLoaderName(loader)}</button
@@ -189,14 +184,14 @@
                 class="mt-4 grid w-full grid-cols-[1fr_auto] overflow-hidden transition duration-200"
             >
                 <InputChip
-                    bind:this={minecraftInput}
-                    bind:input={minecraftChips}
-                    bind:value={minecraft}
+                    bind:this={versionsInput}
+                    bind:input={versionChips}
+                    bind:value={versions}
                     name="chips"
                     class="variant-form-material !min-w-fit !outline-none"
-                    placeholder={$_("modal.upload_version.placeholder.minecraft")}
-                    whitelist={snapshotVersions}
-                    data-ref="minecraftInputChip"
+                    placeholder={$_("modal.upload_version.placeholder.game")}
+                    whitelist={betaVersions}
+                    data-ref="versionInputChip"
                 />
 
                 <button
@@ -205,35 +200,35 @@
                     onclick={() =>
                         (
                             document.querySelector(
-                                "[data-ref=minecraftInputChip]",
+                                "[data-ref=versionInputChip]",
                             ) as HTMLElement | null
                         )?.focus()}
                 >
-                    <TablerIcon name="caret-down" rotated={minecraftOpen} />
+                    <TablerIcon name="caret-down" rotated={versionsOpen} />
                 </button>
             </div>
 
             <div class="my-2 flex flex-row items-center justify-between">
                 <div class="flex flex-row items-center justify-start">
                     <input class="checkbox" type="checkbox" bind:checked={snapshots} />
-                    <p class="ml-2">Show Snapshots</p>
+                    <p class="ml-2">{$_(`modal.upload_version.checkbox.${siteConfig.betaName}`)}</p>
                 </div>
 
                 <div class="flex flex-row items-center justify-end">
                     <button
                         type="button"
                         class="variant-filled-primary btn btn-sm !outline-none"
-                        onclick={() => (minecraft = shownMinecraftVersions)}
+                        onclick={() => (versions = shownGameVersions)}
                     >
-                        Select All
+                        {$_("modal.upload_version.select_all")}
                     </button>
 
                     <button
                         type="button"
                         class="variant-filled-error btn btn-sm ml-2 !outline-none"
-                        onclick={() => (minecraft = [])}
+                        onclick={() => (versions = [])}
                     >
-                        Clear
+                        {$_("modal.upload_version.clear")}
                     </button>
                 </div>
             </div>
@@ -241,14 +236,14 @@
             <div
                 class="card variant-filled-secondary z-20 ml-7 max-h-48 w-[calc(100%-4rem)] overflow-y-auto rounded-md p-2"
                 tabindex="-1"
-                data-popup="minecraftAutocomplete"
+                data-popup="versionsAutocomplete"
             >
-                {#if minecraftVersions.length > 0}
+                {#if gameVersions.length > 0}
                     <Autocomplete
-                        bind:input={minecraftChips}
-                        options={shownMinecraftVersions.map((v) => ({ value: v, label: v }))}
-                        denylist={minecraft}
-                        on:selection={(ev) => minecraftInput.addChip(ev.detail.value)}
+                        bind:input={versionChips}
+                        options={shownGameVersions.map((v) => ({ value: v, label: v }))}
+                        denylist={versions}
+                        on:selection={(ev) => versionsInput.addChip(ev.detail.value)}
                     />
                 {/if}
             </div>
@@ -263,7 +258,7 @@
             <input
                 class="input variant-form-material mt-1 rounded-lg"
                 type="file"
-                accept=".kjspkg,.tgz,.tar.gz"
+                accept=".tgz,.tar.gz"
                 multiple
                 disabled={loading}
                 bind:files

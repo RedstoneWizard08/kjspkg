@@ -15,14 +15,11 @@ pub struct PackageManifest {
     /// The package description
     pub description: String,
 
-    /// The KubeJS versions this package works on
-    pub kubejs: Vec<String>,
-
     /// The loaders this package works on
     pub loaders: Vec<String>,
 
-    /// The Minecraft versions this package works on
-    pub minecraft: Vec<String>,
+    /// The game versions this package works on
+    pub game_versions: Vec<String>,
 
     /// This package's dependencies
     pub dependencies: Vec<String>,

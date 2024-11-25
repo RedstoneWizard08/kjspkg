@@ -1,0 +1,64 @@
+import "./pkl/ModHost.pkl"
+
+app: ModHost.AppConfig = new {
+    server {
+        host = "127.0.0.1"
+        port = 4000
+    }
+
+    postgres {
+        host = "127.0.0.1"
+        port = 5432
+        user = "modhost"
+        pass = "change me!"
+        database = "modhost"
+    }
+
+    auth {
+        github {
+            client_id = "change me!"
+            client_secret = "change me!"
+        }
+    }
+
+    storage {
+        s3 {
+            region = "change me!"
+            endpoint = "change me!"
+            access_key = "change me!"
+            secret_key = "change me!"
+        }
+
+        buckets {
+            packages = "packages"
+        }
+    }
+
+    ui {
+        app = "ModHost"
+        tagline = "Your home for game mods"
+        show_beta = true
+        default_theme = "modhost"
+
+        game {
+            beta_name = "Beta"
+        }
+
+        packages {
+            kind = "Mods"
+
+            file_formats = List(
+                ".zip",
+                ".tgz",
+                ".tar.gz",
+                ".txz",
+                ".tar.xz"
+            )
+        }
+    }
+}
+
+output {
+    value = app
+    renderer = ModHost.renderer()
+}

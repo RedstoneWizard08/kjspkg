@@ -21,5 +21,15 @@ Secrets*.toml
 ref
 cli/kubejs
 kubejs_test
+.pkl-lsp
 
 *.tgz
+supabase
+pocketbase
+pb_data
+minio_data
+ModHost.toml
+ModHost.toml.*
+config.pkl
+config.kjspkg.pkl
+!apps/server/ModHost.toml

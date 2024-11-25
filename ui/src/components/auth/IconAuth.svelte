@@ -22,6 +22,7 @@
     import { setToken } from "$api";
     import TablerIconUser from "$components/icons/TablerIconUser.svelte";
     import TablerIconCurrentTheme from "$components/icons/TablerIconCurrentTheme.svelte";
+    import { siteConfig } from "$lib/config";
 
     const modals = getModalStore();
 
@@ -69,6 +70,7 @@
             { type: "SEPARATOR", header: $_("menu.theme") },
 
             ...[
+                { label: "ModHost", name: "modhost" },
                 { label: "KJSPKG", name: "kjspkg" },
                 { label: "KJSPKG Lighter", name: "kjspkg-lighter" },
                 { label: "G_cat", name: "kjspkg-gcat" },
@@ -93,7 +95,8 @@
                     action: () => {
                         document.documentElement.classList.add("color-animated");
                         $userPreferencesStore.theme = name;
-                        document.body.dataset.theme = $userPreferencesStore.theme ?? "kjspkg";
+                        document.body.dataset.theme =
+                            $userPreferencesStore.theme ?? siteConfig.defaultTheme;
                     },
                 };
             }),

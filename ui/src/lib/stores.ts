@@ -4,6 +4,7 @@ import { browser } from "$app/environment";
 import { locales } from "svelte-i18n";
 import { getCurrentUser, getPackages } from "$api";
 import { persisted } from "svelte-persisted-store";
+import { siteConfig } from "./config";
 
 export const currentScrollPosition = writable<Vec2>({ x: 0, y: 0 });
 export const currentSearchStore = writable<string>("");
@@ -15,7 +16,7 @@ export const currentPackage = writable<PackageData | undefined>(undefined);
 export const userPreferencesStore = persisted<UserPreferences>("preferences", {
     sortBy: "name",
     locale: browser && get(locales).includes(navigator.language) ? navigator.language : "en-US",
-    theme: "kjspkg",
+    theme: siteConfig.defaultTheme,
     lightMode: false,
     compact: false,
 });

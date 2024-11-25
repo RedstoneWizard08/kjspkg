@@ -1,0 +1,20 @@
+[package]
+name = "include_dir_macros"
+description = "The procedural macro used by include_dir"
+version = "0.7.5"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+ignore.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+
+[features]
+nightly = []
+metadata = []

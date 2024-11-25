@@ -1,8 +1,3 @@
-use std::process::ExitStatus;
-
-use axum::Router;
-use tokio::{spawn, task::JoinHandle};
-
 use crate::{
     abort::ABORT_HANDLES,
     config::GlueConfig,
@@ -10,6 +5,9 @@ use crate::{
     router::{register_embedded, register_proxy},
     runner::start_client,
 };
+use axum::Router;
+use std::process::ExitStatus;
+use tokio::{spawn, task::JoinHandle};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Glue {
@@ -41,6 +39,7 @@ impl Glue {
             self.opts.project.clone().unwrap(),
             self.opts.cmd.clone(),
             self.opts.framework.unwrap_or(Framework::None),
+            &self.opts.env,
         )
         .await
     }

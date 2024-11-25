@@ -1,4 +1,4 @@
-import { getToastStore, type ToastStore } from "@skeletonlabs/skeleton";
+import { type ToastStore } from "@skeletonlabs/skeleton";
 
 export const copyText = async (data: string, toasts: ToastStore) => {
     if (!window.isSecureContext) {
