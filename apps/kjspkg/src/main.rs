@@ -1,7 +1,9 @@
-use clap::Parser;
+use clap::{Command, CommandFactory, Parser};
+use clap_complete::{generate, Generator, Shell};
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-use modhost::{from_log_level, init_logger, GameVersion, ModHost, Result};
+use modhost::{from_log_level, init_logger, loaders, GameVersion, ModHost, Result};
 use serde::{Deserialize, Serialize};
+use std::io::stdout;
 
 pub const PISTON_META_ENDPOINT: &str =
     "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
@@ -11,16 +13,29 @@ pub const PISTON_META_ENDPOINT: &str =
 pub struct Cli {
     #[command(flatten)]
     pub verbose: Verbosity<InfoLevel>,
+
+    #[arg(short = 'C', long)]
+    pub complete: Option<Shell>,
 }
 
 impl Cli {
+    fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
+        generate(gen, cmd, cmd.get_name().to_string(), &mut stdout());
+    }
+
     pub async fn run(self) -> Result<()> {
-        dotenvy::dotenv()?;
+        if let Some(shell) = self.complete {
+            Self::print_completions(shell, &mut Cli::command());
+            return Ok(());
+        }
+
+        let _ = dotenvy::dotenv();
         init_logger(from_log_level(self.verbose.log_level_filter()));
 
         ModHost::new()
             .await?
             .versions(get_minecraft_versions().await?)
+            .loaders(loaders!["Forge", "Fabric", "Quilt", "NeoForge",])
             .router()
             .run()
             .await?;

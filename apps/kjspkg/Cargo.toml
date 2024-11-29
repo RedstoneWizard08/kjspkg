@@ -12,6 +12,7 @@ readme.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
+clap_complete.workspace = true
 dotenvy.workspace = true
 modhost.workspace = true
 reqwest.workspace = true

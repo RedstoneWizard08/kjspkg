@@ -1,4 +1,4 @@
-use crate::{routes::meta::vers::GameVersion, Result};
+use crate::{routes::meta::{loaders::ModLoader, vers::GameVersion}, Result};
 use app_config::AppConfig;
 use db::DbPool;
 use oauth2::basic::BasicClient;
@@ -10,6 +10,7 @@ pub struct AppState {
     pub auth: BasicClient,
     pub bucket: Box<Bucket>,
     pub config: AppConfig,
+    pub loaders: Vec<ModLoader>,
     pub game_versions: Vec<GameVersion>,
 }
 
@@ -20,6 +21,7 @@ impl AppState {
             auth: config.auth.github()?,
             bucket: config.storage.packages()?,
             config: config.clone(),
+            loaders: vec![],
             game_versions: vec![],
         })
     }

@@ -1,6 +1,6 @@
 use crate::{
     glue::make_glue,
-    routes::{create_router, meta::vers::GameVersion},
+    routes::{create_router, meta::{loaders::ModLoader, vers::GameVersion}},
     state::AppState,
     worker::run_worker,
 };
@@ -63,6 +63,12 @@ impl ModHost {
     /// Set the game versions for the API.
     pub fn versions(mut self, vers: Vec<GameVersion>) -> Self {
         self.state.game_versions = vers;
+        self
+    }
+
+    /// Set the mod loaders for the API.
+    pub fn loaders(mut self, loaders: Vec<ModLoader>) -> Self {
+        self.state.loaders = loaders;
         self
     }
 
