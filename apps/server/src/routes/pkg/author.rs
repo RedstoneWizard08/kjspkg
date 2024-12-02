@@ -10,7 +10,9 @@ use db::{
     get_full_package, get_package, get_user, package_authors, users, PackageAuthor, PackageData,
     User,
 };
-use diesel::{insert_into, ExpressionMethods, QueryDsl, SelectableHelper};
+use diesel::{
+    dsl::delete, insert_into, BoolExpressionMethods, ExpressionMethods, QueryDsl, SelectableHelper,
+};
 use diesel_async::RunQueryDsl;
 
 /// Get Package Authors
@@ -116,6 +118,74 @@ pub async fn add_handler(
             package: pkg.id,
             user_id: to_add.id,
         })
+        .execute(&mut conn)
+        .await?;
+
+    Ok(Response::builder()
+        .header("Content-Type", "application/json")
+        .body(Body::new(serde_json::to_string(
+            &get_full_package(pkg.id.to_string(), &mut conn).await?,
+        )?))?)
+}
+
+/// Remove Package Author
+///
+/// Remove an author from a package.
+#[utoipa::path(
+    delete,
+    path = "/api/v1/packages/{id}/authors",
+    tag = "Packages",
+    responses(
+        (status = 200, description = "Package updated successfully!", body = PackageData),
+        (status = UNAUTHORIZED, description = "You do not have access to modify this package!"),
+        (status = BAD_REQUEST, description = "The user is not a member of the project!"),
+        (status = INTERNAL_SERVER_ERROR, description = "Error: package might not exist, or another error occured!"),
+    ),
+    request_body(content = String, description = "The ID/username of the author to remove."),
+    security(
+        ("api_auth_token" = []),
+    ),
+)]
+#[debug_handler]
+pub async fn remove_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    State(state): State<AppState>,
+    body: String,
+) -> Result<Response> {
+    let mut conn = state.pool.get().await?;
+    let user = get_user_from_req(&jar, &headers, &mut conn).await?;
+    let pkg = get_package(id, &mut conn).await?;
+
+    let authors = package_authors::table
+        .filter(package_authors::package.eq(pkg.id))
+        .select(PackageAuthor::as_select())
+        .load(&mut conn)
+        .await?;
+
+    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+        return Ok(Response::builder()
+            .status(StatusCode::UNAUTHORIZED)
+            .body(Body::empty())?);
+    }
+
+    let to_remove = get_user(body, &mut conn).await?;
+
+    if authors.iter().find(|v| v.user_id == to_remove.id).is_none() {
+        return Ok(Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .body(Body::new(
+                "Author is not a member of the project!".to_string(),
+            ))?);
+    }
+
+    delete(package_authors::table)
+        .filter(
+            package_authors::package
+                .eq(pkg.id)
+                .and(package_authors::user_id.eq(to_remove.id)),
+        )
         .execute(&mut conn)
         .await?;
 

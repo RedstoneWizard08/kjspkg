@@ -32,9 +32,12 @@ export const getPackages = async (): Promise<PackageData[] | undefined> => {
     }
 };
 
-export const getPackage = async (id: string | number): Promise<PackageData | undefined> => {
+export const getPackage = async (
+    id: string | number,
+    fetcher = fetch,
+): Promise<PackageData | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${id}`)).json();
+        return await (await fetcher(`/api/v1/packages/${id}`)).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -50,9 +53,10 @@ export const getPackageAuthors = async (pkg: string | number): Promise<User[] | 
 
 export const getPackageVersions = async (
     pkg: string | number,
+    fetcher = fetch,
 ): Promise<PackageVersion[] | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${pkg}/versions`)).json();
+        return await (await fetcher(`/api/v1/packages/${pkg}/versions`)).json();
     } catch (_err: any) {
         return undefined;
     }

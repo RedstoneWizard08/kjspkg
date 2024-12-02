@@ -24,6 +24,7 @@
     import { updateGameVersionsIfNeeded } from "$lib/versions";
     import Drawers from "$components/ui/Drawers.svelte";
     import { siteConfig } from "$lib/config";
+    import { updateModLoadersIfNeeded } from "$lib/loaders";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -55,8 +56,9 @@
 
         document.body.dataset.theme = $userPreferencesStore.theme ?? siteConfig.defaultTheme;
 
-        await updateUserStore();
-        await updateGameVersionsIfNeeded();
+        updateUserStore();
+        updateGameVersionsIfNeeded();
+        updateModLoadersIfNeeded();
     });
 
     beforeNavigate(() => (navigating = true));

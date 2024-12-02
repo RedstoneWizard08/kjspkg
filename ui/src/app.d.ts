@@ -1,11 +1,3 @@
-declare module "tabler-icon:*" {
-    type Attrs = SVGAttributes<SVGSVGElement>;
-    type IconNodeList = [elementName: keyof SvelteHTMLElements, attrs: Attrs][];
-    const nodes: IconNodeList;
-
-    export default nodes;
-}
-
 declare module "$env/static/public" {
     export const PUBLIC_APP: string;
     export const PUBLIC_TAGLINE: string;

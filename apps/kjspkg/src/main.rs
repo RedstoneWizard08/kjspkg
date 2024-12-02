@@ -1,9 +1,14 @@
+use axum::body::Bytes;
 use clap::{Command, CommandFactory, Parser};
 use clap_complete::{generate, Generator, Shell};
 use clap_verbosity_flag::{InfoLevel, Verbosity};
+use db::PackageManifest;
+use flate2::read::GzDecoder;
 use modhost::{from_log_level, init_logger, loaders, GameVersion, ModHost, Result};
 use serde::{Deserialize, Serialize};
 use std::io::stdout;
+use std::io::{Cursor, Read};
+use tar::Archive;
 
 pub const PISTON_META_ENDPOINT: &str =
     "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
@@ -32,7 +37,7 @@ impl Cli {
         let _ = dotenvy::dotenv();
         init_logger(from_log_level(self.verbose.log_level_filter()));
 
-        ModHost::new()
+        ModHost::new(Box::new(verify_package))
             .await?
             .versions(get_minecraft_versions().await?)
             .loaders(loaders!["Forge", "Fabric", "Quilt", "NeoForge",])
@@ -86,4 +91,37 @@ pub async fn get_minecraft_versions() -> Result<Vec<GameVersion>> {
             beta: v.kind != "release",
         })
         .collect())
+}
+
+pub fn verify_package(bytes: Bytes) -> bool {
+    let mut data = GzDecoder::new(Cursor::new(bytes));
+    let mut gunzip = Vec::new();
+
+    if let Err(_) = data.read_to_end(&mut gunzip) {
+        return false;
+    }
+
+    let mut archive = Archive::new(Cursor::new(gunzip));
+
+    if let Ok(entries) = archive.entries() {
+        for entry in entries {
+            if let Ok(mut entry) = entry {
+                if entry.path().unwrap_or_default().to_str().unwrap() == "kjspkg.json" {
+                    let mut data = String::new();
+
+                    if let Err(_) = entry.read_to_string(&mut data) {
+                        return false;
+                    }
+
+                    if let Err(_) = serde_json::from_str::<PackageManifest>(&data) {
+                        return false;
+                    }
+
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
 }

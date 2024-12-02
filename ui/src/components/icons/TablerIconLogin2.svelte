@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TablerIcon from "./TablerIcon.svelte";
+    import Icon from "@iconify/svelte";
 </script>
 
-<TablerIcon name="login-2" />
+<Icon icon="tabler:login-2" height="24" />

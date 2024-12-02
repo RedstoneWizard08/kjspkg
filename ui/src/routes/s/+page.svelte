@@ -17,9 +17,9 @@
     import { guessSortMode } from "$lib/utils";
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import PackageList from "$components/ui/PackageList.svelte";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
@@ -71,7 +71,7 @@
             class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
             onclick={() => ($currentSearchStore = "")}
         >
-            <TablerIcon name="clear-all" class="mr-2" />
+            <Icon icon="tabler:clear-all" height="24" class="mr-2" />
             {$_("search.clear_filters")}
         </button>
     {/if}
@@ -80,11 +80,7 @@
         class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
         onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
     >
-        <TablerIcon name="layout-dashboard" class="mr-2" />
-
-        <!-- <span class="inline md:hidden">
-			{$userPreferencesStore.compact ? 'Show icons' : 'Hide icons'}
-		</span> -->
+        <Icon icon="tabler:layout-dashboard" height="24" class="mr-2" />
 
         <span class="md:inline">
             {$userPreferencesStore.compact
@@ -162,7 +158,7 @@
         >
             {$userPreferencesStore.sortBy != ""
                 ? `${$_("search.sorted_by")} ${$_(`search.sorted_by.${$userPreferencesStore.sortBy}`)}`
-                : "Unsorted"}
+                : $_("search.unsorted")}
         </button>
     </div>
 </div>

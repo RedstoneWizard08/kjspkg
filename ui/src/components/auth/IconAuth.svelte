@@ -10,7 +10,6 @@
     } from "$lib/contextMenu";
     import { user, userPreferencesStore } from "$lib/stores";
     import { getModalStore } from "@skeletonlabs/skeleton";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import TablerIconWorld from "$components/icons/TablerIconWorld.svelte";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import IconBlank from "$components/icons/IconBlank.svelte";
@@ -21,8 +20,8 @@
     import TablerIconLogin from "$components/icons/TablerIconLogin.svelte";
     import { setToken } from "$api";
     import TablerIconUser from "$components/icons/TablerIconUser.svelte";
-    import TablerIconCurrentTheme from "$components/icons/TablerIconCurrentTheme.svelte";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     const modals = getModalStore();
 
@@ -38,7 +37,7 @@
         items: [
             {
                 type: "ITEM",
-                label: "Back",
+                label: $_("auth_icon.back"),
                 icon: TablerIconBack,
                 action: () => openContextMenu(userContextMenu),
             },
@@ -62,7 +61,7 @@
         items: [
             {
                 type: "ITEM",
-                label: "Back",
+                label: $_("auth_icon.back"),
                 icon: TablerIconBack,
                 action: () => openContextMenu(userContextMenu),
             },
@@ -72,8 +71,6 @@
             ...[
                 { label: "ModHost", name: "modhost" },
                 { label: "KJSPKG", name: "kjspkg" },
-                { label: "KJSPKG Lighter", name: "kjspkg-lighter" },
-                { label: "G_cat", name: "kjspkg-gcat" },
                 {},
                 { label: "Wintry", name: "wintry" },
                 { label: "Crimson", name: "crimson" },
@@ -112,13 +109,13 @@
                 out.push(
                     {
                         type: "ITEM",
-                        label: "Your Profile",
+                        label: $_("auth_icon.your_profile"),
                         icon: TablerIconUser,
                         action: () => goto(`/u/${$user.username}`),
                     },
                     {
                         type: "ITEM",
-                        label: "Create Package",
+                        label: $_(`auth_icon.create.${siteConfig.type}`),
                         icon: TablerIconUpload,
                         action: openCreateModal,
                     },
@@ -126,7 +123,7 @@
             } else {
                 out.push({
                     type: "ITEM",
-                    label: "Sign In",
+                    label: $_("auth_icon.login"),
                     icon: TablerIconLogin2,
                     action: () => goto(`/api/v1/auth/github/login?redirect_uri=${$page.url}`),
                 });
@@ -138,22 +135,16 @@
                 },
                 {
                     type: "ITEM",
-                    label: "Change Language",
+                    label: $_("auth_icon.language"),
                     icon: TablerIconWorld,
                     action: () => openContextMenu(langContextMenu),
                 },
                 {
                     type: "ITEM",
-                    label: "Change Theme",
+                    label: $_("auth_icon.theme"),
                     icon: TablerIconColorSwatch,
                     action: () => openContextMenu(themeContextMenu),
                 },
-                // { // This is REALLY buggy right now with the colors, I'm not even sure if it's worth it.
-                //     type: "ITEM",
-                //     label: $userPreferencesStore.lightMode ? "Light Mode" : "Dark Mode",
-                //     icon: TablerIconCurrentTheme,
-                //     action: () => $userPreferencesStore.lightMode = !$userPreferencesStore.lightMode,
-                // },
             );
 
             if ($user) {
@@ -163,7 +154,7 @@
                     },
                     {
                         type: "ITEM",
-                        label: "Sign Out",
+                        label: $_("auth_icon.logout"),
                         icon: TablerIconLogin,
                         action: () => {
                             document.cookie = "";
@@ -180,12 +171,10 @@
 </script>
 
 {#if !$user}
-    <!-- href={"/api/v1/auth/github/login?redirect_uri={$page.url}"} -->
     <button class="variant-soft-primary btn-icon" use:contextMenu={userContextMenu}>
-        <TablerIcon name="user" />
+        <Icon icon="tabler:user" height="24" />
     </button>
 {:else}
-    <!-- href="{base}/me" -->
     <button
         class="btn-icon duration-300 hover:scale-110 hover:brightness-100"
         use:contextMenu={userContextMenu}

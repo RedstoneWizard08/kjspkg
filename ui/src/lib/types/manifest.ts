@@ -1,5 +1,3 @@
-export type ModLoader = "forge" | "fabric" | "quilt" | "neoforge";
-
 export interface PackageManifest {
     /**
      * The package's name.
@@ -31,7 +29,7 @@ export interface PackageManifest {
      * A list of loaders this package works on.
      * Must NOT be empty.
      */
-    loaders: ModLoader[];
+    loaders: string[];
 
     /**
      * A list packages this one depends on.

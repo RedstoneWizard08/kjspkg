@@ -53,6 +53,7 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
     info!("Running `bun run sync`...");
 
     Command::new(&bun_exe)
+        .arg("--bun")
         .arg("run")
         .arg("sync")
         .envs(config.ui.env())
@@ -64,8 +65,9 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
     info!("Running `bun run build`...");
 
     Command::new(&bun_exe)
+        .arg("--bun")
         .arg("run")
-        .arg("build")
+        .arg("dist")
         .envs(config.ui.env())
         .current_dir(&dir)
         .spawn()?

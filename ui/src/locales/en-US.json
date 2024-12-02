@@ -1,9 +1,19 @@
 {
-    "name": "English",
+    "name": "English (United States)",
+
+    "auth_icon.back": "Back",
+    "auth_icon.your_profile": "Your Profile",
+    "auth_icon.create.packages": "Create Package",
+    "auth_icon.create.mods": "Create Mod",
+    "auth_icon.login": "Sign In",
+    "auth_icon.language": "Change Language",
+    "auth_icon.theme": "Change Theme",
+    "auth_icon.logout": "Sign Out",
 
     "site.loading": "Loading",
     "site.beta": "Beta",
     "site.alpha": "Alpha",
+    "site.editing": "Editing %s",
 
     "type.packages": "Package",
     "type.mods": "Mod",
@@ -49,15 +59,11 @@
     "action.upload": "Upload",
     "action.create": "Create",
 
-    "loader.forge": "Forge",
-    "loader.fabric": "Fabric",
-    "loader.quilt": "Quilt",
-    "loader.neoforge": "NeoForge",
-
     "search.title.packages": "Package Search",
     "search.title.mods": "Mod Search",
     "search.browse": "Browse",
     "search.home": "Home",
+    "search.unsorted": "Unsorted",
     "search.found_singular": "Found <span>%d</span>",
     "search.found_plural": "Found <span>%d</span>",
     "search.matching": "matching",

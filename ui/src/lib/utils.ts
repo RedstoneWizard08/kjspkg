@@ -1,8 +1,9 @@
 import markdownit from "markdown-it";
 import { full as emoji } from "markdown-it-emoji";
-import type { ModLoader, PackageData, PackageVersion, SortMode } from "./types";
+import type { PackageVersion, SortMode } from "./types";
 import { get } from "svelte/store";
 import { _ } from "svelte-i18n";
+import { modLoaders } from "./loaders";
 
 const md = markdownit({
     html: false,
@@ -15,7 +16,6 @@ const md = markdownit({
     highlight: (/*str, lang*/) => "",
 }).use(emoji);
 
-export const allLoaders: ModLoader[] = ["forge", "fabric", "quilt", "neoforge"];
 export const markdownInline = (str: string): string => md.renderInline(str);
 export const markdown = (str: string): string => md.render(str);
 export const removeBase = (target: string, base: string) => target.replace(base, "");
@@ -53,18 +53,7 @@ export const getGameVersions = (versions: PackageVersion[]) => {
 };
 
 export const fixLoaderName = (name: string) => {
-    switch (name.toLowerCase()) {
-        case "forge":
-            return get(_)("loader.forge");
-        case "fabric":
-            return get(_)("loader.fabric");
-        case "quilt":
-            return get(_)("loader.quilt");
-        case "neoforge":
-            return get(_)("loader.neoforge");
-        default:
-            return name;
-    }
+    return get(modLoaders)?.find((v) => v.id == name)?.name ?? "Unknown";
 };
 
 export const formatDate = (date: Date) => {

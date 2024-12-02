@@ -1,5 +1,12 @@
 import { get, writable } from "svelte/store";
-import type { User, PackageData, UserPreferences, Vec2, SortMode } from "./types";
+import {
+    type User,
+    type PackageData,
+    type UserPreferences,
+    type Vec2,
+    type SortMode,
+    type LoadingState,
+} from "./types";
 import { browser } from "$app/environment";
 import { locales } from "svelte-i18n";
 import { getCurrentUser, getPackages } from "$api";
@@ -12,6 +19,8 @@ export const packagesStore = writable<PackageData[]>([]);
 export const filteredStore = writable<PackageData[]>([]);
 export const user = writable<User | undefined>(undefined);
 export const currentPackage = writable<PackageData | undefined>(undefined);
+export const editSaving = writable<boolean>(false);
+export const editLoadingState = writable<LoadingState>("loading");
 
 export const userPreferencesStore = persisted<UserPreferences>("preferences", {
     sortBy: "name",

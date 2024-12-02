@@ -1,9 +1,9 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
-import { tablerIconLoader } from "./vite/tabler-loader";
+import { localeGetter } from "./vite/locales";
 
 export default defineConfig({
-    plugins: [tablerIconLoader(), sveltekit()],
+    plugins: [sveltekit(), localeGetter()],
     clearScreen: false,
 
     server: {

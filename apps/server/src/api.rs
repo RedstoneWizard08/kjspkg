@@ -37,6 +37,7 @@ use utoipa::{
         crate::routes::pkg::ver::latest_handler,
         crate::routes::pkg::author::list_handler,
         crate::routes::pkg::author::add_handler,
+        crate::routes::pkg::author::remove_handler,
         crate::routes::pkg::search::search_handler,
         crate::routes::meta::badge::version_handler,
         crate::routes::meta::vers::game_versions_handler,

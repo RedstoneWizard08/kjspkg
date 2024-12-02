@@ -1,9 +1,9 @@
 <script lang="ts">
     import { _, locale } from "svelte-i18n";
     import { onMount } from "svelte";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import ProjectScroller from "$components/ui/ProjectScroller.svelte";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     const addCharDelay = 150;
 
@@ -66,7 +66,7 @@
 
     <div class="mt-16 flex flex-col items-center justify-center space-y-4 md:flex-row md:space-y-0">
         <a href="/s" class="variant-filled-primary btn">
-            <span><TablerIcon name="search" class="mr-2" /></span>
+            <span><Icon icon="tabler:search" height="24" class="mr-2" /></span>
             <span>{$_(`site.browse.${siteConfig.type}`)}</span>
         </a>
     </div>

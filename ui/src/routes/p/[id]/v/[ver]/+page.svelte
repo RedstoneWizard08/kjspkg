@@ -7,13 +7,13 @@
     import { onMount } from "svelte";
     import { getPackage, getPackageVersion, updateVersion } from "$api";
     import { getToastStore, ProgressRadial } from "@skeletonlabs/skeleton";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { currentPackage, user } from "$lib/stores";
     import { beforeNavigate } from "$app/navigation";
     import { Carta, MarkdownEditor } from "carta-md";
     import { tryAggregateVersions } from "$lib/vers";
     import { siteConfig } from "$lib/config";
     import { copyText } from "$lib/clipboard";
+    import Icon from "@iconify/svelte";
 
     const maxVersions = 10;
 
@@ -158,9 +158,9 @@
                     class="mr-2 flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
                 >
                     {#if editing}
-                        <TablerIcon name="device-floppy" />
+                        <Icon icon="tabler:device-floppy" height="24" />
                     {:else}
-                        <TablerIcon name="pencil" />
+                        <Icon icon="tabler:pencil" height="24" />
                     {/if}
                 </button>
             {/if}
@@ -170,7 +170,7 @@
                 download={version.file_name}
                 class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
-                <TablerIcon name="download" />
+                <Icon icon="tabler:download" height="24" />
             </a>
         </div>
     </div>

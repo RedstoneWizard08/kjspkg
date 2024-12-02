@@ -2,10 +2,10 @@
     import { _ } from "svelte-i18n";
     import type { PackageVersion } from "$lib/types";
     import { formatDate } from "$lib/utils";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { deleteVersion } from "$api";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import { downloadFile } from "$lib/download";
+    import Icon from "@iconify/svelte";
 
     interface Props {
         version: PackageVersion;
@@ -78,15 +78,15 @@
 >
     <button
         type="button"
-        class="variant-soft-primary btn p-2 transition-all hover:variant-soft-success"
+        class="variant-filled-secondary btn p-2 transition-all hover:variant-outline-primary"
         onclick={directDownload}
     >
         {#if done}
-            <TablerIcon name="check" />
+            <Icon icon="tabler:check" height="24" />
         {:else if downloading}
-            <TablerIcon name="loader-2" class="animate-spin" />
+            <Icon icon="tabler:loader-2" height="24" class="animate-spin" />
         {:else}
-            <TablerIcon name="download" />
+            <Icon icon="tabler:download" height="24" />
         {/if}
     </button>
 
@@ -102,7 +102,7 @@
             onclick={handleDelete}
             disabled={loading}
         >
-            <TablerIcon name="trash" />
+            <Icon icon="tabler:trash" height="24" />
         </button>
     {/if}
 </a>

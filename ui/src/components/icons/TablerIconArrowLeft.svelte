@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TablerIcon from "./TablerIcon.svelte";
+    import Icon from "@iconify/svelte";
 </script>
 
-<TablerIcon name="arrow-left" />
+<Icon icon="tabler:arrow-left" height="24" />

@@ -1772,14 +1772,18 @@ name = "kjspkg"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "axum",
  "clap",
  "clap-verbosity-flag",
  "clap_complete",
+ "db",
  "dotenvy",
+ "flate2",
  "modhost",
  "reqwest 0.12.9",
  "serde",
  "serde_json",
+ "tar",
  "tokio",
 ]
 
@@ -1977,6 +1981,7 @@ dependencies = [
  "flate2",
  "include_dir",
  "jsglue",
+ "jsonwebtoken",
  "lazy_static",
  "log",
  "oauth2",
@@ -1990,6 +1995,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "sha-1",
  "tar",
  "tempfile",
  "thiserror 2.0.3",

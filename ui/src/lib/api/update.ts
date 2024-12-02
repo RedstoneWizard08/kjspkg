@@ -21,7 +21,40 @@ export const addPackageAuthor = async (
         return await (
             await fetch(`/api/v1/packages/${pkg}/authors`, {
                 method: "PUT",
-                body: "id" in (author as User) ? (author as User).id.toString() : author.toString(),
+                body:
+                    typeof author == "number"
+                        ? author.toString()
+                        : "id" in (author as User)
+                          ? (author as User).id.toString()
+                          : author.toString(),
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+        ).json();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const removePackageAuthor = async (
+    pkg: string | number,
+    author: string | number | User,
+): Promise<PackageData | undefined> => {
+    const token = getToken();
+
+    if (!token) return undefined;
+
+    try {
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/authors`, {
+                method: "DELETE",
+                body:
+                    typeof author == "number"
+                        ? author.toString()
+                        : "id" in (author as User)
+                          ? (author as User).id.toString()
+                          : author.toString(),
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

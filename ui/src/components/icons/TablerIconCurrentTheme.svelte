@@ -1,11 +1,10 @@
 <script lang="ts">
     import { userPreferencesStore } from "$lib/stores";
-    import TablerIconMoon from "./TablerIconMoon.svelte";
-    import TablerIconSun from "./TablerIconSun.svelte";
+    import Icon from "@iconify/svelte";
 </script>
 
 {#if $userPreferencesStore.lightMode}
-    <TablerIconSun />
+    <Icon icon="tabler:sun" height="24" />
 {:else}
-    <TablerIconMoon />
+    <Icon icon="tabler:moon" height="24" />
 {/if}

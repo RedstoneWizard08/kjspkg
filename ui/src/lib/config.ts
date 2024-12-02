@@ -10,6 +10,7 @@ import {
     PUBLIC_SHOW_BETA,
     PUBLIC_TAGLINE,
 } from "$env/static/public";
+import type { ModLoader } from "./loaders";
 
 export interface SiteConfig {
     siteName: string;
@@ -20,6 +21,7 @@ export interface SiteConfig {
     packageFileFormats: string[];
     betaName: "beta" | "snapshot";
     versionFetcher: () => Promise<GameVersion[]>;
+    loaderFetcher: () => Promise<ModLoader[]>;
 }
 
 export const siteConfig: SiteConfig = {
@@ -31,4 +33,5 @@ export const siteConfig: SiteConfig = {
     packageFileFormats: PUBLIC_PKG_FILE_FORMATS.split(","),
     betaName: PUBLIC_GAME_BETA_NAME as "beta" | "snapshot",
     versionFetcher: async () => await (await fetch("/api/v1/meta/game_versions")).json(),
+    loaderFetcher: async () => await (await fetch("/api/v1/meta/loaders")).json(),
 };

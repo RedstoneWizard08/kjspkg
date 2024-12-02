@@ -20,6 +20,7 @@ pub fn router(state: AppState) -> Router<AppState> {
         .route("/:id", delete(info::delete_handler))
         .route("/:id/authors", get(author::list_handler))
         .route("/:id/authors", put(author::add_handler))
+        .route("/:id/authors", delete(author::remove_handler))
         .route("/:id/versions", get(ver::list_handler))
         .route("/:id/versions", put(ver::create_handler))
         .route("/:id/versions/latest", get(ver::latest_handler))

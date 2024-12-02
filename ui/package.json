@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "vite",
+        "dist": "vite build",
         "build": "vite build",
         "preview": "vite preview",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -13,6 +14,9 @@
         "sync": "svelte-kit sync"
     },
     "devDependencies": {
+        "@iconify-json/mdi": "^1.2.1",
+        "@iconify-json/tabler": "^1.2.8",
+        "@iconify/svelte": "^4.0.2",
         "@skeletonlabs/skeleton": "^2.10.3",
         "@skeletonlabs/tw-plugin": "^0.4.0",
         "@sveltejs/adapter-static": "^3.0.6",

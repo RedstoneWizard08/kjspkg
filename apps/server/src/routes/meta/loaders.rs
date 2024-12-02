@@ -23,8 +23,6 @@ pub struct ModLoader {
     ),
 )]
 #[debug_handler]
-pub async fn loaders_handler(
-    State(state): State<AppState>,
-) -> Result<Json<Vec<ModLoader>>> {
+pub async fn loaders_handler(State(state): State<AppState>) -> Result<Json<Vec<ModLoader>>> {
     Ok(Json(state.loaders))
 }

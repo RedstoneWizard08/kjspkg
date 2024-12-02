@@ -1,3 +1,4 @@
+import { siteConfig } from "$lib/config";
 import type { Handle } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
@@ -8,5 +9,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         locale.set(lang);
     }
 
-    return resolve(event);
+    return resolve(event, {
+        transformPageChunk: ({ html }) => html.replace("%default_theme%", siteConfig.defaultTheme),
+    });
 };

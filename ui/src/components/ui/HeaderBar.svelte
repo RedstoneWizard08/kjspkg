@@ -7,8 +7,8 @@
     import IconAuth from "$components/auth/IconAuth.svelte";
     import { onMount } from "svelte";
     import { goto, replaceState } from "$app/navigation";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     let inputElement: HTMLInputElement = $state(null!);
     let active = $state(false);
@@ -48,7 +48,7 @@
 >
     {#snippet lead()}
         <button type="button" onclick={openHomeDrawer} class="mr-2 flex items-center">
-            <TablerIcon name="menu-2" size="28" />
+            <Icon icon="tabler:menu-2" height="28" />
         </button>
 
         <a class="flex items-center gap-2" href="/">
@@ -71,7 +71,7 @@
             transition:fly={{ y: -40 }}
         >
             <a href="/s" class="hidden text-surface-400 lg:inline">
-                <TablerIcon name="search" class="hidden lg:block" />
+                <Icon icon="tabler:search" height="24" class="hidden lg:block" />
             </a>
 
             <input

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
     import { Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     const drawerStore = getDrawerStore();
 
@@ -33,7 +33,7 @@
                     class="btn-primary transition-duration-300 variant-soft-primary btn mr-4 flex flex-row items-center justify-start outline-none transition-all hover:variant-filled-secondary"
                     onclick={closeDrawer}
                 >
-                    <TablerIcon name="home" />
+                    <Icon icon="tabler:home" height="24" />
                     <span>{$_("search.home")}</span>
                 </a>
 
@@ -42,7 +42,7 @@
                     class="btn-primary transition-duration-300 variant-soft-primary btn mr-4 flex flex-row items-center justify-start outline-none transition-all hover:variant-filled-secondary"
                     onclick={closeDrawer}
                 >
-                    <TablerIcon name="search" />
+                    <Icon icon="tabler:search" height="24" />
                     <span>{$_("search.browse")}</span>
                 </a>
             </div>

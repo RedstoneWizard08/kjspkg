@@ -1,57 +1,39 @@
-// @ts-nocheck
+/// <reference path="./tabler.d.ts" />
 
 import type { SvelteHTMLElements, SVGAttributes } from "svelte/elements";
-import alertTriangleData from "tabler-icon:alert-triangle";
-import brandGithubData from "tabler-icon:brand-github";
-import userData from "tabler-icon:user";
-import searchData from "tabler-icon:search";
-import checkData from "tabler-icon:check";
-import colorSwatchData from "tabler-icon:color-swatch";
-import worldData from "tabler-icon:world";
-import downloadData from "tabler-icon:download";
-import pencilData from "tabler-icon:pencil";
-import deviceFloppyData from "tabler-icon:device-floppy";
-import clearAllData from "tabler-icon:clear-all";
-import layoutDashboardData from "tabler-icon:layout-dashboard";
-import plusData from "tabler-icon:plus";
-import trashData from "tabler-icon:trash";
-import uploadData from "tabler-icon:upload";
-import arrowLeftData from "tabler-icon:arrow-left";
-import loginData from "tabler-icon:login";
-import login2Data from "tabler-icon:login-2";
-import caretDownData from "tabler-icon:caret-down";
-import sunData from "tabler-icon:sun";
-import moonData from "tabler-icon:moon";
-import homeData from "tabler-icon:home";
-import menu2Data from "tabler-icon:menu-2";
-import loader2Data from "tabler-icon:loader-2";
 
 export const icons = {
-    // alert-triangle, brand-github, user, search, check, color-swatch, world, download, pencil, device-floppy, clear-all, layout-dashboard
-    "alert-triangle": alertTriangleData,
-    "brand-github": brandGithubData,
-    user: userData,
-    search: searchData,
-    check: checkData,
-    "color-swatch": colorSwatchData,
-    world: worldData,
-    download: downloadData,
-    pencil: pencilData,
-    "device-floppy": deviceFloppyData,
-    "clear-all": clearAllData,
-    "layout-dashboard": layoutDashboardData,
-    plus: plusData,
-    trash: trashData,
-    upload: uploadData,
-    "arrow-left": arrowLeftData,
-    "login-2": login2Data,
-    login: loginData,
-    "caret-down": caretDownData,
-    sun: sunData,
-    moon: moonData,
-    home: homeData,
-    "menu-2": menu2Data,
-    "loader-2": loader2Data,
+    "alert-triangle": () => import("tabler-icon:alert-triangle"),
+    "brand-github": () => import("tabler-icon:brand-github"),
+    "color-swatch": () => import("tabler-icon:color-swatch"),
+    "device-floppy": () => import("tabler-icon:device-floppy"),
+    "clear-all": () => import("tabler-icon:clear-all"),
+    "layout-dashboard": () => import("tabler-icon:layout-dashboard"),
+    "arrow-left": () => import("tabler-icon:arrow-left"),
+    "login-2": () => import("tabler-icon:login-2"),
+    "caret-down": () => import("tabler-icon:caret-down"),
+    "menu-2": () => import("tabler-icon:menu-2"),
+    "loader-2": () => import("tabler-icon:loader-2"),
+    "file-description": () => import("tabler-icon:file-description"),
+    "library-photo": () => import("tabler-icon:library-photo"),
+    user: () => import("tabler-icon:user"),
+    search: () => import("tabler-icon:search"),
+    check: () => import("tabler-icon:check"),
+    world: () => import("tabler-icon:world"),
+    download: () => import("tabler-icon:download"),
+    pencil: () => import("tabler-icon:pencil"),
+    plus: () => import("tabler-icon:plus"),
+    trash: () => import("tabler-icon:trash"),
+    upload: () => import("tabler-icon:upload"),
+    login: () => import("tabler-icon:login"),
+    sun: () => import("tabler-icon:sun"),
+    moon: () => import("tabler-icon:moon"),
+    home: () => import("tabler-icon:home"),
+    settings: () => import("tabler-icon:settings"),
+    tags: () => import("tabler-icon:tags"),
+    license: () => import("tabler-icon:license"),
+    users: () => import("tabler-icon:users"),
+    versions: () => import("tabler-icon:versions"),
 };
 
 export type IconName = keyof typeof icons;

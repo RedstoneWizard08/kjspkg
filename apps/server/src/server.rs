@@ -1,12 +1,15 @@
 use crate::{
     glue::make_glue,
-    routes::{create_router, meta::{loaders::ModLoader, vers::GameVersion}},
+    routes::{
+        create_router,
+        meta::{loaders::ModLoader, vers::GameVersion},
+    },
     state::AppState,
     worker::run_worker,
 };
 use anyhow::Result;
 use app_config::{get_config, AppConfig};
-use axum::{extract::connect_info::IntoMakeServiceWithConnectInfo, serve, Router};
+use axum::{body::Bytes, extract::connect_info::IntoMakeServiceWithConnectInfo, serve, Router};
 use db::{create_connection, run_migrations, DbPool};
 use jsglue::{glue::Glue, util::is_debug};
 use std::net::{IpAddr, SocketAddr};
@@ -23,7 +26,7 @@ pub struct ModHost {
 
 impl ModHost {
     /// Create a new server instance.
-    pub async fn new() -> Result<Self> {
+    pub async fn new(verifier: Box<dyn Fn(Bytes) -> bool + Send + Sync>) -> Result<Self> {
         info!("Starting app...");
         info!("Getting config...");
 
@@ -39,7 +42,7 @@ impl ModHost {
 
         info!("Creating state...");
 
-        let state = AppState::new(pool.clone(), &config)?;
+        let state = AppState::new(pool.clone(), &config, verifier)?;
 
         info!("Creating glue...");
 

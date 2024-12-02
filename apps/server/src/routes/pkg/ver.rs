@@ -16,7 +16,7 @@ use db::{
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use semver::Version;
-use uuid::Uuid;
+use sha1::{Digest, Sha1};
 
 #[derive(
     Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, ToSchema, ToResponse, Serialize, Deserialize,
@@ -312,27 +312,22 @@ pub async fn create_handler(
     let file = file.unwrap();
 
     Version::parse(&version_number)?;
-    // verify_package(&file)?; // Skip for now, TODO!
 
-    let file_id = Uuid::new_v4().to_string();
+    if !(state.verifier)(file.clone()) {
+        Err(anyhow!("Invalid package!"))?;
+    }
+
+    let mut hasher = Sha1::new();
+
+    hasher.update(&file);
+
+    let file_id = format!("{:x}", hasher.finalize());
     let file_name = format!("{}.tgz", file_id);
-
-    // let url = format!(
-    //     "{}/storage/v1/object/{}/{}",
-    //     state.supabase_url, state.packages_bucket, file_name
-    // );
 
     state
         .bucket
         .put_object(format!("/{}", file_name), &file)
         .await?;
-
-    // Client::new()
-    //     .post(url)
-    //     .header("Authorization", format!("Bearer {}", state.supabase_key))
-    //     .body(file)
-    //     .send()
-    //     .await?;
 
     let data = NewPackageVersion {
         package: pkg.id,

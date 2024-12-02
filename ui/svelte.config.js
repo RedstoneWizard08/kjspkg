@@ -16,6 +16,14 @@ const config = {
             $api: "./src/lib/api/index.ts",
         },
     },
+
+    compilerOptions: {
+        sourcemap: true,
+    },
+
+    vitePlugin: {
+        inspector: true,
+    },
 };
 
 export default config;

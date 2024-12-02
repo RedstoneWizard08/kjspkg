@@ -19,6 +19,7 @@ pub(crate) mod bun;
 pub(crate) mod env;
 pub(crate) mod glue;
 pub(crate) mod logger;
+pub(crate) mod macros;
 pub(crate) mod middleware;
 pub(crate) mod routes;
 pub(crate) mod server;
@@ -26,11 +27,10 @@ pub(crate) mod state;
 pub(crate) mod ui;
 pub(crate) mod util;
 pub(crate) mod worker;
-pub(crate) mod macros;
 
 pub use logger::*;
-pub use routes::meta::vers::GameVersion;
 pub use routes::meta::loaders::ModLoader;
+pub use routes::meta::vers::GameVersion;
 pub use server::*;
 
 pub type Result<T, E = app_core::AppError> = app_core::Result<T, E>;

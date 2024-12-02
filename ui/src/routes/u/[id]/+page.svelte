@@ -10,12 +10,12 @@
     import { getToastStore } from "@skeletonlabs/skeleton";
     import PackageList from "$components/ui/PackageList.svelte";
     import { guessSortMode } from "$lib/utils";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import IconBlank from "$components/icons/IconBlank.svelte";
     import { goto } from "$app/navigation";
     import { siteConfig } from "$lib/config";
+    import Icon from "@iconify/svelte";
 
     const id = $derived($page.params.id);
     const toasts = getToastStore();
@@ -102,7 +102,7 @@
                 class="variant-soft-secondary btn mb-4 w-fit hover:variant-filled-primary"
                 onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
             >
-                <TablerIcon name="layout-dashboard" class="mr-2" />
+                <Icon icon="tabler:layout-dashboard" height="24" class="mr-2" />
 
                 <span class="md:inline">
                     {$userPreferencesStore.compact

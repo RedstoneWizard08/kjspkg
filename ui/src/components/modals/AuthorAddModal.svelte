@@ -9,8 +9,8 @@
     } from "@skeletonlabs/skeleton";
     import { addPackageAuthor, getUser, searchUsers } from "$api";
     import type { User } from "$lib/types";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { currentPackage } from "$lib/stores";
+    import Icon from "@iconify/svelte";
 
     const modals = getModalStore();
     let username = $state("");
@@ -89,7 +89,7 @@
                 {#if errored}
                     <!-- svelte-ignore a11y_missing_attribute -->
                     <a class="[&>*]:pointer-events-none" use:popup={errorPopupSettings}>
-                        <TablerIcon name="alert-triangle" />
+                        <Icon icon="tabler:alert-triangle" height="24" />
                     </a>
                 {/if}
             </div>

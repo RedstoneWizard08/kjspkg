@@ -1,13 +1,15 @@
 <script lang="ts">
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
+    import Icon from "@iconify/svelte";
 
     const { link }: { link?: string } = $props();
 </script>
 
 {#if link != null}
     <a href={link} class="variant-soft-primary btn-icon">
-        <TablerIcon name="user" />
+        <Icon icon="tabler:user" height="24" />
     </a>
 {:else}
-    <div class="variant-soft-primary btn-icon cursor-pointer"><TablerIcon name="user" /></div>
+    <div class="variant-soft-primary btn-icon cursor-pointer">
+        <Icon icon="tabler:user" height="24" />
+    </div>
 {/if}

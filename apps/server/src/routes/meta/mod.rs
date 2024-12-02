@@ -1,6 +1,6 @@
 pub mod badge;
-pub mod vers;
 pub mod loaders;
+pub mod vers;
 
 use crate::state::AppState;
 use axum::{routing::get, Router};

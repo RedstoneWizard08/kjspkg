@@ -24,7 +24,7 @@
     ></button>
 
     <div
-        class="card variant-glass-surface absolute z-[999] m-2 p-1"
+        class="card variant-glass-surface absolute z-[999] m-2 max-h-screen overflow-y-scroll p-1"
         style="left: {$contextMenuStore.x}px; top: {$contextMenuStore.y}px;"
         class:invisible={$contextMenuStore.invisible}
         role="menu"
@@ -34,7 +34,7 @@
         onclick={() => ($contextMenuStore = undefined)}
         transition:slide={{ axis: "y", duration: 300 }}
     >
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-1" class:mb-16={$contextMenuStore.items.length > 12}>
             {#key $contextMenuStore}
                 {#each $contextMenuStore.items as item, i}
                     {#if item.type == "SEPARATOR"}

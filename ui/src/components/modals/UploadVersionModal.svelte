@@ -8,22 +8,22 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import { createVersion } from "$api";
-    import type { ModLoader, PackageVersion, PackageVersionInit } from "$lib/types";
+    import type { PackageVersion, PackageVersionInit } from "$lib/types";
     import { currentPackage } from "$lib/stores";
-    import { allLoaders, fixLoaderName } from "$lib/utils";
     import { onDestroy, onMount } from "svelte";
     import { elementPopup, type PopupControls } from "$lib/ui/popups";
     import { goto } from "$app/navigation";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { siteConfig } from "$lib/config";
     import { gameVersions as allGameVersions } from "$lib/versions";
+    import { modLoaders } from "$lib/loaders";
+    import Icon from "@iconify/svelte";
 
     const modals = getModalStore();
 
     let name = $state("");
     let version_number = $state("");
     let changelog = $state("");
-    let loaders: ModLoader[] = $state([]);
+    let loaders: string[] = $state([]);
     let versions: string[] = $state([]);
     let files = $state<FileList>();
 
@@ -129,7 +129,7 @@
         modals.close();
     };
 
-    const toggleLoader = (loader: ModLoader) => {
+    const toggleLoader = (loader: string) => {
         if (loaders.includes(loader)) {
             loaders = loaders.filter((l) => l !== loader);
         } else {
@@ -169,13 +169,13 @@
 
             <div class="flex flex-row items-center lg:m-2 lg:mt-4">
                 <p class="mr-2 hidden lg:block">{$_("modal.upload_version.placeholder.loaders")}</p>
-                {#each allLoaders as loader}
+                {#each $modLoaders ?? [] as loader}
                     <button
                         type="button"
-                        class="chip mx-1 text-base !outline-none {loaders.includes(loader)
+                        class="chip mx-1 text-base !outline-none {loaders.includes(loader.id)
                             ? 'variant-filled-primary'
                             : 'variant-soft'}"
-                        onclick={() => toggleLoader(loader)}>{fixLoaderName(loader)}</button
+                        onclick={() => toggleLoader(loader.id)}>{loader.name}</button
                     >
                 {/each}
             </div>
@@ -204,7 +204,7 @@
                             ) as HTMLElement | null
                         )?.focus()}
                 >
-                    <TablerIcon name="caret-down" rotated={versionsOpen} />
+                    <Icon icon="tabler:caret-down" height="24" rotate={versionsOpen ? 180 : 0} />
                 </button>
             </div>
 

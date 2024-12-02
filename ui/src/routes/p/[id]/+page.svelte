@@ -18,10 +18,10 @@
     import Version from "$components/ui/Version.svelte";
     import { currentPackage, forceUpdatePackagesStore, user } from "$lib/stores";
     import { Carta, MarkdownEditor } from "carta-md";
-    import TablerIcon from "$components/icons/TablerIcon.svelte";
     import { tryAggregateVersions } from "$lib/vers";
     import { siteConfig } from "$lib/config";
     import { copyText } from "$lib/clipboard";
+    import Icon from "@iconify/svelte";
 
     const maxVersions = 10;
 
@@ -206,18 +206,19 @@
                 onclick={onDeletePackage}
                 class="variant-glass-error flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-error"
             >
-                <TablerIcon name="trash" />
+                <Icon icon="tabler:trash" height="24" />
             </button>
-            <button
-                onclick={toggleEditing}
+            <a
+                aria-label="Edit"
+                href="/p/{id}/edit"
                 class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
             >
-                {#if editing}
-                    <TablerIcon name="device-floppy" />
-                {:else}
-                    <TablerIcon name="pencil" />
-                {/if}
-            </button>
+                <!-- {#if editing}
+                    <Icon icon="tabler:device-floppy" height="24" />
+                {:else} -->
+                <Icon icon="tabler:pencil" height="24" />
+                <!-- {/if} -->
+            </a>
         {/if}
     </div>
 
@@ -303,7 +304,7 @@
                     in:fly={{ y: 20 }}
                     onclick={openAddingModal}
                 >
-                    <TablerIcon name="plus" />
+                    <Icon icon="tabler:plus" height="24" />
                     {$_("modal.add_author.trigger")}
                 </button>
             {/if}
@@ -358,7 +359,7 @@
                         {#each sortedVersions as version}
                             <Version
                                 {version}
-                                pkg={$currentPackage.slug}
+                                pkg={$currentPackage!.slug}
                                 {editing}
                                 onDelete={onDeleteVersion}
                             />
@@ -372,7 +373,7 @@
                         in:fly={{ y: 20 }}
                         onclick={openUploadModal}
                     >
-                        <TablerIcon name="upload" class="mr-2" />
+                        <Icon icon="tabler:upload" height="24" class="mr-2" />
                         {$_("package.upload_version")}
                     </button>
                 {/if}
