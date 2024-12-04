@@ -33,3 +33,9 @@ ModHost.toml.*
 config.pkl
 config.kjspkg.pkl
 !apps/server/ModHost.toml
+
+.pgdump
+.minio
+
+# Dev
+docker-compose.yml

@@ -2,6 +2,31 @@ use super::User;
 use crate::schema::packages;
 use chrono::NaiveDateTime;
 use diesel::pg::Pg;
+use diesel_derive_enum::DbEnum;
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    ToSchema,
+    ToResponse,
+    DbEnum,
+    Default,
+)]
+#[ExistingTypePath = "crate::schema::sql_types::Visibility"]
+pub enum PackageVisibility {
+    #[default]
+    Public,
+    Private,
+    Unlisted,
+}
 
 /// A package.
 #[derive(
@@ -58,6 +83,12 @@ pub struct Package {
 
     /// An optional link to the package's wiki.
     pub wiki: Option<String>,
+
+    /// The visibility of a package.
+    pub visibility: PackageVisibility,
+
+    /// The license the package is under.
+    pub license: Option<String>,
 }
 
 /// A model for creating a new package.
@@ -103,6 +134,14 @@ pub struct NewPackage {
     /// An optional link to the package's wiki.
     #[serde(default)]
     pub wiki: Option<String>,
+
+    /// The visibility of a package. Optional. Defaults to public.
+    #[serde(default)]
+    pub visibility: PackageVisibility,
+
+    /// The license the package is under.
+    #[serde(default)]
+    pub license: Option<String>,
 }
 
 /// A package with additional data.
@@ -148,6 +187,12 @@ pub struct PackageData {
 
     /// This package's authors.
     pub authors: Vec<User>,
+
+    /// The visibility of a package.
+    pub visibility: PackageVisibility,
+
+    /// The license the package is under.
+    pub license: Option<String>,
 }
 
 impl Package {
@@ -165,6 +210,8 @@ impl Package {
             updated_at: self.updated_at,
             views: self.views,
             downloads: self.downloads,
+            visibility: self.visibility,
+            license: self.license,
             authors,
         }
     }

@@ -7,13 +7,16 @@
     import Icon from "@iconify/svelte";
     import {
         Autocomplete,
+        getModalStore,
         popup,
         type AutocompleteOption,
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import { getLicenses } from "$lib/licenses";
+    import type { ProjectVisibility } from "$lib/types";
 
     const id = $derived($page.params.id);
+    const modals = getModalStore();
 
     let slug = $state("");
     let name = $state("");
@@ -21,6 +24,7 @@
     let issues = $state("");
     let wiki = $state("");
     let license = $state("");
+    let visibility = $state<ProjectVisibility>("Public");
     let allLicenses = $state<AutocompleteOption<string, string>[]>([]);
 
     const realRepo = $derived(repo != "" ? repo : undefined);
@@ -36,7 +40,8 @@
         repo = $currentPackage.source ?? "";
         issues = $currentPackage.issues ?? "";
         wiki = $currentPackage.wiki ?? "";
-        // license = $currentPackage.license ?? ""; // TODO
+        license = $currentPackage.license ?? "";
+        visibility = $currentPackage.visibility;
 
         allLicenses = (await getLicenses()).map((v) => ({ value: v, label: v }));
     });
@@ -46,10 +51,11 @@
 
         await updatePackage(id, {
             name,
+            visibility,
             source: realRepo,
             issues: realIssues,
             wiki: realWiki,
-            // license: realLicense, // TODO
+            license: realLicense,
         });
 
         $currentPackage = await getPackage(id);
@@ -59,9 +65,17 @@
         repo = $currentPackage?.source ?? repo;
         issues = $currentPackage?.issues ?? issues;
         wiki = $currentPackage?.wiki ?? wiki;
-        // license = $currentPackage.license ?? ""; // TODO
+        license = $currentPackage?.license ?? license;
+        visibility = $currentPackage?.visibility ?? visibility;
 
         $editSaving = false;
+    };
+
+    const deleteProject = async () => {
+        modals.trigger({
+            type: "component",
+            component: "confirmDelete",
+        });
     };
 
     const licensesPopup: PopupSettings = {
@@ -74,6 +88,11 @@
         license = ev.detail.value;
     };
 </script>
+
+<p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+    <Icon icon="tabler:settings" height="24" class="mr-2" />
+    General Settings
+</p>
 
 <div class="card variant-soft-secondary w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
@@ -149,7 +168,7 @@
 <div class="card variant-soft-secondary w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:license" height="24" class="mr-2" />
-        License [WIP]
+        License
     </p>
 
     <input
@@ -169,11 +188,38 @@
     </div>
 </div>
 
-<button
-    type="button"
-    class="variant-filled-primary btn mt-2 flex flex-row items-center justify-center rounded-lg"
-    onclick={save}
->
-    <Icon icon="tabler:device-floppy" height="24" class="mr-2" />
-    Save
-</button>
+<div class="card variant-soft-secondary w-full p-4">
+    <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+        <Icon icon="tabler:eye" height="24" class="mr-2" />
+        Visibility
+    </p>
+
+    <select
+        class="select variant-ghost-primary cursor-pointer !outline-none"
+        bind:value={visibility}
+    >
+        <option value="Public">Public</option>
+        <option value="Private">Private</option>
+        <option value="Unlisted">Unlisted</option>
+    </select>
+</div>
+
+<div class="flex flex-row items-center justify-start gap-2">
+    <button
+        type="button"
+        class="variant-filled-primary btn mt-2 flex flex-row items-center justify-center rounded-lg transition-all hover:variant-ghost-primary hover:text-token"
+        onclick={save}
+    >
+        <Icon icon="tabler:device-floppy" height="24" class="mr-2" />
+        Save
+    </button>
+
+    <button
+        type="button"
+        class="variant-filled-error btn mt-2 flex flex-row items-center justify-center rounded-lg transition-all hover:variant-ghost-error"
+        onclick={deleteProject}
+    >
+        <Icon icon="tabler:trash" height="24" class="mr-2" />
+        Delete Project
+    </button>
+</div>

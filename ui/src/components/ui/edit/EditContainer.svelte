@@ -46,7 +46,7 @@
         >
     </h1>
 
-    <div class="flex w-full flex-row gap-2">
+    <div class="flex w-full flex-col gap-2 md:flex-row">
         <EditNav {id} />
 
         <section

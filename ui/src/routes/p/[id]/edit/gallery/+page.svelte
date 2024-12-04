@@ -27,6 +27,11 @@
     };
 </script>
 
+<p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+    <Icon icon="tabler:library-photo" height="24" class="mr-2" />
+    Gallery
+</p>
+
 <button
     type="button"
     class="variant-filled-primary btn mt-2 flex flex-row items-center justify-center rounded-lg"

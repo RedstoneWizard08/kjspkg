@@ -11,6 +11,7 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use db::{
     get_full_package, get_package, package_authors, packages, Package, PackageAuthor, PackageData,
+    PackageVisibility,
 };
 use diesel::{delete, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -38,6 +39,12 @@ pub struct PartialPackage {
 
     #[serde(default)]
     pub wiki: Option<String>,
+
+    #[serde(default)]
+    pub visibility: Option<PackageVisibility>,
+
+    #[serde(default)]
+    pub license: Option<String>,
 }
 
 /// Get Package
@@ -130,6 +137,8 @@ pub async fn update_handler(
             packages::source.eq(data.source.map(|v| Some(v)).unwrap_or(pkg.source)),
             packages::issues.eq(data.issues.map(|v| Some(v)).unwrap_or(pkg.issues)),
             packages::wiki.eq(data.wiki.map(|v| Some(v)).unwrap_or(pkg.wiki)),
+            packages::visibility.eq(data.visibility.unwrap_or(pkg.visibility)),
+            packages::license.eq(data.license.map(|v| Some(v)).unwrap_or(pkg.license)),
         ))
         .returning(Package::as_select())
         .get_result(&mut conn)

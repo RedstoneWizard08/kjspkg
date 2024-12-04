@@ -33,6 +33,7 @@ derive_builder = "0.20.2"
 diesel = { version = "2.2.5", features = ["chrono", "postgres", "r2d2"] }
 diesel-async = { version = "0.5.1", features = ["tokio", "postgres", "deadpool"] }
 diesel_async_migrations = "0.15.0"
+diesel-derive-enum = { version = "2.1.0", features = ["postgres"] }
 dirs = "5.0.1"
 dotenvy = "0.15.7"
 eyre = "0.6.12"

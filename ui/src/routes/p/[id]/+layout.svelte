@@ -1,0 +1,387 @@
+<script lang="ts">
+    import { beforeNavigate, goto } from "$app/navigation";
+    import { _ } from "svelte-i18n";
+    import { page } from "$app/stores";
+    import type { ProjectVisibility, LoadingState, PackageData, PackageVersion } from "$lib/types";
+    import {
+        fixLoaderName,
+        getLoaders,
+        getGameVersions,
+        markdownInline,
+        formatDate,
+    } from "$lib/utils";
+    import { fly } from "svelte/transition";
+    import { onMount } from "svelte";
+    import { getPackage, getPackageVersion, getPackageVersions } from "$api";
+    import { getToastStore } from "@skeletonlabs/skeleton";
+    import { base } from "$app/paths";
+    import { currentPackage, user } from "$lib/stores";
+    import { tryAggregateVersions } from "$lib/vers";
+    import { siteConfig } from "$lib/config";
+    import { copyText } from "$lib/clipboard";
+    import Icon from "@iconify/svelte";
+    import { downloadFile } from "$lib/download";
+
+    const pkgRoutes = ["/p/[id]", "/p/[id]/v/[ver]"];
+    const maxVersions = 10;
+
+    const id = $derived($page.params.id);
+    const toasts = getToastStore();
+    const isVersion = $derived("ver" in $page.params);
+    const ver = $derived(isVersion ? $page.params.ver : undefined);
+
+    let loadingState: LoadingState = $state("loading");
+    let versions: PackageVersion[] = $state([]);
+
+    let name = $state("");
+    let repo = $state("");
+    let issues = $state("");
+    let wiki = $state("");
+    let vis = $state<ProjectVisibility>("Public");
+    let version = $state<PackageVersion | undefined>(undefined);
+    let downloading = $state(false);
+    let done = $state(false);
+
+    let doneTimeout: number | undefined;
+
+    const loaders = $derived(getLoaders(versions));
+    const gameVersions = $derived(getGameVersions(versions));
+
+    const hasRepo = $derived(repo != "");
+    const hasIssues = $derived(issues != "");
+    const hasWiki = $derived(wiki != "");
+
+    const canEdit = $derived(
+        $currentPackage &&
+            $user &&
+            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id),
+    );
+
+    const visibility = $derived(
+        vis == "Public" ? "Public" : vis == "Private" ? "Private" : "Unlisted",
+    );
+
+    const copyId = async () => {
+        if (!$currentPackage) return;
+
+        await copyText($currentPackage.id.toString(), toasts);
+    };
+
+    const copyVersionId = async () => {
+        if (!version) return;
+
+        await copyText(version.id.toString(), toasts);
+    };
+
+    onMount(async () => {
+        $currentPackage = await getPackage(id);
+        versions = (await getPackageVersions(id)) ?? [];
+
+        if ($currentPackage) {
+            name = $currentPackage.name;
+            repo = $currentPackage.source ?? "";
+            issues = $currentPackage.issues ?? "";
+            wiki = $currentPackage.wiki ?? "";
+            vis = $currentPackage.visibility;
+
+            if (isVersion) {
+                version = await getPackageVersion(id, ver!);
+            }
+
+            loadingState = "ready";
+        } else {
+            loadingState = "failed";
+        }
+    });
+
+    beforeNavigate(({ to }) => {
+        if (pkgRoutes.includes(to?.route.id ?? "")) return;
+
+        $currentPackage = undefined;
+        loadingState = "loading";
+    });
+
+    const directDownload = async (ev: Event) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        if (!version || !$currentPackage) return;
+
+        downloading = true;
+
+        const fileName = `${$currentPackage.slug}_${version.version_number}.mhpkg`;
+
+        await downloadFile(
+            `/api/v1/packages/${$currentPackage}/versions/${version.id}/download`,
+            fileName,
+        );
+
+        downloading = false;
+        done = true;
+
+        if (doneTimeout) clearTimeout(doneTimeout);
+
+        doneTimeout = setTimeout(() => {
+            done = false;
+        }, 1000) as any;
+    };
+
+    const reset = async () => {
+        $currentPackage = await getPackage(id);
+        versions = (await getPackageVersions(id)) ?? [];
+
+        if ($currentPackage) {
+            name = $currentPackage.name;
+            repo = $currentPackage.source ?? "";
+            issues = $currentPackage.issues ?? "";
+            wiki = $currentPackage.wiki ?? "";
+            vis = $currentPackage.visibility;
+
+            if (isVersion) {
+                version = await getPackageVersion(id, ver!);
+            }
+
+            loadingState = "ready";
+        } else {
+            loadingState = "failed";
+        }
+    };
+
+    const aggVersions = $derived(tryAggregateVersions(gameVersions));
+    const { children } = $props();
+</script>
+
+<svelte:head>
+    <title>{$currentPackage?.name ?? $_("site.loading")} - {siteConfig.siteName}</title>
+</svelte:head>
+
+{#if loadingState == "loading"}
+    <div class="placeholder m-2 mx-auto w-32 animate-pulse"></div>
+{:else if loadingState == "ready" && $currentPackage}
+    <div class="flex w-full flex-col gap-2 md:flex-row">
+        <div
+            class="card flex w-full flex-col items-start justify-start gap-2 self-baseline p-4 md:w-[30%]"
+        >
+            <div class="flex w-full flex-row items-center justify-between">
+                <a href="/p/{id}" class="text-2xl font-bold text-primary-500">
+                    {name}
+                </a>
+
+                <div class="flex flex-row items-center justify-end gap-2">
+                    {#if isVersion}
+                        <button
+                            type="button"
+                            class="btn p-2 transition-all hover:variant-filled-primary"
+                            onclick={directDownload}
+                        >
+                            {#if done}
+                                <Icon icon="tabler:check" height="24" />
+                            {:else if downloading}
+                                <Icon icon="tabler:loader-2" height="24" class="animate-spin" />
+                            {:else}
+                                <Icon icon="tabler:download" height="24" />
+                            {/if}
+                        </button>
+                    {/if}
+
+                    {#if canEdit}
+                        <a
+                            aria-label="Edit"
+                            href="/p/{id}/edit"
+                            class="flex flex-row items-center justify-center rounded-full p-2 transition-all hover:variant-filled-primary"
+                        >
+                            <Icon icon="tabler:pencil" height="24" />
+                        </a>
+                    {/if}
+                </div>
+            </div>
+
+            {#if isVersion}
+                <span class="text-lg font-bold">
+                    {version!.name}
+                </span>
+            {/if}
+
+            <span
+                class="variant-filled-secondary badge flex flex-row items-center justify-center px-2"
+            >
+                {#if vis == "Public"}
+                    <Icon icon="tabler:eye" height="22" class="mr-2" />
+                {:else}
+                    <Icon icon="tabler:eye-off" height="22" class="mr-2" />
+                {/if}
+                {visibility}
+            </span>
+
+            <hr class="w-full" />
+
+            <span class="select-text *:select-text">
+                {@html markdownInline($currentPackage.description)}
+            </span>
+
+            {#if isVersion}
+                <span class="select-text *:select-text">
+                    <span class="font-bold">{$_("package.version.prefix")}</span>
+                    {version?.version_number}
+                </span>
+            {/if}
+
+            <span class="text-sm opacity-50">
+                <span
+                    >{isVersion ? version!.downloads : $currentPackage.downloads}
+                    {(isVersion ? version!.downloads : $currentPackage.downloads) == 1
+                        ? $_("list.download_singluar")
+                        : $_("list.download_plural")}</span
+                >
+                &bull;
+                <span
+                    >{$currentPackage.views}
+                    {$currentPackage.views == 1
+                        ? $_("list.view_singular")
+                        : $_("list.view_plural")}</span
+                >
+            </span>
+
+            <hr class="w-full" />
+
+            <dt class="text-sm opacity-50">{$_("package.available_for")}</dt>
+
+            {#if loaders.length > 0 || gameVersions.length > 0}
+                {#if loaders.length > 0}
+                    <dd class="flex flex-wrap gap-1">
+                        {#each loaders as loader}
+                            <span class="variant-filled-primary badge select-text"
+                                >{fixLoaderName(loader)}</span
+                            >
+                        {/each}
+                    </dd>
+                {/if}
+                {#if gameVersions.length > 0}
+                    <dd class="flex flex-wrap gap-1">
+                        {#if aggVersions.length > maxVersions}
+                            {#each aggVersions.slice(0, maxVersions) as version}
+                                <span class="variant-filled-primary badge select-text"
+                                    >{version}</span
+                                >
+                            {/each}
+                            <span class="variant-filled-primary badge select-text">...</span>
+                        {:else}
+                            {#each aggVersions as version}
+                                <span class="variant-filled-primary badge select-text"
+                                    >{version}</span
+                                >
+                            {/each}
+                        {/if}
+                    </dd>
+                {/if}
+            {:else}
+                <dd class="flex flex-wrap gap-1">
+                    <span class="variant-filled-primary badge select-text"
+                        >{$_("package.unknown")}</span
+                    >
+                </dd>
+            {/if}
+
+            <hr class="w-full" />
+
+            {#if hasRepo}
+                <a href={repo} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.source")}
+                </a>
+            {/if}
+
+            {#if hasIssues}
+                <a href={issues} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.issues")}
+                </a>
+            {/if}
+
+            {#if hasWiki}
+                <a href={wiki} class="anchor select-text no-underline" target="_blank">
+                    {$_("package.wiki")}
+                </a>
+            {/if}
+
+            <hr class="w-full" />
+
+            <p class="text-sm opacity-50">{$_("package.version.published")}</p>
+            <p class="mb-1">{formatDate(new Date($currentPackage.created_at))}</p>
+
+            <p class="text-sm opacity-50">{$_("package.version.updated")}</p>
+            <p>{formatDate(new Date($currentPackage.updated_at))}</p>
+
+            <hr class="w-full" />
+
+            <dt class="text-sm opacity-50">{$_("package.created_by")}</dt>
+
+            {#each $currentPackage.authors as author}
+                <a
+                    class="card flex w-full flex-row items-center p-2 hover:variant-soft-primary"
+                    href="{base}/u/{author.username}"
+                    in:fly={{ y: 20 }}
+                >
+                    <img
+                        src="https://avatars.githubusercontent.com/u/{author.github_id}"
+                        alt="author's profile afirst child cssvatar"
+                        class="my-auto mr-4 aspect-square h-8 rounded-token"
+                    />
+                    {author.username}
+                </a>
+            {/each}
+
+            <hr class="w-full" />
+
+            <span class="flex flex-row items-center justify-end">
+                {$_(`id.${siteConfig.type}`)}&nbsp;
+                <button class="anchor select-text no-underline" onclick={copyId}
+                    >{$currentPackage.id}</button
+                >
+            </span>
+
+            {#if isVersion}
+                <span class="flex flex-row items-center justify-end">
+                    {$_("id.version")}&nbsp;
+                    <button class="anchor select-text no-underline" onclick={copyVersionId}
+                        >{version?.id}</button
+                    >
+                </span>
+            {/if}
+        </div>
+
+        <div class="flex w-full flex-col items-start justify-start gap-2 md:w-[70%]">
+            {@render children?.()}
+        </div>
+    </div>
+{:else if loadingState == "failed"}
+    <!-- <p>Something went wrong (this package doesn't seem to exist)</p> -->
+    {(() => {
+        toasts.trigger({
+            message: `Mod/Package Broken`,
+            hideDismiss: true,
+            timeout: 5000,
+            background: "variant-filled-error",
+        });
+
+        history.back();
+
+        return undefined;
+    })() || "Please wait, redirecting..."}
+{:else}
+    <div class="flex flex-col items-center justify-center">
+        <span>Something went horribly,&nbsp;<i>horribly</i>&nbsp;wrong.</span>
+
+        <span
+            >Try <button type="button" class="anchor" onclick={reset}
+                >refreshing the page data</button
+            >.</span
+        >
+
+        <span
+            >If the issue persists, please open an issue on our <a
+                class="anchor"
+                href="https://github.com/RedstoneWizard08/ModHost/issues/new"
+                target="_blank">GitHub</a
+            >.</span
+        >
+    </div>
+{/if}

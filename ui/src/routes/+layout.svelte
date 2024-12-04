@@ -25,6 +25,8 @@
     import Drawers from "$components/ui/Drawers.svelte";
     import { siteConfig } from "$lib/config";
     import { updateModLoadersIfNeeded } from "$lib/loaders";
+    import ConfirmDeleteModal from "$components/modals/ConfirmDeleteModal.svelte";
+    import ConfirmDeleteVersionModal from "$components/modals/ConfirmDeleteVersionModal.svelte";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -33,6 +35,8 @@
         addAuthor: { ref: AuthorAddModal },
         uploadVersion: { ref: UploadVersionModal },
         createPackage: { ref: CreatePackageModal },
+        confirmDelete: { ref: ConfirmDeleteModal },
+        confirmDeleteVersion: { ref: ConfirmDeleteVersionModal },
     };
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });

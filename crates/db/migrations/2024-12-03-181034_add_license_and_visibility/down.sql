@@ -1,0 +1,4 @@
+ALTER TABLE packages DROP COLUMN IF EXISTS license;
+ALTER TABLE packages DROP COLUMN IF EXISTS visibility;
+
+DROP TYPE IF EXISTS Visibility;

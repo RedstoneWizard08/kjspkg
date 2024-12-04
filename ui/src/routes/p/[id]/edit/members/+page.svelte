@@ -142,12 +142,12 @@
     };
 </script>
 
-<div class="card variant-soft-secondary w-full space-y-2 p-4">
-    <p class="mb-4 flex flex-row items-center justify-start text-primary-500">
-        <Icon icon="tabler:users" height="24" class="mr-2" />
-        Project Members
-    </p>
+<p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+    <Icon icon="tabler:users" height="24" class="mr-2" />
+    Manage Members
+</p>
 
+<div class="card variant-soft-secondary w-full space-y-2 p-4">
     {#each displayAuthors as author}
         <a
             class="card flex flex-row items-center justify-between p-2 hover:variant-soft-primary"

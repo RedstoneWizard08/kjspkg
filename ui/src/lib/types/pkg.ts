@@ -1,5 +1,7 @@
 import type { User } from "./user";
 
+export type ProjectVisibility = "Public" | "Private" | "Unlisted";
+
 export interface Package {
     /**
      * The ID of the package.
@@ -55,6 +57,16 @@ export interface Package {
      * The amount of views this package gets.
      */
     views: number;
+
+    /**
+     * The visibility of a package.
+     */
+    visibility: ProjectVisibility;
+
+    /**
+     * The license a package is under.
+     */
+    license?: string;
 }
 
 export interface PackageUpdate {
@@ -87,6 +99,16 @@ export interface PackageUpdate {
      * An optional link to this package's wiki.
      */
     wiki?: string;
+
+    /**
+     * The visibility of a package.
+     */
+    visibility?: ProjectVisibility;
+
+    /**
+     * The license a package is under.
+     */
+    license?: string;
 }
 
 export interface NewPackage {
@@ -124,6 +146,16 @@ export interface NewPackage {
      * An optional link to this package's wiki.
      */
     wiki?: string;
+
+    /**
+     * The visibility of a package.
+     */
+    visibility?: ProjectVisibility;
+
+    /**
+     * The license a package is under.
+     */
+    license?: string;
 }
 
 export interface PackageData extends Package {

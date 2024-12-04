@@ -27,6 +27,11 @@
     };
 </script>
 
+<p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+    <Icon icon="tabler:tags" height="24" class="mr-2" />
+    Manage Tags
+</p>
+
 <p class="h3">Coming Soon!</p>
 
 <!-- <button

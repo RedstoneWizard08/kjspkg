@@ -207,6 +207,8 @@ mh_converters: Mapping<Class | String, (unknown) -> Any> = new {
     [UIConfig] = (cfg) -> fixUIConfig(cfg)
 }
 
+/// Create the TOML renderer for ModHost configs, with ModHost's
+/// converters applied to output a valid config.
 function renderer(): toml.Renderer = new {
     converters = mh_converters
 }

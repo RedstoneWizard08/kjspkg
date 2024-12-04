@@ -33,7 +33,14 @@
     };
 </script>
 
-<MarkdownEditor carta={editor} bind:value={readme} mode="tabs" />
+<p class="mb-2 flex flex-row items-center justify-start text-primary-500">
+    <Icon icon="tabler:file-description" height="24" class="mr-2" />
+    Edit Description
+</p>
+
+<div class="card variant-soft-secondary w-full p-4">
+    <MarkdownEditor carta={editor} bind:value={readme} mode="tabs" />
+</div>
 
 <button
     type="button"

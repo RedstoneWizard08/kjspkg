@@ -40,6 +40,11 @@ app: ModHost.AppConfig = new {
         show_beta = true
         default_theme = "modhost"
 
+        favicon {
+            ico = "default"
+            png = "default"
+        }
+
         game {
             beta_name = "Beta"
         }
