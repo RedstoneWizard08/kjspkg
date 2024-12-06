@@ -180,12 +180,12 @@
             </span>
 
             <span class="mt-auto hidden text-sm opacity-50 md:inline">
-                Website designed with love by
+                Powered by
                 <a
-                    href="https://github.com/RedstoneWizard08"
+                    href="https://github.com/RedstoneWizard08/ModHost"
                     class="anchor no-underline"
-                    target="_blank">RedstoneWizard08</a
-                > &lt;3
+                    target="_blank">ModHost</a
+                >
             </span>
         </footer>
     </div>

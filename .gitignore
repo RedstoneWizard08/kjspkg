@@ -32,6 +32,7 @@ ModHost.toml
 ModHost.toml.*
 config.pkl
 config.kjspkg.pkl
+config.astro.pkl
 !apps/server/ModHost.toml
 
 .pgdump

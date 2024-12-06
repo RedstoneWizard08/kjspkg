@@ -1,28 +1,11 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
-    import { onDestroy, onMount } from "svelte";
-    import {
-        getGalleryImage,
-        getPackage,
-        getPackageVersion,
-        updateGalleryImage,
-        updateVersion,
-    } from "$api";
+    import { onMount } from "svelte";
+    import { getGalleryImage, getPackage, updateGalleryImage } from "$api";
     import { currentPackage, editSaving } from "$lib/stores";
     import Icon from "@iconify/svelte";
-    import type { PackageVersion } from "$lib/types";
-    import {
-        Autocomplete,
-        getModalStore,
-        InputChip,
-        popup,
-        type PopupSettings,
-    } from "@skeletonlabs/skeleton";
-    import { siteConfig } from "$lib/config";
-    import { modLoaders } from "$lib/loaders";
-    import { gameVersions as allGameVersions } from "$lib/versions";
-    import { elementPopup, type PopupControls } from "$lib/ui/popups";
+    import { getModalStore, popup, type PopupSettings } from "@skeletonlabs/skeleton";
     import { Carta, MarkdownEditor } from "carta-md";
     import type { PublicGalleryImage } from "$lib/types/gallery";
 
@@ -142,6 +125,6 @@
         onclick={deleteImage}
     >
         <Icon icon="tabler:trash" height="24" class="mr-2" />
-        Delete Version
+        Delete Image
     </button>
 </div>

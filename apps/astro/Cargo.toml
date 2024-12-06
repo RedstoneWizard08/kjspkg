@@ -1,0 +1,33 @@
+[package]
+name = "astro"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+clap.workspace = true
+clap-verbosity-flag.workspace = true
+clap_complete.workspace = true
+db.workspace = true
+dotenvy.workspace = true
+flate2.workspace = true
+itertools.workspace = true
+lenient_semver.workspace = true
+modhost.workspace = true
+once_cell.workspace = true
+parse-wiki-text-2.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+ron.workspace = true
+semver.workspace = true
+serde.workspace = true
+serde-xml-rs.workspace = true
+serde_json.workspace = true
+tar.workspace = true
+tokio.workspace = true

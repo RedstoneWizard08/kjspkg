@@ -25,13 +25,6 @@
 
     const modals = getModalStore();
 
-    const openCreateModal = () => {
-        modals.trigger({
-            type: "component",
-            component: "createPackage",
-        });
-    };
-
     const langContextMenu = $derived({
         initiator: "left" as const,
         items: [
@@ -71,6 +64,7 @@
             ...[
                 { label: "ModHost", name: "modhost" },
                 { label: "KJSPKG", name: "kjspkg" },
+                { label: "Astro", name: "astro" },
                 {},
                 { label: "Wintry", name: "wintry" },
                 { label: "Crimson", name: "crimson" },
@@ -117,7 +111,7 @@
                         type: "ITEM",
                         label: $_(`auth_icon.create.${siteConfig.type}`),
                         icon: TablerIconUpload,
-                        action: openCreateModal,
+                        action: () => goto("/new"),
                     },
                 );
             } else {

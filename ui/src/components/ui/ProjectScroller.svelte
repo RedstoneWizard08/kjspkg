@@ -47,6 +47,8 @@
         >
             <div
                 class="flex min-w-full flex-shrink-0 animate-scroll gap-6 whitespace-nowrap"
+                class:anim-reverse={!(index % 2 == 0)}
+                class:anim-mid={!(index % 2 == 0)}
                 bind:this={rowElements[index]}
             >
                 {#each items as pkg}

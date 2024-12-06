@@ -27,7 +27,11 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
     if config.ui.favicon_ico != "default" {
         info!("Downloading favicon.ico...");
 
-        let data = reqwest::get(&config.ui.favicon_ico).await?.bytes().await?;
+        let data = if config.ui.favicon_ico.starts_with("http") {
+            reqwest::get(&config.ui.favicon_ico).await?.bytes().await?
+        } else {
+            fs::read(&config.ui.favicon_ico)?.into()
+        };
 
         fs::write(dir.join("static/favicon.ico"), data)?;
     }
@@ -35,7 +39,11 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
     if config.ui.favicon_png != "default" {
         info!("Downloading favicon.png...");
 
-        let data = reqwest::get(&config.ui.favicon_png).await?.bytes().await?;
+        let data = if config.ui.favicon_png.starts_with("http") {
+            reqwest::get(&config.ui.favicon_png).await?.bytes().await?
+        } else {
+            fs::read(&config.ui.favicon_png)?.into()
+        };
 
         fs::write(dir.join("static/favicon.png"), data)?;
     }

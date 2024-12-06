@@ -8,6 +8,7 @@ import { kjspkgTheme } from "./src/themes/kjspkg";
 import { lighterTheme } from "./src/themes/kjspkg-lighter";
 import { gcatTheme } from "./src/themes/kjspkg-gcat";
 import { serenityTheme } from "./src/themes/serenity";
+import { astroTheme } from "./src/themes/astro";
 
 const config = {
     darkMode: "class",
@@ -44,7 +45,14 @@ const config = {
         typography,
         skeleton({
             themes: {
-                custom: [modhostTheme, kjspkgTheme, lighterTheme, gcatTheme, serenityTheme],
+                custom: [
+                    modhostTheme,
+                    kjspkgTheme,
+                    astroTheme,
+                    lighterTheme,
+                    gcatTheme,
+                    serenityTheme,
+                ],
                 preset: [
                     "wintry",
                     "crimson",

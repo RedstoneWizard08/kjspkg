@@ -22,6 +22,7 @@ pub(crate) mod logger;
 pub(crate) mod macros;
 pub(crate) mod middleware;
 pub(crate) mod routes;
+pub(crate) mod search;
 pub(crate) mod server;
 pub(crate) mod state;
 pub(crate) mod ui;
