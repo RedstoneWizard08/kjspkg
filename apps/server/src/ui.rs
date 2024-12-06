@@ -56,6 +56,7 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
         .arg("--bun")
         .arg("run")
         .arg("sync")
+        .env("NODE_ENV", "production")
         .envs(config.ui.env())
         .current_dir(&dir)
         .spawn()?
@@ -68,6 +69,7 @@ pub async fn build_ui(config: &AppConfig) -> Result<PathBuf> {
         .arg("--bun")
         .arg("run")
         .arg("dist")
+        .env("NODE_ENV", "production")
         .envs(config.ui.env())
         .current_dir(&dir)
         .spawn()?
