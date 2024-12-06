@@ -1634,6 +1634,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "imghdr"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "include_dir"
 version = "0.7.5"
 dependencies = [
@@ -1998,6 +2005,7 @@ dependencies = [
  "diesel_async_migrations",
  "dotenvy",
  "flate2",
+ "imghdr",
  "include_dir",
  "jsglue",
  "jsonwebtoken",

@@ -1,5 +1,6 @@
 import markdownit from "markdown-it";
 import { full as emoji } from "markdown-it-emoji";
+import hljs from "highlight.js";
 import type { PackageVersion, SortMode } from "./types";
 import { get } from "svelte/store";
 import { _ } from "svelte-i18n";
@@ -13,7 +14,15 @@ const md = markdownit({
     linkify: true,
     typographer: true,
     quotes: "“”‘’",
-    highlight: (/*str, lang*/) => "",
+    highlight: (str, lang) => {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return hljs.highlight(str, { language: lang }).value;
+            } catch (__) {}
+        }
+
+        return "";
+    },
 }).use(emoji);
 
 export const markdownInline = (str: string): string => md.renderInline(str);
@@ -21,7 +30,7 @@ export const markdown = (str: string): string => md.render(str);
 export const removeBase = (target: string, base: string) => target.replace(base, "");
 
 export const guessSortMode = (input: string): SortMode => {
-    if (["", "name", "downloads", "views"].includes(input)) {
+    if (["", "name", "downloads"].includes(input)) {
         return input as SortMode;
     } else {
         return "";

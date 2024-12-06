@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { beforeNavigate, goto } from "$app/navigation";
+    import { afterNavigate, beforeNavigate } from "$app/navigation";
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import type { ProjectVisibility, LoadingState, PackageData, PackageVersion } from "$lib/types";
@@ -10,9 +10,8 @@
         markdownInline,
         formatDate,
     } from "$lib/utils";
-    import { fly } from "svelte/transition";
     import { onMount } from "svelte";
-    import { getPackage, getPackageVersion, getPackageVersions } from "$api";
+    import { getPackage, getPackageVersions } from "$api";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import { base } from "$app/paths";
     import { currentPackage, user } from "$lib/stores";
@@ -20,15 +19,12 @@
     import { siteConfig } from "$lib/config";
     import { copyText } from "$lib/clipboard";
     import Icon from "@iconify/svelte";
-    import { downloadFile } from "$lib/download";
+    import { pkgRoutes } from "$lib/routes";
+    import ProjectTabs from "$components/ui/ProjectTabs.svelte";
 
-    const pkgRoutes = ["/p/[id]", "/p/[id]/v/[ver]"];
     const maxVersions = 10;
-
     const id = $derived($page.params.id);
     const toasts = getToastStore();
-    const isVersion = $derived("ver" in $page.params);
-    const ver = $derived(isVersion ? $page.params.ver : undefined);
 
     let loadingState: LoadingState = $state("loading");
     let versions: PackageVersion[] = $state([]);
@@ -37,12 +33,8 @@
     let repo = $state("");
     let issues = $state("");
     let wiki = $state("");
+    let license = $state<string | undefined>(undefined);
     let vis = $state<ProjectVisibility>("Public");
-    let version = $state<PackageVersion | undefined>(undefined);
-    let downloading = $state(false);
-    let done = $state(false);
-
-    let doneTimeout: number | undefined;
 
     const loaders = $derived(getLoaders(versions));
     const gameVersions = $derived(getGameVersions(versions));
@@ -67,12 +59,6 @@
         await copyText($currentPackage.id.toString(), toasts);
     };
 
-    const copyVersionId = async () => {
-        if (!version) return;
-
-        await copyText(version.id.toString(), toasts);
-    };
-
     onMount(async () => {
         $currentPackage = await getPackage(id);
         versions = (await getPackageVersions(id)) ?? [];
@@ -82,11 +68,8 @@
             repo = $currentPackage.source ?? "";
             issues = $currentPackage.issues ?? "";
             wiki = $currentPackage.wiki ?? "";
+            license = $currentPackage.license;
             vis = $currentPackage.visibility;
-
-            if (isVersion) {
-                version = await getPackageVersion(id, ver!);
-            }
 
             loadingState = "ready";
         } else {
@@ -101,30 +84,11 @@
         loadingState = "loading";
     });
 
-    const directDownload = async (ev: Event) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        if (!version || !$currentPackage) return;
-
-        downloading = true;
-
-        const fileName = `${$currentPackage.slug}_${version.version_number}.mhpkg`;
-
-        await downloadFile(
-            `/api/v1/packages/${$currentPackage}/versions/${version.id}/download`,
-            fileName,
-        );
-
-        downloading = false;
-        done = true;
-
-        if (doneTimeout) clearTimeout(doneTimeout);
-
-        doneTimeout = setTimeout(() => {
-            done = false;
-        }, 1000) as any;
-    };
+    afterNavigate(({ to }) => {
+        if (pkgRoutes.includes(to?.route.id ?? "") && !$currentPackage) {
+            reset();
+        }
+    });
 
     const reset = async () => {
         $currentPackage = await getPackage(id);
@@ -135,11 +99,8 @@
             repo = $currentPackage.source ?? "";
             issues = $currentPackage.issues ?? "";
             wiki = $currentPackage.wiki ?? "";
+            license = $currentPackage.license;
             vis = $currentPackage.visibility;
-
-            if (isVersion) {
-                version = await getPackageVersion(id, ver!);
-            }
 
             loadingState = "ready";
         } else {
@@ -168,22 +129,6 @@
                 </a>
 
                 <div class="flex flex-row items-center justify-end gap-2">
-                    {#if isVersion}
-                        <button
-                            type="button"
-                            class="btn p-2 transition-all hover:variant-filled-primary"
-                            onclick={directDownload}
-                        >
-                            {#if done}
-                                <Icon icon="tabler:check" height="24" />
-                            {:else if downloading}
-                                <Icon icon="tabler:loader-2" height="24" class="animate-spin" />
-                            {:else}
-                                <Icon icon="tabler:download" height="24" />
-                            {/if}
-                        </button>
-                    {/if}
-
                     {#if canEdit}
                         <a
                             aria-label="Edit"
@@ -195,12 +140,6 @@
                     {/if}
                 </div>
             </div>
-
-            {#if isVersion}
-                <span class="text-lg font-bold">
-                    {version!.name}
-                </span>
-            {/if}
 
             <span
                 class="variant-filled-secondary badge flex flex-row items-center justify-center px-2"
@@ -215,30 +154,18 @@
 
             <hr class="w-full" />
 
-            <span class="select-text *:select-text">
+            <span
+                class="style-markdown w-full select-text hyphens-auto text-wrap break-words *:select-text"
+            >
                 {@html markdownInline($currentPackage.description)}
             </span>
 
-            {#if isVersion}
-                <span class="select-text *:select-text">
-                    <span class="font-bold">{$_("package.version.prefix")}</span>
-                    {version?.version_number}
-                </span>
-            {/if}
-
             <span class="text-sm opacity-50">
                 <span
-                    >{isVersion ? version!.downloads : $currentPackage.downloads}
-                    {(isVersion ? version!.downloads : $currentPackage.downloads) == 1
+                    >{$currentPackage.downloads}
+                    {$currentPackage.downloads == 1
                         ? $_("list.download_singluar")
                         : $_("list.download_plural")}</span
-                >
-                &bull;
-                <span
-                    >{$currentPackage.views}
-                    {$currentPackage.views == 1
-                        ? $_("list.view_singular")
-                        : $_("list.view_plural")}</span
                 >
             </span>
 
@@ -284,6 +211,13 @@
 
             <hr class="w-full" />
 
+            {#if license}
+                <p class="text-sm opacity-50">License</p>
+                <p>{license}</p>
+
+                <hr class="w-full" />
+            {/if}
+
             {#if hasRepo}
                 <a href={repo} class="anchor select-text no-underline" target="_blank">
                     {$_("package.source")}
@@ -318,7 +252,6 @@
                 <a
                     class="card flex w-full flex-row items-center p-2 hover:variant-soft-primary"
                     href="{base}/u/{author.username}"
-                    in:fly={{ y: 20 }}
                 >
                     <img
                         src="https://avatars.githubusercontent.com/u/{author.github_id}"
@@ -337,18 +270,29 @@
                     >{$currentPackage.id}</button
                 >
             </span>
-
-            {#if isVersion}
-                <span class="flex flex-row items-center justify-end">
-                    {$_("id.version")}&nbsp;
-                    <button class="anchor select-text no-underline" onclick={copyVersionId}
-                        >{version?.id}</button
-                    >
-                </span>
-            {/if}
         </div>
 
         <div class="flex w-full flex-col items-start justify-start gap-2 md:w-[70%]">
+            <ProjectTabs
+                tabs={[
+                    {
+                        routes: ["/p/[id]"],
+                        text: "Description",
+                        url: `/p/${id}`,
+                    },
+                    {
+                        routes: ["/p/[id]/gallery"],
+                        text: "Gallery",
+                        url: `/p/${id}/gallery`,
+                    },
+                    {
+                        routes: ["/p/[id]/versions", "/p/[id]/versions/[ver]"],
+                        text: "Versions",
+                        url: `/p/${id}/versions`,
+                    },
+                ]}
+            />
+
             {@render children?.()}
         </div>
     </div>
@@ -367,7 +311,7 @@
         return undefined;
     })() || "Please wait, redirecting..."}
 {:else}
-    <div class="flex flex-col items-center justify-center">
+    <!-- <div class="flex flex-col items-center justify-center">
         <span>Something went horribly,&nbsp;<i>horribly</i>&nbsp;wrong.</span>
 
         <span
@@ -383,5 +327,5 @@
                 target="_blank">GitHub</a
             >.</span
         >
-    </div>
+    </div> -->
 {/if}

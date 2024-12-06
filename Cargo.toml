@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["./apps/*", "./crates/*"]
+members = ["./apps/*", "./crates/*", "crates/imghdr"]
 
 [workspace.package]
 edition = "2021"
@@ -100,6 +100,7 @@ app-core = { version = "0", path = "./crates/app-core" }
 app-config = { version = "0", path = "./crates/app-config" }
 axumite = { version = "0", path = "./crates/axumite" }
 db = { version = "0", path = "./crates/db" }
+imghdr = { version = "0", path = "./crates/imghdr", features = ["serde"] }
 include_dir = { version = "0", path = "./crates/include_dir" }
 include_dir_macros = { version = "0", path = "./crates/include_dir_macros" }
 jsglue = { version = "0", path = "./crates/jsglue" }

@@ -123,7 +123,7 @@
             return;
         }
 
-        goto(`/p/${$currentPackage!.id}/v/${res.id}`);
+        goto(`/p/${$currentPackage!.id}/versions/${res.id}`);
 
         loading = false;
         modals.close();

@@ -40,7 +40,7 @@
 </script>
 
 <a
-    href="/p/{pkg}/v/{version.id}"
+    href="/p/{pkg}/versions/{version.id}"
     class="flex w-full items-center gap-2 p-2 text-left transition-all rounded-container-token hover:variant-soft-primary"
 >
     <button

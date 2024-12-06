@@ -69,9 +69,6 @@ pub struct Package {
     /// The date the package was last updated.
     pub updated_at: NaiveDateTime,
 
-    /// The package's view count.
-    pub views: i32,
-
     /// The amount of downloads a package has.
     pub downloads: i32,
 
@@ -179,9 +176,6 @@ pub struct PackageData {
     /// The date the package was last updated.
     pub updated_at: NaiveDateTime,
 
-    /// The number of views the package has.
-    pub views: i32,
-
     /// The number of downloads the package has.
     pub downloads: i32,
 
@@ -208,7 +202,6 @@ impl Package {
             wiki: self.wiki,
             created_at: self.created_at,
             updated_at: self.updated_at,
-            views: self.views,
             downloads: self.downloads,
             visibility: self.visibility,
             license: self.license,

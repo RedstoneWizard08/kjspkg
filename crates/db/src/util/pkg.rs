@@ -1,6 +1,6 @@
 use crate::{
     schema::{packages, users},
-    DbConn, Package, PackageAuthor, PackageData, Result, User,
+    DbConn, GalleryImage, Package, PackageAuthor, PackageData, Result, User,
 };
 use diesel::{BelongingToDsl, ExpressionMethods, OptionalExtension, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -38,4 +38,14 @@ pub async fn get_full_package(id: impl AsRef<str>, conn: &mut DbConn) -> Result<
         .await?;
 
     Ok(pkg.with_authors(authors))
+}
+
+/// Get the gallery images for a package.
+pub async fn get_gallery(pkg_id: impl AsRef<str>, conn: &mut DbConn) -> Result<Vec<GalleryImage>> {
+    let pkg = get_package(pkg_id, conn).await?;
+
+    Ok(GalleryImage::belonging_to(&pkg)
+        .select(GalleryImage::as_select())
+        .load(conn)
+        .await?)
 }

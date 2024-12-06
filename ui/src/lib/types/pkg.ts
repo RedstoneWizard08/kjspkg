@@ -44,19 +44,14 @@ export interface Package {
     wiki?: string;
 
     /**
-     * A stringified {@link Date} for when this version was created.
+     * A stringified {@link Date} for when this package was created.
      */
     created_at: string;
 
     /**
-     * A stringified {@link Date} for when this version was updated.
+     * A stringified {@link Date} for when this package was last updated.
      */
     updated_at: string;
-
-    /**
-     * The amount of views this package gets.
-     */
-    views: number;
 
     /**
      * The visibility of a package.

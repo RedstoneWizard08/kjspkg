@@ -1,5 +1,7 @@
 <script lang="ts">
     import "../app.pcss";
+    import "highlight.js/styles/github-dark.min.css";
+
     import "carta-md/default.css";
     import { currentScrollPosition, updateUserStore, userPreferencesStore } from "$lib/stores";
     import {
@@ -27,6 +29,10 @@
     import { updateModLoadersIfNeeded } from "$lib/loaders";
     import ConfirmDeleteModal from "$components/modals/ConfirmDeleteModal.svelte";
     import ConfirmDeleteVersionModal from "$components/modals/ConfirmDeleteVersionModal.svelte";
+    import ConfirmDeleteImageModal from "$components/modals/ConfirmDeleteImageModal.svelte";
+    import type { NavigationTarget } from "@sveltejs/kit";
+    import { editRoutes, pkgRoutes } from "$lib/routes";
+    import ImageViewModal from "$components/modals/ImageViewModal.svelte";
 
     const { data, children }: { data: any; children: Snippet } = $props();
     let navigating = $state(false);
@@ -36,7 +42,9 @@
         uploadVersion: { ref: UploadVersionModal },
         createPackage: { ref: CreatePackageModal },
         confirmDelete: { ref: ConfirmDeleteModal },
+        confirmDeleteImage: { ref: ConfirmDeleteImageModal },
         confirmDeleteVersion: { ref: ConfirmDeleteVersionModal },
+        imageView: { ref: ImageViewModal },
     };
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -68,8 +76,20 @@
     beforeNavigate(() => (navigating = true));
     afterNavigate(() => (navigating = false));
 
+    const isPackageRoute = (to?: NavigationTarget, from?: NavigationTarget) =>
+        pkgRoutes.includes(to?.route.id ?? "") && pkgRoutes.includes(from?.route.id ?? "");
+
+    const isEditRoute = (to?: NavigationTarget, from?: NavigationTarget) =>
+        editRoutes.includes(to?.route.id ?? "") && editRoutes.includes(from?.route.id ?? "");
+
     onNavigate((navigation) => {
-        if (navigation.to?.route.id == navigation.from?.route.id) return;
+        if (
+            navigation.to?.route.id == navigation.from?.route.id ||
+            isPackageRoute(navigation.to ?? undefined, navigation.from ?? undefined) ||
+            isEditRoute(navigation.to ?? undefined, navigation.from ?? undefined)
+        )
+            return;
+
         if (!document.startViewTransition) return;
 
         return new Promise((resolve) => {
@@ -87,7 +107,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/favicon.png" />
     <meta property="og:description" content={siteConfig.tagline} />
-    <!-- <meta name="theme-color" content={$theme} /> -->
+    <meta name="theme-color" content={siteConfig.themeColor} />
 </svelte:head>
 
 <Toast position="br" max={8} />

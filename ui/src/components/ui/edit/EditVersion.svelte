@@ -78,14 +78,14 @@
 
     <!-- This has no onclick handler because it just passes through to the underlying link -->
     <button
-        class="btn-ghost variant-glass-primary btn btn-sm transition-all hover:variant-filled-primary"
+        class="variant-glass-primary btn btn-sm transition-all hover:variant-filled-primary"
         type="button"
     >
         <Icon icon="tabler:pencil" height="24" />
     </button>
 
     <button
-        class="btn-ghost variant-glass-error btn btn-sm transition-all hover:variant-filled-error"
+        class="variant-glass-error btn btn-sm transition-all hover:variant-filled-error"
         type="button"
         onclick={handleDelete}
     >

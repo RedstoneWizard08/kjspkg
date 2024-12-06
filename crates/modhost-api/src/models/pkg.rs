@@ -78,9 +78,6 @@ pub struct PackageWithData {
     /// A link to this package's wiki.
     pub wiki: Option<String>,
 
-    /// The number of views this package has.
-    pub views: i32,
-
     /// The number of downloads this package has.
     pub downloads: i32,
 

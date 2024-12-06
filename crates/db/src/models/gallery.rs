@@ -50,6 +50,36 @@ pub struct GalleryImage {
     pub updated_at: NaiveDateTime,
 }
 
+/// A gallery image, modified for public consumption (i.e. REST endpoints).
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ToSchema, ToResponse,
+)]
+pub struct PublicGalleryImage {
+    /// The gallery image ID.
+    pub id: i32,
+
+    /// The package ID.
+    pub package: i32,
+
+    /// The display name of the version.
+    pub name: String,
+
+    /// A URL to access this image with.
+    pub url: String,
+
+    /// An optional markdown-formatted description.
+    pub description: Option<String>,
+
+    /// The order of this image.
+    pub ordering: i32,
+
+    /// The date this version was created.
+    pub created_at: NaiveDateTime,
+
+    /// The date this version was last updated.
+    pub updated_at: NaiveDateTime,
+}
+
 /// A gallery image for insertion.
 #[derive(
     Debug,

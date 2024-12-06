@@ -130,7 +130,7 @@
             use:contextMenu={{
                 initiator: "left",
                 items: [
-                    ...["name", "downloads", "views", "published", "updated"].map(
+                    ...["name", "downloads", "published", "updated"].map(
                         (name) =>
                             ({
                                 type: "ITEM",

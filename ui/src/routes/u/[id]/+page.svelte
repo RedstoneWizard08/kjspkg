@@ -4,7 +4,6 @@
     import { page } from "$app/stores";
     import type { LoadingState, PackageData, SortMode, User } from "$lib/types";
     import { onMount } from "svelte";
-    import { fly } from "svelte/transition";
     import { user as userStore, userPreferencesStore, sortPackages } from "$lib/stores";
     import { admins } from "$lib/data";
     import { getToastStore } from "@skeletonlabs/skeleton";
@@ -26,7 +25,6 @@
     let packages: PackageData[] = $state([]);
 
     const downloads = $derived(packages.reduce((a, b) => a + b.downloads, 0));
-    const views = $derived(packages.reduce((a, b) => a + b.views, 0));
     const sortedPackages = $derived(sortPackages(packages, $userPreferencesStore.sortBy, false));
 
     onMount(async () => {
@@ -59,7 +57,7 @@
                 class="mr-4 aspect-square h-16 rounded-token"
             />
 
-            <span class="h2 font-bold" in:fly={{ y: 20 }}>{user?.username}</span>
+            <span class="h2 font-bold">{user?.username}</span>
         </div>
 
         <div class="flex flex-row items-center justify-end">
@@ -74,27 +72,21 @@
     </div>
 
     <div
-        class="style-markdown blockquote mb-1 flex w-full select-text flex-row items-center justify-between gap-1 overflow-x-auto p-4 not-italic"
-        in:fly={{ y: 20 }}
+        class="card mb-1 flex w-full select-text flex-row items-center justify-between gap-1 overflow-x-auto p-4 not-italic"
     >
         <div class="flex h-full w-full flex-col gap-1 overflow-x-auto">
-            <span class="text-sm opacity-50">
+            <span class="text-sm">
                 <span
                     >{downloads}
                     {downloads == 1
                         ? $_("list.download_singluar")
                         : $_("list.download_plural")}</span
                 >
-                &bull;
-                <span
-                    >{views}
-                    {views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
-                >
             </span>
         </div>
     </div>
 
-    <div class="card p-4" in:fly={{ y: 20 }}>
+    <div class="card p-4">
         <dt class="mb-2 text-sm opacity-50">{$_(`user.${siteConfig.type}`)}</dt>
 
         <div class="flex flex-row items-center justify-between">
@@ -117,7 +109,7 @@
                     use:contextMenu={{
                         initiator: "left",
                         items: [
-                            ...["name", "downloads", "views", "published", "updated"].map(
+                            ...["name", "downloads", "published", "updated"].map(
                                 (name) =>
                                     ({
                                         type: "ITEM",

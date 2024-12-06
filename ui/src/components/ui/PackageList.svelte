@@ -65,11 +65,6 @@
                         ? $_("list.download_singluar")
                         : $_("list.download_plural")}</span
                 >
-                &bull;
-                <span
-                    >{pkg.views}
-                    {pkg.views == 1 ? $_("list.view_singular") : $_("list.view_plural")}</span
-                >
             </dd>
             {#if showDetails}
                 <dd class="text-sm opacity-50">

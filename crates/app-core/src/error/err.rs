@@ -1,3 +1,5 @@
+use std::num::ParseIntError;
+
 use super::{AxumError, HasCode};
 use axum::response::{IntoResponse, Response};
 use diesel::r2d2::PoolError as SyncPoolError;
@@ -94,6 +96,9 @@ pub enum AppError {
     #[error(transparent)]
     TempFile(#[from] tempfile::PersistError),
 
+    #[error(transparent)]
+    ParseInt(#[from] ParseIntError),
+
     #[error("Missing required token header or cookie!")]
     MissingToken,
 
@@ -104,7 +109,7 @@ pub enum AppError {
 impl HasCode for AppError {
     fn code(&self) -> u16 {
         match self {
-            Self::Multipart(_) => 400,
+            Self::Multipart(_) | Self::ParseInt(_) => 400,
             Self::MissingToken => 401,
             Self::UnknownUser => 404,
             _ => 500,

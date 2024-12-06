@@ -70,19 +70,6 @@ pub async fn info_handler(
     let mut conn = state.pool.get().await?;
     let pkg = get_full_package(id, &mut conn).await?;
 
-    tokio::spawn(async move {
-        update(packages::table)
-            .filter(packages::id.eq(pkg.id))
-            .set((
-                packages::views.eq(pkg.views + 1),
-                packages::updated_at.eq(pkg.updated_at),
-            ))
-            .returning(Package::as_returning())
-            .get_result(&mut conn)
-            .await
-            .unwrap();
-    });
-
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(&pkg)?))?)

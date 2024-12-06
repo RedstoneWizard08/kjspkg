@@ -35,19 +35,19 @@
 
 {#if $modals[0]}
     <div class="w-modal-slim relative rounded-lg bg-surface-500 p-8 shadow-xl">
-        <header class="text-2xl font-bold">Confirm Delete</header>
+        <header class="text-2xl font-bold">Confirm Deletion</header>
 
         <p>Are you sure you want to delete your project, {$currentPackage?.name}?</p>
 
         <footer class="modal-footer mt-4 flex flex-row items-center">
             <button
-                class="variant-filled-error btn mr-2 !outline-none hover:variant-ghost-error"
+                class="variant-filled-error btn mr-2 !outline-none transition-all hover:variant-ghost-error"
                 disabled={loading}
                 onclick={confirmDelete}>Delete</button
             >
 
             <button
-                class="variant-filled-secondary btn mr-2 !outline-none hover:variant-ghost-primary"
+                class="variant-filled-secondary btn mr-2 !outline-none transition-all hover:variant-ghost-primary"
                 disabled={loading}
                 onclick={() => modals.close()}>{$_("action.cancel")}</button
             >

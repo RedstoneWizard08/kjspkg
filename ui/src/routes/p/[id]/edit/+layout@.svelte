@@ -5,20 +5,10 @@
     import { currentPackage, editLoadingState, user } from "$lib/stores";
     import { getPackage } from "$api";
     import { beforeNavigate, goto } from "$app/navigation";
+    import { editRoutes } from "$lib/routes";
 
     const id = $derived($page.params.id);
     const ok = $derived(!!$currentPackage?.authors.find((v) => v.id == $user?.id));
-
-    const editRoutes = [
-        "/p/[id]/edit",
-        "/p/[id]/edit/description",
-        "/p/[id]/edit/gallery",
-        "/p/[id]/edit/members",
-        "/p/[id]/edit/tags",
-        "/p/[id]/edit/versions",
-        "/p/[id]/edit/versions/create",
-        "/p/[id]/edit/versions/edit/[version]",
-    ];
 
     onMount(async () => {
         $currentPackage = await getPackage(id);

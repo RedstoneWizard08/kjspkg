@@ -32,5 +32,11 @@ pub fn router(state: AppState) -> Router<AppState> {
             "/:id/versions/:version/download",
             get(ver::download_handler),
         )
+        .route("/:id/gallery", get(gallery::list_handler))
+        .route("/:id/gallery", put(gallery::upload_handler))
+        .route("/:id/gallery/:image", get(gallery::info_handler))
+        .route("/:id/gallery/:image", patch(gallery::update_handler))
+        .route("/:id/gallery/:image", delete(gallery::delete_handler))
+        .route("/s3/gallery/:id", get(gallery::s3_image_handler))
         .with_state(state)
 }

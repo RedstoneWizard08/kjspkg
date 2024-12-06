@@ -7,6 +7,7 @@ import type {
     PackageVersionUpdate,
     User,
 } from "$lib/types";
+import type { GalleryImageInit, GalleryImageUpdate } from "$lib/types/gallery";
 import { getToken } from "./auth";
 
 export const addPackageAuthor = async (
@@ -200,6 +201,86 @@ export const deleteVersion = async (
     try {
         return await (
             await fetch(`/api/v1/packages/${pkg}/versions/${version}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+        ).text();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const createGalleryImage = async (
+    pkg: string | number,
+    data: GalleryImageInit,
+    file: File | Blob,
+): Promise<PackageVersion | undefined> => {
+    const token = getToken();
+
+    if (!token) return undefined;
+
+    const formData = new FormData();
+
+    formData.set("name", data.name);
+
+    if (data.ordering) formData.set("ordering", data.ordering.toString());
+    if (data.description) formData.set("description", data.description);
+
+    formData.set("file", file);
+
+    try {
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/gallery`, {
+                method: "PUT",
+                body: formData,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+        ).json();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const updateGalleryImage = async (
+    pkg: string | number,
+    image: string | number,
+    data: GalleryImageUpdate,
+): Promise<PackageData | undefined> => {
+    const token = getToken();
+
+    if (!token) return undefined;
+
+    try {
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/gallery/${image}`, {
+                method: "PATCH",
+                body: JSON.stringify(data),
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            })
+        ).json();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const deleteGalleryImage = async (
+    pkg: string | number,
+    image: string | number,
+): Promise<string | undefined> => {
+    const token = getToken();
+
+    if (!token) return undefined;
+
+    try {
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/gallery/${image}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

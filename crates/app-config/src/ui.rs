@@ -11,6 +11,7 @@ pub struct UIConfig {
     pub game_beta_name: BetaName,
     pub favicon_png: String,
     pub favicon_ico: String,
+    pub theme_color: String,
 }
 
 #[derive(
@@ -74,6 +75,8 @@ impl UIConfig {
             self.game_beta_name.stringify().into(),
         );
 
+        map.insert("PUBLIC_THEME_COLOR".into(), self.theme_color.clone());
+
         map
     }
 }
@@ -96,6 +99,7 @@ impl Default for UIConfig {
             game_beta_name: BetaName::Beta,
             favicon_ico: "default".into(),
             favicon_png: "default".into(),
+            theme_color: "#068099".into(),
         }
     }
 }

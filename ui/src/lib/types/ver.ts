@@ -41,7 +41,7 @@ export interface PackageVersion {
     created_at: string;
 
     /**
-     * A stringified {@link Date} for when this version was updated.
+     * A stringified {@link Date} for when this version was last updated.
      */
     updated_at: string;
 

@@ -129,8 +129,8 @@
 </script>
 
 <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
-    <Icon icon="tabler:settings" height="24" class="mr-2" />
-    General Settings
+    <Icon icon="tabler:pencil" height="24" class="mr-2" />
+    Edit Version
 </p>
 
 <div class="card variant-soft-secondary w-full p-4">

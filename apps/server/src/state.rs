@@ -10,10 +10,16 @@ use s3::Bucket;
 use std::sync::Arc;
 
 #[derive(Clone)]
+pub struct BucketState {
+    pub packages: Box<Bucket>,
+    pub gallery: Box<Bucket>,
+}
+
+#[derive(Clone)]
 pub struct AppState {
     pub pool: DbPool,
     pub auth: BasicClient,
-    pub bucket: Box<Bucket>,
+    pub buckets: BucketState,
     pub config: AppConfig,
     pub loaders: Vec<ModLoader>,
     pub game_versions: Vec<GameVersion>,
@@ -29,7 +35,10 @@ impl AppState {
         Ok(Self {
             pool,
             auth: config.auth.github()?,
-            bucket: config.storage.packages()?,
+            buckets: BucketState {
+                packages: config.storage.packages()?,
+                gallery: config.storage.gallery()?,
+            },
             config: config.clone(),
             loaders: vec![],
             game_versions: vec![],

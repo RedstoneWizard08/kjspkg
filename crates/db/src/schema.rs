@@ -66,7 +66,6 @@ diesel::table! {
         slug -> Text,
         readme -> Text,
         description -> Text,
-        views -> Int4,
         source -> Nullable<Text>,
         issues -> Nullable<Text>,
         wiki -> Nullable<Text>,

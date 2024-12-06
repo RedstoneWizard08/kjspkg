@@ -9,6 +9,7 @@ import {
     PUBLIC_PKG_TYPE,
     PUBLIC_SHOW_BETA,
     PUBLIC_TAGLINE,
+    PUBLIC_THEME_COLOR,
 } from "$env/static/public";
 import type { ModLoader } from "./loaders";
 
@@ -20,6 +21,7 @@ export interface SiteConfig {
     defaultTheme: string;
     packageFileFormats: string[];
     betaName: "beta" | "snapshot";
+    themeColor: string;
     versionFetcher: () => Promise<GameVersion[]>;
     loaderFetcher: () => Promise<ModLoader[]>;
 }
@@ -32,6 +34,7 @@ export const siteConfig: SiteConfig = {
     defaultTheme: PUBLIC_DEFAULT_THEME,
     packageFileFormats: PUBLIC_PKG_FILE_FORMATS.split(","),
     betaName: PUBLIC_GAME_BETA_NAME as "beta" | "snapshot",
+    themeColor: PUBLIC_THEME_COLOR,
     versionFetcher: async () => await (await fetch("/api/v1/meta/game_versions")).json(),
     loaderFetcher: async () => await (await fetch("/api/v1/meta/loaders")).json(),
 };

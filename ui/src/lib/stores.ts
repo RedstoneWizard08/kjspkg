@@ -78,11 +78,6 @@ export const sortPackages = (packagesIn: PackageData[], sortBy: SortMode, search
                 a.downloads == b.downloads ? 0 : a.downloads < b.downloads ? 1 : -1,
             );
             break;
-        case "views":
-            result = alphabetic.sort((a, b) =>
-                a.views == b.views ? 0 : a.views < b.views ? 1 : -1,
-            );
-            break;
         case "published":
             result = alphabetic.sort((a, b) =>
                 new Date(a.created_at) == new Date(b.created_at)

@@ -109,7 +109,7 @@
 
         if (!res) {
             toasts.trigger({
-                message: `Error uploading your project!`,
+                message: `Error uploading your version!`,
                 hideDismiss: true,
                 timeout: 5000,
                 background: "variant-filled-error",
@@ -291,8 +291,8 @@
 
 <div class="card variant-soft-secondary w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
-        <Icon icon="tabler:file-description" height="24" class="mr-2" />
-        Edit Changelog
+        <Icon icon="tabler:upload" height="24" class="mr-2" />
+        Upload File
     </p>
 
     <FileDropzone

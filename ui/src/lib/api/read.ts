@@ -1,4 +1,5 @@
 import type { PackageData, PackageVersion, User } from "$lib/types";
+import type { PublicGalleryImage } from "$lib/types/gallery";
 
 export const getUser = async (id: string | number): Promise<User | undefined> => {
     try {
@@ -81,6 +82,27 @@ export const getPackageVersionFile = async (
         return await (
             await fetch(`/api/v1/packages/${pkg}/versions/${version}/download`)
         ).arrayBuffer();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const getPackageGallery = async (
+    pkg: string | number,
+): Promise<PublicGalleryImage[] | undefined> => {
+    try {
+        return await (await fetch(`/api/v1/packages/${pkg}/gallery`)).json();
+    } catch (_err: any) {
+        return undefined;
+    }
+};
+
+export const getGalleryImage = async (
+    pkg: string | number,
+    img: string | number,
+): Promise<PublicGalleryImage | undefined> => {
+    try {
+        return await (await fetch(`/api/v1/packages/${pkg}/gallery/${img}`)).json();
     } catch (_err: any) {
         return undefined;
     }

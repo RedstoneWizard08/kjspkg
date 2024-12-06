@@ -187,13 +187,9 @@ pub async fn download_handler(
         .get_result(&mut conn)
         .await?;
 
-    // let url = format!(
-    //     "{}/storage/v1/object/{}/{}.tgz",
-    //     state.supabase_url, state.packages_bucket, ver.file_id
-    // );
-
     let bytes = state
-        .bucket
+        .buckets
+        .packages
         .get_object(format!("/{}.tgz", ver.file_id))
         .await?
         .into_bytes()
@@ -325,7 +321,8 @@ pub async fn create_handler(
     let file_name = format!("{}.tgz", file_id);
 
     state
-        .bucket
+        .buckets
+        .packages
         .put_object(format!("/{}", file_name), &file)
         .await?;
 
@@ -471,6 +468,20 @@ pub async fn delete_handler(
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
+    }
+
+    let all_referencing = package_versions::table
+        .filter(package_versions::file_id.eq(ver.file_id.clone()))
+        .select(PackageVersion::as_select())
+        .load(&mut conn)
+        .await?;
+
+    if all_referencing.len() <= 1 {
+        state
+            .buckets
+            .packages
+            .delete_object(format!("/{}.tgz", ver.file_id))
+            .await?;
     }
 
     delete(package_versions::table)

@@ -2,13 +2,15 @@
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
-    import { getPackage, getPackageVersions } from "$api";
-    import { currentPackage, editSaving } from "$lib/stores";
+    import { getPackageVersions } from "$api";
+    import { currentPackage } from "$lib/stores";
     import Icon from "@iconify/svelte";
     import type { PackageVersion } from "$lib/types";
     import EditVersion from "$components/ui/edit/EditVersion.svelte";
+    import { getModalStore } from "@skeletonlabs/skeleton";
 
     const id = $derived($page.params.id);
+    const modals = getModalStore();
 
     let vers = $state<PackageVersion[]>([]);
     let loading = $state(true);
@@ -17,21 +19,12 @@
         if (!$currentPackage) return;
 
         vers = (await getPackageVersions(id)) ?? [];
-
         loading = false;
     });
 
-    const save = async () => {
-        $editSaving = true;
-
-        // Update code goes here
-
-        $currentPackage = await getPackage(id);
-
-        // Field update code goes here
-
-        $editSaving = false;
-    };
+    modals.subscribe(async () => {
+        vers = (await getPackageVersions(id)) ?? [];
+    });
 </script>
 
 <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
@@ -39,25 +32,28 @@
     Manage Versions
 </p>
 
-<div class="card variant-soft-secondary w-full space-y-2 p-4">
-    <p class="mb-4 flex flex-row items-center justify-start text-primary-500">
-        <Icon icon="tabler:versions" height="24" class="mr-2" />
-        Project Versions
-    </p>
-
-    {#if loading}
+{#if loading}
+    <div class="card variant-soft-secondary w-full space-y-2 p-4">
         <div class="flex flex-row items-center justify-center">
             <p class="flex flex-row items-center justify-center">
                 <Icon icon="tabler:loader-2" height="24" class="mr-2 animate-spin" />
                 Loading...
             </p>
         </div>
-    {:else}
+    </div>
+{:else if vers.length >= 1}
+    <div class="card variant-soft-secondary w-full space-y-2 p-4">
         {#each vers as version}
             <EditVersion {version} pkg={id} />
         {/each}
-    {/if}
-</div>
+    </div>
+{:else}
+    <div
+        class="card variant-soft-secondary flex w-full flex-row items-center justify-center p-4 py-16"
+    >
+        No images found!
+    </div>
+{/if}
 
 <div class="card variant-soft-secondary w-full space-y-2 p-4">
     <p class="mb-4 flex flex-row items-center justify-start text-primary-500">
