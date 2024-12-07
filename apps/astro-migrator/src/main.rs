@@ -1,0 +1,48 @@
+use anyhow::Result;
+use app_config::get_config;
+use astro_migrator::models::{Mod, ModsDump};
+use db::{create_connection, run_migrations, users, NewUser, User};
+use diesel::{insert_into, SelectableHelper};
+use diesel_async::RunQueryDsl;
+use indicatif::ProgressIterator;
+use modhost::init_logger;
+use std::{fs, path::PathBuf};
+use tracing::level_filters::LevelFilter;
+
+#[tokio::main]
+pub async fn main() -> Result<()> {
+    init_logger(LevelFilter::INFO);
+
+    let config = get_config()?;
+    let pool = create_connection(Some(config.postgres.uri())).await?;
+
+    run_migrations(&pool).await?;
+
+    let pkgs = config.storage.packages()?;
+    let imgs = config.storage.gallery()?;
+
+    let mods_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("mods");
+    let raw = fs::read_to_string(mods_dir.join("mods.json"))?;
+    let data = serde_json::from_str::<ModsDump>(&raw)?;
+    let dump: Vec<Mod> = data.into();
+
+    let user = NewUser {
+        github_id: -1,
+        username: "ModHost Migrator".into(),
+        admin: false,
+    };
+
+    let id = insert_into(users::table)
+        .values(user)
+        .returning(User::as_returning())
+        .get_result(&mut pool.get().await?)
+        .await?
+        .id;
+
+    for item in dump.into_iter().progress() {
+        item.upload_all(id, &mut pool.get().await?, &pkgs, &imgs)
+            .await?;
+    }
+
+    Ok(())
+}

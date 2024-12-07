@@ -44,12 +44,21 @@
         style={customHeight != null ? `height: ${customHeight}rem` : ""}
     >
         {#if showAvatar && !compact}
-            <img
-                src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
-                alt="author's profile avatar"
-                class="my-auto mr-4 aspect-square h-8 rounded-token"
-                in:slide={{ axis: "x" }}
-            />
+            {#if pkg.authors[0].github_id == -1}
+                <img
+                    src="/modhost.png"
+                    alt="author's profile avatar"
+                    class="my-auto mr-4 aspect-square h-8 rounded-token"
+                    in:slide={{ axis: "x" }}
+                />
+            {:else}
+                <img
+                    src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
+                    alt="author's profile avatar"
+                    class="my-auto mr-4 aspect-square h-8 rounded-token"
+                    in:slide={{ axis: "x" }}
+                />
+            {/if}
         {/if}
         <dl class="my-auto">
             <dt class="mb-1 select-text font-bold">{pkg.name}</dt>

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{
     auth::get_user_from_req, routes::users::pkg::clear_user_cache, state::AppState, Result,
 };
@@ -14,7 +12,7 @@ use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use db::{
     get_full_package, package_authors, packages, users, DbPool, NewPackage, Package, PackageAuthor,
-    PackageData, User,
+    PackageData, PackageVisibility, User,
 };
 use diesel::{
     insert_into, BelongingToDsl, ExpressionMethods, GroupedBy, OptionalExtension, QueryDsl,
@@ -22,6 +20,7 @@ use diesel::{
 };
 use diesel_async::RunQueryDsl;
 use parking_lot::Mutex;
+use std::sync::Arc;
 
 const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
 
@@ -70,7 +69,11 @@ pub async fn refresh_list_cache(pool: DbPool) {
     ),
 )]
 #[debug_handler]
-pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<PackageData>>> {
+pub async fn list_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<PackageData>>> {
     if let Some((expires, data)) = PACKAGE_LIST_CACHE.lock().clone() {
         let now = Utc::now().timestamp_millis();
 
@@ -102,7 +105,25 @@ pub async fn list_handler(State(state): State<AppState>) -> Result<Json<Vec<Pack
     *PACKAGE_LIST_CACHE.lock() =
         Some((Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()));
 
-    Ok(Json(res))
+    match get_user_from_req(&jar, &headers, &mut conn).await {
+        Ok(user) => Ok(Json(
+            res.iter()
+                .filter(|v| {
+                    v.visibility == PackageVisibility::Public
+                        || v.authors.iter().any(|v| v.github_id == user.github_id)
+                        || user.admin
+                })
+                .cloned()
+                .collect(),
+        )),
+
+        Err(_) => Ok(Json(
+            res.iter()
+                .filter(|v| v.visibility == PackageVisibility::Public)
+                .cloned()
+                .collect(),
+        )),
+    }
 }
 
 /// Create Package

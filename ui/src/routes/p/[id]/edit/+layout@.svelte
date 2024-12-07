@@ -8,7 +8,7 @@
     import { editRoutes } from "$lib/routes";
 
     const id = $derived($page.params.id);
-    const ok = $derived(!!$currentPackage?.authors.find((v) => v.id == $user?.id));
+    const ok = $derived(!!$currentPackage?.authors.find((v) => v.id == $user?.id) || $user?.admin);
 
     onMount(async () => {
         $currentPackage = await getPackage(id);

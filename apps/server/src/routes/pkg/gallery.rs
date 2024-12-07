@@ -1,4 +1,5 @@
 use anyhow::anyhow;
+use app_core::AppError;
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -9,8 +10,9 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use db::{
-    gallery_images, get_gallery, get_gallery_image, get_package, package_authors, packages,
-    GalleryImage, NewGalleryImage, Package, PackageAuthor, PublicGalleryImage,
+    gallery_images, get_full_package, get_gallery, get_gallery_image, get_package, package_authors,
+    packages, GalleryImage, NewGalleryImage, Package, PackageAuthor, PackageVisibility,
+    PublicGalleryImage,
 };
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -80,10 +82,25 @@ pub struct PartialGalleryImage {
 )]
 #[debug_handler]
 pub async fn list_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path(id): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
+    let pkg = get_full_package(id.clone(), &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")
@@ -110,10 +127,26 @@ pub async fn list_handler(
 )]
 #[debug_handler]
 pub async fn info_handler(
-    Path((_id, image)): Path<(String, String)>,
+    jar: CookieJar,
+    headers: HeaderMap,
+    Path((id, image)): Path<(String, String)>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
+    let pkg = get_full_package(id.clone(), &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
+
     let img = get_gallery_image(image, &mut conn).await?;
 
     Ok(Response::builder()
@@ -184,7 +217,7 @@ pub async fn upload_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -299,7 +332,7 @@ pub async fn delete_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -366,7 +399,7 @@ pub async fn update_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);

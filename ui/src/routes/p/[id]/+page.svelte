@@ -15,7 +15,7 @@
 </script>
 
 <section class="card h-fit w-full p-4">
-    <dt class="text-sm opacity-50">Description</dt>
+    <dt class="mb-2 text-sm opacity-50">Description</dt>
     <dd class="style-markdown flex select-text flex-col items-start *:select-text">
         {@html markdown(readme)}
     </dd>

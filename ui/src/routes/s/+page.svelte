@@ -21,7 +21,6 @@
     import { siteConfig } from "$lib/config";
     import Icon from "@iconify/svelte";
 
-    let optionsHeader: HTMLDivElement = $state(null!);
     let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
 
     const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
@@ -29,12 +28,6 @@
     onMount(async () => {
         loadingState = (await updatePackagesStore()) ? "ready" : "failed";
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
-
-        let largeScreen = matchMedia("(min-width: 1024px)").matches;
-
-        window.onresize = () => {
-            largeScreen = matchMedia("(min-width: 1024px)").matches;
-        };
 
         if (
             $currentSearchStore == "" &&
@@ -92,7 +85,6 @@
 
 <div
     class="sticky top-[-1px] z-10 justify-between border-surface-600 bg-surface-900 p-2 backdrop-blur rounded-bl-container-token rounded-br-container-token md:flex"
-    bind:this={optionsHeader}
 >
     <h1 class="h3">
         {#if !$currentSearchStore}
@@ -190,5 +182,5 @@
         />
     </dl>
 {:else if loadingState == "failed"}
-    <p>{$_("errors.something_went_wrong")}</p>
+    <!-- <p class="p-2">No projects found!</p> -->
 {/if}

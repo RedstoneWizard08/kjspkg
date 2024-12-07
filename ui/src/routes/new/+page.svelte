@@ -218,13 +218,12 @@
 <div class="card variant-soft-secondary w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:eye" height="24" class="mr-2" />
-        Visibility (Coming Soon)
+        Visibility
     </p>
 
     <select
         class="select variant-ghost-primary cursor-pointer !outline-none"
         bind:value={visibility}
-        disabled
     >
         <option value="Public">Public</option>
         <option value="Private">Private</option>

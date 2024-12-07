@@ -29,9 +29,10 @@
     const aggVersions = $derived(tryAggregateVersions(gameVersions));
 
     const canEdit = $derived(
-        $currentPackage &&
+        ($currentPackage &&
             $user &&
-            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id),
+            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id)) ||
+            ($user && $user.admin),
     );
 
     onMount(async () => {

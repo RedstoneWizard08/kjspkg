@@ -11,7 +11,7 @@
         formatDate,
     } from "$lib/utils";
     import { onMount } from "svelte";
-    import { getPackage, getPackageVersions } from "$api";
+    import { getPackage, getPackageGallery, getPackageVersions } from "$api";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import { base } from "$app/paths";
     import { currentPackage, user } from "$lib/stores";
@@ -21,6 +21,7 @@
     import Icon from "@iconify/svelte";
     import { pkgRoutes } from "$lib/routes";
     import ProjectTabs from "$components/ui/ProjectTabs.svelte";
+    import type { PublicGalleryImage } from "$lib/types/gallery";
 
     const maxVersions = 10;
     const id = $derived($page.params.id);
@@ -35,6 +36,7 @@
     let wiki = $state("");
     let license = $state<string | undefined>(undefined);
     let vis = $state<ProjectVisibility>("Public");
+    let image = $state<PublicGalleryImage | undefined>(undefined);
 
     const loaders = $derived(getLoaders(versions));
     const gameVersions = $derived(getGameVersions(versions));
@@ -44,9 +46,10 @@
     const hasWiki = $derived(wiki != "");
 
     const canEdit = $derived(
-        $currentPackage &&
+        ($currentPackage &&
             $user &&
-            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id),
+            !!($currentPackage as PackageData).authors.find((v) => v.id == $user.id)) ||
+            ($user && $user.admin),
     );
 
     const visibility = $derived(
@@ -72,6 +75,12 @@
             vis = $currentPackage.visibility;
 
             loadingState = "ready";
+
+            const gallery = (await getPackageGallery(id)) ?? [];
+
+            if (gallery.length >= 1) {
+                image = gallery[0];
+            }
         } else {
             loadingState = "failed";
         }
@@ -103,6 +112,12 @@
             vis = $currentPackage.visibility;
 
             loadingState = "ready";
+
+            const gallery = (await getPackageGallery(id)) ?? [];
+
+            if (gallery.length >= 1) {
+                image = gallery[0];
+            }
         } else {
             loadingState = "failed";
         }
@@ -123,6 +138,14 @@
         <div
             class="card flex w-full flex-col items-start justify-start gap-2 self-baseline p-4 md:w-[30%]"
         >
+            {#if image}
+                <img
+                    src={image.url}
+                    alt={image.name}
+                    class="aspect-square w-[40%] rounded-lg object-cover"
+                />
+            {/if}
+
             <div class="flex w-full flex-row items-center justify-between">
                 <a href="/p/{id}" class="text-2xl font-bold text-primary-500">
                     {name}
@@ -236,7 +259,9 @@
                 </a>
             {/if}
 
-            <hr class="w-full" />
+            {#if !license && !(hasRepo || hasIssues || hasWiki)}
+                <hr class="w-full" />
+            {/if}
 
             <p class="text-sm opacity-50">{$_("package.version.published")}</p>
             <p class="mb-1">{formatDate(new Date($currentPackage.created_at))}</p>
@@ -253,11 +278,19 @@
                     class="card flex w-full flex-row items-center p-2 hover:variant-soft-primary"
                     href="{base}/u/{author.username}"
                 >
-                    <img
-                        src="https://avatars.githubusercontent.com/u/{author.github_id}"
-                        alt="author's profile afirst child cssvatar"
-                        class="my-auto mr-4 aspect-square h-8 rounded-token"
-                    />
+                    {#if author.github_id == -1}
+                        <img
+                            src="/modhost.png"
+                            alt="author's profile afirst child cssvatar"
+                            class="my-auto mr-4 aspect-square h-8 rounded-token"
+                        />
+                    {:else}
+                        <img
+                            src="https://avatars.githubusercontent.com/u/{author.github_id}"
+                            alt="author's profile afirst child cssvatar"
+                            class="my-auto mr-4 aspect-square h-8 rounded-token"
+                        />
+                    {/if}
                     {author.username}
                 </a>
             {/each}

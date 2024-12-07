@@ -104,6 +104,9 @@ pub enum AppError {
 
     #[error("Unknown user!")]
     UnknownUser,
+
+    #[error("Resource not found!")]
+    NotFound,
 }
 
 impl HasCode for AppError {
@@ -111,7 +114,7 @@ impl HasCode for AppError {
         match self {
             Self::Multipart(_) | Self::ParseInt(_) => 400,
             Self::MissingToken => 401,
-            Self::UnknownUser => 404,
+            Self::NotFound | Self::UnknownUser => 404,
             _ => 500,
         }
     }

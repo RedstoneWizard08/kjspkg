@@ -1,0 +1,31 @@
+[package]
+name = "astro-migrator"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+app-config.workspace = true
+chrono.workspace = true
+db.workspace = true
+diesel.workspace = true
+diesel-async.workspace = true
+indicatif.workspace = true
+lenient_semver.workspace = true
+modhost.workspace = true
+reqwest.workspace = true
+ron.workspace = true
+rust-s3.workspace = true
+semver.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde-this-or-that.workspace = true
+sha-1.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

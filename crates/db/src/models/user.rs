@@ -30,6 +30,9 @@ pub struct User {
 
     /// The user's GitHub ID.
     pub github_id: i32,
+
+    /// Are they an admin?
+    pub admin: bool,
 }
 
 /// A model for creating a new user in the database.

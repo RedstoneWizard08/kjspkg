@@ -1,5 +1,6 @@
 use crate::{auth::get_user_from_req, state::AppState, Result};
 use anyhow::anyhow;
+use app_core::AppError;
 use axum::{
     body::Body,
     extract::{Multipart, Path, State},
@@ -10,8 +11,9 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use db::{
-    get_package, get_version, package_authors, package_versions, packages, NewPackageVersion,
-    Package, PackageAuthor, PackageVersion, PackageVersionInit,
+    get_full_package, get_package, get_version, package_authors, package_versions, packages,
+    NewPackageVersion, Package, PackageAuthor, PackageVersion, PackageVersionInit,
+    PackageVisibility,
 };
 use diesel::{delete, insert_into, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
@@ -55,11 +57,25 @@ pub struct PartialPackageVersion {
 )]
 #[debug_handler]
 pub async fn list_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path(id): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
-    let pkg = get_package(id, &mut conn).await?;
+    let pkg = get_full_package(id, &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
 
     let versions = package_versions::table
         .filter(package_versions::package.eq(pkg.id))
@@ -90,11 +106,26 @@ pub async fn list_handler(
 )]
 #[debug_handler]
 pub async fn info_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
-    let pkg = get_package(package, &mut conn).await?;
+    let pkg = get_full_package(package, &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
+
     let ver = get_version(pkg.id, version, &mut conn).await?;
 
     Ok(Response::builder()
@@ -119,11 +150,25 @@ pub async fn info_handler(
 )]
 #[debug_handler]
 pub async fn latest_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path(package): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
-    let pkg = get_package(package, &mut conn).await?;
+    let pkg = get_full_package(package, &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
 
     let mut versions = package_versions::table
         .filter(package_versions::package.eq(pkg.id))
@@ -160,11 +205,26 @@ pub async fn latest_handler(
 )]
 #[debug_handler]
 pub async fn download_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path((package, version)): Path<(String, String)>,
     State(state): State<AppState>,
 ) -> Result<Vec<u8>> {
     let mut conn = state.pool.get().await?;
-    let pkg = get_package(package, &mut conn).await?;
+    let pkg = get_full_package(package, &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
+
     let ver = get_version(pkg.id, version, &mut conn).await?;
 
     update(packages::table)
@@ -235,7 +295,7 @@ pub async fn create_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -318,7 +378,7 @@ pub async fn create_handler(
     hasher.update(&file);
 
     let file_id = format!("{:x}", hasher.finalize());
-    let file_name = format!("{}.tgz", file_id);
+    let file_name = format!("{}", file_id);
 
     state
         .buckets
@@ -395,7 +455,7 @@ pub async fn update_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -464,7 +524,7 @@ pub async fn delete_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -480,7 +540,7 @@ pub async fn delete_handler(
         state
             .buckets
             .packages
-            .delete_object(format!("/{}.tgz", ver.file_id))
+            .delete_object(format!("/{}", ver.file_id))
             .await?;
     }
 

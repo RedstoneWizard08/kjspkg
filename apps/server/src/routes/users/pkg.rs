@@ -1,10 +1,15 @@
-use crate::{state::AppState, Result};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{
     extract::{Path, State},
+    http::HeaderMap,
     Json,
 };
+use axum_extra::extract::CookieJar;
 use chrono::Utc;
-use db::{get_user, package_authors, packages, users, Package, PackageAuthor, PackageData, User};
+use db::{
+    get_user, package_authors, packages, users, Package, PackageAuthor, PackageData,
+    PackageVisibility, User,
+};
 use diesel::{BelongingToDsl, ExpressionMethods, GroupedBy, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use parking_lot::Mutex;
@@ -38,6 +43,8 @@ pub fn clear_user_cache(id: i32) {
 )]
 #[debug_handler]
 pub async fn list_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<Vec<PackageData>>> {
@@ -83,5 +90,23 @@ pub async fn list_handler(
         (Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()),
     );
 
-    Ok(Json(res))
+    match get_user_from_req(&jar, &headers, &mut conn).await {
+        Ok(user) => Ok(Json(
+            res.iter()
+                .filter(|v| {
+                    v.visibility == PackageVisibility::Public
+                        || v.authors.iter().any(|v| v.github_id == user.github_id)
+                        || user.admin
+                })
+                .cloned()
+                .collect(),
+        )),
+
+        Err(_) => Ok(Json(
+            res.iter()
+                .filter(|v| v.visibility == PackageVisibility::Public)
+                .cloned()
+                .collect(),
+        )),
+    }
 }

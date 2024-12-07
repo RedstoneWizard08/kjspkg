@@ -1,6 +1,7 @@
 use crate::{
     auth::get_user_from_req, routes::users::pkg::clear_user_cache, state::AppState, Result,
 };
+use app_core::AppError;
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -64,11 +65,25 @@ pub struct PartialPackage {
 )]
 #[debug_handler]
 pub async fn info_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path(id): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
     let pkg = get_full_package(id, &mut conn).await?;
+
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
+
+            Err(_) => return Err(AppError::NotFound),
+        }
+    }
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")
@@ -109,7 +124,7 @@ pub async fn update_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -173,7 +188,7 @@ pub async fn delete_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);

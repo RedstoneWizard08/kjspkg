@@ -92,6 +92,7 @@ diesel::table! {
         id -> Int4,
         username -> Text,
         github_id -> Int4,
+        admin -> Bool,
     }
 }
 

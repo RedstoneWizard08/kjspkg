@@ -161,11 +161,19 @@
                 class:!line-through={removedAuthors.includes(author.id)}
                 class:!text-error-500={removedAuthors.includes(author.id)}
             >
-                <img
-                    src="https://avatars.githubusercontent.com/u/{author.github_id}"
-                    alt="author's profile afirst child cssvatar"
-                    class="my-auto mr-2 aspect-square h-8 rounded-token"
-                />
+                {#if author.github_id == -1}
+                    <img
+                        src="https://avatars.githubusercontent.com/u/{author.github_id}"
+                        alt="author's profile afirst child cssvatar"
+                        class="my-auto mr-2 aspect-square h-8 rounded-token"
+                    />
+                {:else}
+                    <img
+                        src="/modhost.png"
+                        alt="author's profile afirst child cssvatar"
+                        class="my-auto mr-2 aspect-square h-8 rounded-token"
+                    />
+                {/if}
                 {author.username}
             </div>
 

@@ -1,9 +1,11 @@
-use crate::{state::AppState, Result};
+use crate::{auth::get_user_from_req, state::AppState, Result};
 use axum::{
     extract::{Query, State},
+    http::HeaderMap,
     Json,
 };
-use db::{packages, users, Package, PackageAuthor, PackageData, User};
+use axum_extra::extract::CookieJar;
+use db::{packages, users, Package, PackageAuthor, PackageData, PackageVisibility, User};
 use diesel::{
     BelongingToDsl, BoolExpressionMethods, GroupedBy, PgTextExpressionMethods, QueryDsl,
     SelectableHelper,
@@ -32,6 +34,8 @@ pub struct SearchQuery {
 )]
 #[debug_handler]
 pub async fn search_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     State(state): State<AppState>,
     Query(SearchQuery { q }): Query<SearchQuery>,
 ) -> Result<Json<Vec<PackageData>>> {
@@ -61,5 +65,23 @@ pub async fn search_handler(
         .map(|(users, pkg)| pkg.with_authors(users.iter().map(|(_, user)| user.clone()).collect()))
         .collect::<Vec<_>>();
 
-    Ok(Json(res))
+    match get_user_from_req(&jar, &headers, &mut conn).await {
+        Ok(user) => Ok(Json(
+            res.iter()
+                .filter(|v| {
+                    v.visibility == PackageVisibility::Public
+                        || v.authors.iter().any(|v| v.github_id == user.github_id)
+                        || user.admin
+                })
+                .cloned()
+                .collect(),
+        )),
+
+        Err(_) => Ok(Json(
+            res.iter()
+                .filter(|v| v.visibility == PackageVisibility::Public)
+                .cloned()
+                .collect(),
+        )),
+    }
 }

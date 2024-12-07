@@ -60,11 +60,19 @@
                         onmouseleave={outHandler(index)}
                     >
                         <!-- <Avatar :src="project.icon_url" :alt="project.title" size="sm" loading="lazy" /> -->
-                        <img
-                            src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
-                            alt="author's profile avatar"
-                            class="my-auto mr-1 aspect-square h-10 rounded-token"
-                        />
+                        {#if pkg.authors[0].github_id == -1}
+                            <img
+                                src="/modhost.png"
+                                alt="author's profile avatar"
+                                class="my-auto mr-1 aspect-square h-10 rounded-token"
+                            />
+                        {:else}
+                            <img
+                                src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
+                                alt="author's profile avatar"
+                                class="my-auto mr-1 aspect-square h-10 rounded-token"
+                            />
+                        {/if}
                         <div class="project-info flex flex-col">
                             <span class="title font-bold">
                                 {pkg.name}

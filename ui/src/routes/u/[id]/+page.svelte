@@ -5,7 +5,6 @@
     import type { LoadingState, PackageData, SortMode, User } from "$lib/types";
     import { onMount } from "svelte";
     import { user as userStore, userPreferencesStore, sortPackages } from "$lib/stores";
-    import { admins } from "$lib/data";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import PackageList from "$components/ui/PackageList.svelte";
     import { guessSortMode } from "$lib/utils";
@@ -51,17 +50,25 @@
 {:else if loadingState == "ready"}
     <div class="h2 mb-1 flex w-full flex-row items-center justify-between font-bold">
         <div class="flex flex-row items-center justify-start">
-            <img
-                src="https://avatars.githubusercontent.com/u/{user?.github_id}"
-                alt="author's profile"
-                class="mr-4 aspect-square h-16 rounded-token"
-            />
+            {#if user?.github_id == -1}
+                <img
+                    src="/modhost.png"
+                    alt="author's profile"
+                    class="mr-4 aspect-square h-16 rounded-token"
+                />
+            {:else}
+                <img
+                    src="https://avatars.githubusercontent.com/u/{user?.github_id}"
+                    alt="author's profile"
+                    class="mr-4 aspect-square h-16 rounded-token"
+                />
+            {/if}
 
             <span class="h2 font-bold">{user?.username}</span>
         </div>
 
         <div class="flex flex-row items-center justify-end">
-            {#if user && admins.includes(user.github_id)}
+            {#if user && user.admin}
                 <span class="variant-filled-error badge">{$_("user.admin")}</span>
             {/if}
 

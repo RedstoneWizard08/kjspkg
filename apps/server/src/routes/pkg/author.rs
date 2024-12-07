@@ -1,4 +1,5 @@
 use crate::{auth::get_user_from_req, state::AppState, Result};
+use app_core::AppError;
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -7,8 +8,8 @@ use axum::{
 };
 use axum_extra::extract::CookieJar;
 use db::{
-    get_full_package, get_package, get_user, package_authors, users, PackageAuthor, PackageData,
-    User,
+    get_full_package, get_package, get_user, package_authors, PackageAuthor, PackageData,
+    PackageVisibility, User,
 };
 use diesel::{
     dsl::delete, insert_into, BoolExpressionMethods, ExpressionMethods, QueryDsl, SelectableHelper,
@@ -32,33 +33,29 @@ use diesel_async::RunQueryDsl;
 )]
 #[debug_handler]
 pub async fn list_handler(
+    jar: CookieJar,
+    headers: HeaderMap,
     Path(id): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Response> {
     let mut conn = state.pool.get().await?;
-    let pkg = get_package(id, &mut conn).await?;
+    let pkg = get_full_package(id, &mut conn).await?;
 
-    let authors = package_authors::table
-        .filter(package_authors::package.eq(pkg.id))
-        .select(PackageAuthor::as_select())
-        .load(&mut conn)
-        .await?;
+    if pkg.visibility == PackageVisibility::Private {
+        match get_user_from_req(&jar, &headers, &mut conn).await {
+            Ok(user) => {
+                if !pkg.authors.iter().any(|v| v.github_id == user.github_id) && !user.admin {
+                    return Err(AppError::NotFound);
+                }
+            }
 
-    let mut res = Vec::new();
-
-    for item in authors {
-        res.push(
-            users::table
-                .find(item.user_id)
-                .select(User::as_select())
-                .get_result(&mut conn)
-                .await?,
-        );
+            Err(_) => return Err(AppError::NotFound),
+        }
     }
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")
-        .body(Body::new(serde_json::to_string(&res)?))?)
+        .body(Body::new(serde_json::to_string(&pkg.authors)?))?)
 }
 
 /// Add Package Author
@@ -97,7 +94,7 @@ pub async fn add_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
@@ -164,7 +161,7 @@ pub async fn remove_handler(
         .load(&mut conn)
         .await?;
 
-    if authors.iter().find(|v| v.user_id == user.id).is_none() {
+    if authors.iter().find(|v| v.user_id == user.id).is_none() && !user.admin {
         return Ok(Response::builder()
             .status(StatusCode::UNAUTHORIZED)
             .body(Body::empty())?);
