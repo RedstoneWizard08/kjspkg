@@ -33,7 +33,7 @@ impl Cli {
         ModHost::new(Box::new(|_| true))
             .await?
             .versions(get_astro_versions().await?)
-            .loaders(loaders!["AstroModIntegrator"])
+            .loaders(loaders!["AstroModIntegrator", "UE4SS"])
             .router()
             .run()
             .await?;

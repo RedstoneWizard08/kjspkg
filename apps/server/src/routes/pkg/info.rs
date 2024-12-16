@@ -17,8 +17,6 @@ use db::{
 use diesel::{delete, update, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 
-use super::list::refresh_list_cache;
-
 #[derive(
     Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, ToSchema, ToResponse, Serialize, Deserialize,
 )]
@@ -146,7 +144,7 @@ pub async fn update_handler(
         .get_result(&mut conn)
         .await?;
 
-    tokio::spawn(refresh_list_cache(state.pool));
+    // tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
 
     Ok(Response::builder()
@@ -199,7 +197,7 @@ pub async fn delete_handler(
         .execute(&mut conn)
         .await?;
 
-    tokio::spawn(refresh_list_cache(state.pool));
+    // tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
 
     Ok(Response::builder().body(Body::new("Deleted package successfully!".to_string()))?)

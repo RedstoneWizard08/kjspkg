@@ -29,7 +29,6 @@ pub async fn main() -> Result<()> {
     let user = NewUser {
         github_id: -1,
         username: "ModHost Migrator".into(),
-        admin: false,
     };
 
     let id = insert_into(users::table)

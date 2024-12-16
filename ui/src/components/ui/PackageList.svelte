@@ -6,22 +6,19 @@
     import { fade, slide } from "svelte/transition";
     import { formatDate } from "$lib/utils";
     import type { PackageData } from "$lib/types";
+    import type { SearchResults } from "$lib/types/search";
 
     interface Props {
-        startFrom?: number;
-        maxCount?: number;
         customHeight?: number;
         compact?: boolean;
         showAvatar?: boolean;
         showDetails?: boolean;
         showName?: boolean;
         select?: (id: number) => void | Promise<void>;
-        packages: PackageData[];
+        packages: SearchResults;
     }
 
     const {
-        startFrom = 0,
-        maxCount = Infinity,
         customHeight,
         compact = false,
         showName = true,
@@ -32,7 +29,7 @@
     }: Props = $props();
 </script>
 
-{#each packages.slice(startFrom, maxCount) as pkg, i (pkg)}
+{#each packages.results as pkg, i (pkg)}
     <a
         href={`${base}/p/${pkg.slug}`}
         class="card flex p-4 hover:variant-soft-primary"

@@ -6,8 +6,8 @@
         currentSearchStore,
         packagesStore,
         userPreferencesStore,
-        filteredStore,
         updatePackagesStore,
+        emptySearchResults,
     } from "$lib/stores";
     import { vsprintf } from "sprintf-js";
     import type { LoadingState, SortMode } from "$lib/types";
@@ -20,8 +20,14 @@
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import { siteConfig } from "$lib/config";
     import Icon from "@iconify/svelte";
+    import { searchPackages } from "$api";
 
-    let loadingState: LoadingState = $state($packagesStore.length == 0 ? "loading" : "ready");
+    let currentPage = $state(0);
+    let perPage = $state(30);
+
+    let loadingState: LoadingState = $state(
+        $packagesStore.pagination.results == 0 ? "loading" : "ready",
+    );
 
     const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
 
@@ -36,6 +42,12 @@
         ) {
             $currentSearchStore = $page.url.searchParams.get("q")!;
         }
+    });
+
+    $effect(() => {
+        searchPackages($currentSearchStore, currentPage, perPage).then(
+            (v) => ($packagesStore = v ?? emptySearchResults),
+        );
     });
 
     const updateQuery = async () => {
@@ -61,7 +73,7 @@
 <div class="mb-2 flex flex-wrap gap-2">
     {#if $currentSearchStore}
         <button
-            class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
+            class="variant-soft-secondary btn hover:variant-filled-primary w-fit"
             onclick={() => ($currentSearchStore = "")}
         >
             <Icon icon="tabler:clear-all" height="24" class="mr-2" />
@@ -70,7 +82,7 @@
     {/if}
 
     <button
-        class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
+        class="variant-soft-secondary btn hover:variant-filled-primary w-fit"
         onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
     >
         <Icon icon="tabler:layout-dashboard" height="24" class="mr-2" />
@@ -84,22 +96,22 @@
 </div>
 
 <div
-    class="sticky top-[-1px] z-10 justify-between border-surface-600 bg-surface-900 p-2 backdrop-blur rounded-bl-container-token rounded-br-container-token md:flex"
+    class="border-surface-600 bg-surface-900 rounded-bl-container-token rounded-br-container-token sticky top-[-1px] z-10 items-center justify-between p-2 backdrop-blur md:flex"
 >
     <h1 class="h3">
         {#if !$currentSearchStore}
-            {@html vsprintf($_("search.found_plural"), [$filteredStore.length])}
+            {@html vsprintf($_("search.found_plural"), [$packagesStore.pagination.total])}
             {$_(`search.plural.${siteConfig.type}`)}
         {:else}
             {@html vsprintf(
-                $filteredStore.length == 1
+                $packagesStore.pagination.total == 1
                     ? $_("search.found_singular")
                     : $_("search.found_plural"),
-                [$filteredStore.length],
+                [$packagesStore.pagination.total],
             )}
 
             <a href="{base}/s" class="anchor no-underline">
-                {$filteredStore.length == 1
+                {$packagesStore.pagination.total == 1
                     ? $_(`search.singular.${siteConfig.type}`)
                     : $_(`search.plural.${siteConfig.type}`)}
             </a>
@@ -107,7 +119,7 @@
             {#if $currentSearchStore != ""}
                 {$_("search.matching")}
                 <button
-                    class="transition-all hover:variant-filled-error hover:rounded hover:p-1 hover:px-2 hover:line-through"
+                    class="hover:variant-filled-error transition-all hover:rounded hover:p-1 hover:px-2 hover:line-through"
                     onclick={() => ($currentSearchStore = "")}
                 >
                     {$currentSearchStore}
@@ -115,6 +127,16 @@
             {/if}
         {/if}
     </h1>
+
+    <div class="flex flex-row flex-wrap items-center space-x-2">
+        {#each new Array($packagesStore.pagination.pages) as _, page}
+            <button
+                class="btn variant-glass-primary hover:variant-ghost-primary btn-icon-sm text-center font-bold transition-all"
+                class:!variant-filled-primary={currentPage == page}
+                onclick={() => (currentPage = page)}>{page}</button
+            >
+        {/each}
+    </div>
 
     <div class="flex flex-wrap space-x-2">
         <button
@@ -163,10 +185,10 @@
         class:lg:grid-cols-3={$userPreferencesStore.compact}
     >
         {#each Array(5) as _}
-            <div class="placeholder h-24 w-full animate-pulse rounded-container-token"></div>
+            <div class="placeholder rounded-container-token h-24 w-full animate-pulse"></div>
         {/each}
     </dl>
-{:else if loadingState == "ready" && $filteredStore.length == 0}
+{:else if loadingState == "ready" && $packagesStore.pagination.total == 0}
     <p class="text-center opacity-50">{$_(`errors.none_published.${siteConfig.type}`)}</p>
 {:else if loadingState == "ready"}
     <dl
@@ -178,7 +200,7 @@
         <PackageList
             {showDetails}
             compact={$userPreferencesStore.compact}
-            packages={$filteredStore}
+            packages={$packagesStore}
         />
     </dl>
 {:else if loadingState == "failed"}

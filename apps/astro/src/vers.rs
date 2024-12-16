@@ -1,18 +1,39 @@
 use crate::{models::MediaWiki, PATCH_NOTES_URL, VER_REGEX};
 use anyhow::Result;
+use const_format::formatcp;
 use itertools::Itertools;
 use modhost::GameVersion;
 use parse_wiki_text_2::{Configuration, Node, TableNode};
+use reqwest::{header::USER_AGENT, Client};
+use tracing::info;
+
+pub const AMH_USER_AGENT: &str = formatcp!("AstroModHost/{}", env!("CARGO_PKG_VERSION"));
 
 pub async fn get_astro_versions() -> Result<Vec<GameVersion>> {
-    let res = reqwest::get(PATCH_NOTES_URL).await?.text().await?;
+    info!("Getting patch notes from wiki...");
+
+    let client = Client::new();
+
+    let res = client
+        .get(PATCH_NOTES_URL)
+        .header(USER_AGENT, AMH_USER_AGENT)
+        .send()
+        .await?
+        .text()
+        .await?;
+
+    info!("Parsing XML...");
 
     let txt = serde_xml_rs::from_str::<MediaWiki>(&res)?
         .page
         .revision
         .text;
 
+    info!("Parsing MediaWiki dump...");
+
     let parsed = Configuration::default().parse(&txt)?;
+
+    info!("Getting tables...");
 
     let tables = parsed
         .nodes
@@ -35,10 +56,14 @@ pub async fn get_astro_versions() -> Result<Vec<GameVersion>> {
         })
         .collect::<Vec<_>>();
 
+    info!("Getting cells...");
+
     let cells = tables
         .iter()
         .flat_map(|v| v.rows.iter().flat_map(|v| v.cells.clone()))
         .collect::<Vec<_>>();
+
+    info!("Getting cells content...");
 
     let cell_texts = cells
         .iter()
@@ -55,11 +80,15 @@ pub async fn get_astro_versions() -> Result<Vec<GameVersion>> {
         .cloned()
         .collect::<Vec<_>>();
 
+    info!("Getting version numbers...");
+
     let nums = cell_texts
         .iter()
         .filter(|v| VER_REGEX.is_match(v))
         .cloned()
         .collect::<Vec<_>>();
+
+    info!("Parsing version numbers...");
 
     let semvers = nums
         .iter()
@@ -67,6 +96,8 @@ pub async fn get_astro_versions() -> Result<Vec<GameVersion>> {
         .sorted()
         .rev()
         .collect::<Vec<_>>();
+
+    info!("Reformatting version numbers...");
 
     let fmt_semvers = semvers
         .iter()

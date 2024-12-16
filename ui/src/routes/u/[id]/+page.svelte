@@ -11,7 +11,7 @@
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import IconBlank from "$components/icons/IconBlank.svelte";
-    import { goto } from "$app/navigation";
+    import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
     import { siteConfig } from "$lib/config";
     import Icon from "@iconify/svelte";
 
@@ -28,15 +28,36 @@
 
     onMount(async () => {
         loadingState = "loading";
-
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
+        user = await getUser(id);
 
-        try {
-            user = await getUser(id);
+        if (user) {
             packages = (await getUserPackages(id)) ?? [];
             loadingState = "ready";
-        } catch (_unused) {
+        } else {
             loadingState = "failed";
+        }
+    });
+
+    beforeNavigate(() => {
+        loadingState = "loading";
+        user = undefined;
+        packages = [];
+    });
+
+    // This is incredibly scuffed but it works
+    afterNavigate(async ({ to }) => {
+        if (to?.route.id == "/u/[id]") {
+            loadingState = "loading";
+            $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
+            user = await getUser(id);
+
+            if (user) {
+                packages = (await getUserPackages(id)) ?? [];
+                loadingState = "ready";
+            } else {
+                loadingState = "failed";
+            }
         }
     });
 </script>
@@ -47,20 +68,20 @@
 
 {#if loadingState == "loading"}
     <div class="placeholder m-2 mx-auto w-32 animate-pulse"></div>
-{:else if loadingState == "ready"}
+{:else if loadingState == "ready" && user}
     <div class="h2 mb-1 flex w-full flex-row items-center justify-between font-bold">
         <div class="flex flex-row items-center justify-start">
             {#if user?.github_id == -1}
                 <img
                     src="/modhost.png"
                     alt="author's profile"
-                    class="mr-4 aspect-square h-16 rounded-token"
+                    class="rounded-token mr-4 aspect-square h-16"
                 />
             {:else}
                 <img
                     src="https://avatars.githubusercontent.com/u/{user?.github_id}"
                     alt="author's profile"
-                    class="mr-4 aspect-square h-16 rounded-token"
+                    class="rounded-token mr-4 aspect-square h-16"
                 />
             {/if}
 
@@ -68,11 +89,15 @@
         </div>
 
         <div class="flex flex-row items-center justify-end">
-            {#if user && user.admin}
+            {#if user.github_id == -1}
+                <span class="variant-filled-success badge">System</span>
+            {/if}
+
+            {#if user.admin}
                 <span class="variant-filled-error badge">{$_("user.admin")}</span>
             {/if}
 
-            {#if $userStore && user && $userStore.github_id == user.github_id}
+            {#if $userStore && $userStore.github_id == user.github_id}
                 <span class="variant-filled-primary badge ml-2">{$_("user.you")}</span>
             {/if}
         </div>
@@ -98,7 +123,7 @@
 
         <div class="flex flex-row items-center justify-between">
             <button
-                class="variant-soft-secondary btn mb-4 w-fit hover:variant-filled-primary"
+                class="variant-soft-secondary btn hover:variant-filled-primary mb-4 w-fit"
                 onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
             >
                 <Icon icon="tabler:layout-dashboard" height="24" class="mr-2" />

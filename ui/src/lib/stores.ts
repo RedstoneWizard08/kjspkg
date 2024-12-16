@@ -9,14 +9,26 @@ import {
 } from "./types";
 import { browser } from "$app/environment";
 import { locales } from "svelte-i18n";
-import { getCurrentUser, getPackages } from "$api";
+import { getCurrentUser, searchPackages } from "$api";
 import { persisted } from "svelte-persisted-store";
 import { siteConfig } from "./config";
+import type { SearchResults } from "./types/search";
+
+export const emptySearchResults: SearchResults = {
+    pagination: {
+        page: 1,
+        pages: 0,
+        per_page: 30,
+        results: 0,
+        total: 0,
+    },
+
+    results: [],
+};
 
 export const currentScrollPosition = writable<Vec2>({ x: 0, y: 0 });
 export const currentSearchStore = writable<string>("");
-export const packagesStore = writable<PackageData[]>([]);
-export const filteredStore = writable<PackageData[]>([]);
+export const packagesStore = writable<SearchResults>(emptySearchResults);
 export const user = writable<User | undefined>(undefined);
 export const currentPackage = writable<PackageData | undefined>(undefined);
 export const editSaving = writable<boolean>(false);
@@ -31,17 +43,14 @@ export const userPreferencesStore = persisted<UserPreferences>("preferences", {
 });
 
 export const forceUpdatePackagesStore = async () => {
-    packagesStore.set((await getPackages()) ?? []);
+    packagesStore.set((await searchPackages()) ?? emptySearchResults);
 };
 
 export const updatePackagesStore = async () => {
-    if (get(packagesStore).length == 0) packagesStore.set((await getPackages()) ?? []);
+    if (get(packagesStore).pagination.results == 0)
+        packagesStore.set((await searchPackages()) ?? emptySearchResults);
 
-    return get(packagesStore).length != 0;
-};
-
-export const updateFilteredPackages = () => {
-    filteredStore.set(sortPackages(get(packagesStore), get(userPreferencesStore).sortBy, true));
+    return get(packagesStore).pagination.results != 0;
 };
 
 export const sortPackages = (packagesIn: PackageData[], sortBy: SortMode, search = false) => {
@@ -117,6 +126,4 @@ export const updateTheme = () => {
     }
 };
 
-currentSearchStore.subscribe(updateFilteredPackages);
-userPreferencesStore.subscribe(updateFilteredPackages);
 userPreferencesStore.subscribe(updateTheme);

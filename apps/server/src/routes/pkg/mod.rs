@@ -13,7 +13,7 @@ use axum::{
 
 pub fn router(state: AppState) -> Router<AppState> {
     Router::new()
-        .route("/", get(list::list_handler))
+        // .route("/", get(list::list_handler))
         .route("/", put(list::create_handler))
         .route("/search", get(search::search_handler))
         .route("/:id", get(info::info_handler))
