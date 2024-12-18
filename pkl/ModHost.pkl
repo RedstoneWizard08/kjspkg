@@ -18,6 +18,9 @@ class AppConfig {
 
     /// UI (frontend) configuration.
     ui: UIConfig
+
+    /// Meilisearch configuration
+    meilisearch: MeilisearchConfig
 }
 
 /// Server configuration.
@@ -169,6 +172,30 @@ class UIConfig {
     game: UIGameConfig = new {}
 }
 
+/// Meilisearch indexes configuration
+class MeilisearchIndexConfig {
+    /// The name of the packages index
+    packages: String = "packages"
+}
+
+/// Meilisearch configuration.
+class MeilisearchConfig {
+    /// The Meilisearch server host
+    host: String = "localhost"
+    
+    /// The Meilisearch server port
+    port: Int = 7700
+    
+    /// The protocol to access Meilisearch over
+    protocol: String(this == "http" || this == "https") = "http"
+
+    /// The key to use when accessing Meilisearch
+    key: String
+
+    /// The Meilisearch indexes config
+    indexes: MeilisearchIndexConfig = new {}
+}
+
 class RealStorageConfig {
     s3_region: String
     s3_endpoint: String
@@ -189,6 +216,14 @@ class RealUIConfig {
     favicon_ico: String
     favicon_png: String
     theme_color: String
+}
+
+class RealMeilisearchConfig {
+    host: String
+    port: Int
+    protocol: String
+    key: String
+    pkg_index: String
 }
 
 function fixStorageConfig(cfg: StorageConfig): RealStorageConfig = new {
@@ -213,9 +248,18 @@ function fixUIConfig(cfg: UIConfig): RealUIConfig = new {
     theme_color = cfg.theme_color
 }
 
+function fixMeilisearchConfig(cfg: MeilisearchConfig): RealMeilisearchConfig = new {
+    host = cfg.host
+    port = cfg.port
+    protocol = cfg.protocol
+    key = cfg.key
+    pkg_index = cfg.indexes.packages
+}
+
 mh_converters: Mapping<Class | String, (unknown) -> Any> = new {
     [StorageConfig] = (cfg) -> fixStorageConfig(cfg)
     [UIConfig] = (cfg) -> fixUIConfig(cfg)
+    [MeilisearchConfig] = (cfg) -> fixMeilisearchConfig(cfg)
 }
 
 /// Create the TOML renderer for ModHost configs, with ModHost's

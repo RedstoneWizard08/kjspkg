@@ -118,6 +118,8 @@ pub async fn add_handler(
         .execute(&mut conn)
         .await?;
 
+    state.search.update_package(pkg.id, &mut conn).await?;
+
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(
@@ -185,6 +187,8 @@ pub async fn remove_handler(
         )
         .execute(&mut conn)
         .await?;
+
+    state.search.update_package(pkg.id, &mut conn).await?;
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")

@@ -20,6 +20,7 @@
                     alt="logo"
                     class="aspect-square w-8 min-w-8 rounded-token"
                 />
+
                 <span>{siteConfig.siteName}</span>
 
                 {#if siteConfig.showBeta}

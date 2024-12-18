@@ -22,7 +22,6 @@ pub mod logger;
 pub mod macros;
 pub mod middleware;
 pub mod routes;
-pub mod search;
 pub mod server;
 pub mod state;
 pub mod ui;

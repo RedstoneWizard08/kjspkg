@@ -5,12 +5,10 @@ use axum::{
     Json,
 };
 use axum_extra::extract::CookieJar;
-use db::{
-    search_packages, search_packages_admin, search_packages_authed, SearchResults, SortDirection,
-    SortMode,
-};
+use db::PackageVisibility;
+use search::{Facet, SearchResults, Sort, SortMode};
 
-pub const MAX_PER_PAGE: i64 = 100;
+pub const MAX_PER_PAGE: usize = 100;
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema, ToResponse)]
 pub struct SearchQuery {
@@ -18,16 +16,20 @@ pub struct SearchQuery {
     pub q: Option<String>,
 
     /// The current page. Defaults to 1.
-    pub page: Option<i64>,
+    pub page: Option<usize>,
 
     /// How many items per page. Defaults to 25.
-    pub per_page: Option<i64>,
+    pub per_page: Option<usize>,
 
     /// The sort mode. Defaults to None.
-    pub sort: Option<SortMode>,
+    pub sort: Option<Sort>,
 
-    /// The sort direction. Defaults to Descending.
-    pub direction: Option<SortDirection>,
+    /// The sort direction. Defaults to None.
+    pub dir: Option<SortMode>,
+
+    /// Search filters. Defaults to an empty array.
+    /// Note that this will actually get deserialized to `Vec<(String, Vec<String>)>`.
+    pub filters: Option<String>,
 }
 
 /// Search Packages
@@ -57,26 +59,51 @@ pub async fn search_handler(
         page,
         per_page,
         sort,
-        direction,
+        dir,
+        filters,
     }): Query<SearchQuery>,
 ) -> Result<Json<SearchResults>> {
     let mut conn = state.pool.get().await?;
     let page = page.unwrap_or(1).max(1);
     let per_page = per_page.unwrap_or(25).min(MAX_PER_PAGE).max(1);
-    let sort = sort.unwrap_or_default();
-    let dir = direction.unwrap_or_default();
+    let filters =
+        serde_json::from_str::<Vec<(String, Vec<String>)>>(&filters.unwrap_or("[]".into()))?;
+    let mut facets = Vec::new();
+
+    match get_user_from_req(&jar, &headers, &mut conn).await {
+        Ok(user) => {
+            if !user.admin {
+                facets.push(Facet::Manual(format!(
+                    "{} OR {}",
+                    Facet::Visibility(PackageVisibility::Public).into_filter_string(),
+                    Facet::Author(user.id).into_filter_string()
+                )))
+            }
+        }
+
+        Err(_) => facets.push(Facet::Visibility(PackageVisibility::Public)),
+    }
+
+    for item in filters {
+        facets.push(Facet::parse(item)?);
+    }
+
+    let mut real_sort = None;
+
+    if let Some(sort) = sort {
+        if let Some(dir) = dir {
+            real_sort = Some((sort, dir));
+        } else {
+            real_sort = Some((sort, Default::default()));
+        }
+    } else if let Some(dir) = dir {
+        real_sort = Some((Default::default(), dir));
+    }
 
     Ok(Json(
-        match get_user_from_req(&jar, &headers, &mut conn).await {
-            Ok(user) => {
-                if user.admin {
-                    search_packages_admin(q, page, per_page, sort, dir, &mut conn).await?
-                } else {
-                    search_packages_authed(q, page, per_page, sort, dir, user, &mut conn).await?
-                }
-            }
-
-            Err(_) => search_packages(q, page, per_page, sort, dir, &mut conn).await?,
-        },
+        state
+            .search
+            .search(q.unwrap_or_default(), facets, page, per_page, real_sort)
+            .await?,
     ))
 }

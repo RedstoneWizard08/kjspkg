@@ -247,6 +247,8 @@ pub async fn download_handler(
         .get_result(&mut conn)
         .await?;
 
+    state.search.update_package(pkg.id, &mut conn).await?;
+
     let bytes = state
         .buckets
         .packages
@@ -411,6 +413,8 @@ pub async fn create_handler(
         .get_result(&mut conn)
         .await?;
 
+    state.search.update_package(pkg.id, &mut conn).await?;
+
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(&ver)?))?)
@@ -482,6 +486,8 @@ pub async fn update_handler(
         .get_result(&mut conn)
         .await?;
 
+    state.search.update_package(pkg.id, &mut conn).await?;
+
     Ok(Response::builder()
         .header("Content-Type", "application/json")
         .body(Body::new(serde_json::to_string(&ver)?))?)
@@ -548,6 +554,8 @@ pub async fn delete_handler(
         .filter(package_versions::id.eq(ver.id))
         .execute(&mut conn)
         .await?;
+
+    state.search.update_package(pkg.id, &mut conn).await?;
 
     Ok(Response::builder().body(Body::new(
         "Deleted package version successfully!".to_string(),

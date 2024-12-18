@@ -85,11 +85,13 @@
 
     "search.sorted_by": "Sorted by",
 
-    "search.sort_type.name": "Name (a-z)",
-    "search.sort_type.downloads": "Download count",
-    "search.sort_type.views": "View count",
+    "search.sort_type.name": "Name",
+    "search.sort_type.downloads": "Downloads",
     "search.sort_type.published": "Published",
     "search.sort_type.updated": "Last Updated",
+
+    "search.sort_mode.asc": "Ascending",
+    "search.sort_mode.desc": "Descending",
 
     "search.sorted_by.name": "name",
     "search.sorted_by.downloads": "downloads",

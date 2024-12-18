@@ -2,9 +2,9 @@
     import { _ } from "svelte-i18n";
     import { getUser, getUserPackages } from "$api";
     import { page } from "$app/stores";
-    import type { LoadingState, PackageData, SortMode, User } from "$lib/types";
+    import type { LoadingState, PackageData, Sort, SortMode, User } from "$lib/types";
     import { onMount } from "svelte";
-    import { user as userStore, userPreferencesStore, sortPackages } from "$lib/stores";
+    import { user as userStore, userPreferencesStore } from "$lib/stores";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import PackageList from "$components/ui/PackageList.svelte";
     import { guessSortMode } from "$lib/utils";
@@ -24,7 +24,6 @@
     let packages: PackageData[] = $state([]);
 
     const downloads = $derived(packages.reduce((a, b) => a + b.downloads, 0));
-    const sortedPackages = $derived(sortPackages(packages, $userPreferencesStore.sortBy, false));
 
     onMount(async () => {
         loadingState = "loading";
@@ -150,8 +149,7 @@
                                             $userPreferencesStore.sortBy == name
                                                 ? TablerIconCheck
                                                 : IconBlank,
-                                        action: () =>
-                                            ($userPreferencesStore.sortBy = name as SortMode),
+                                        action: () => ($userPreferencesStore.sortBy = name as Sort),
                                     }) as ContextMenuItem,
                             ),
                             { type: "SEPARATOR" },
@@ -168,7 +166,7 @@
                         ],
                     }}
                 >
-                    {$userPreferencesStore.sortBy != ""
+                    {$userPreferencesStore.sortBy != "none"
                         ? `${$_("search.sorted_by")} ${$_(`search.sorted_by.${$userPreferencesStore.sortBy}`)}`
                         : "Unsorted"}
                 </button>
@@ -184,7 +182,13 @@
             <PackageList
                 {showDetails}
                 compact={$userPreferencesStore.compact}
-                packages={sortedPackages}
+                packages={{
+                    results: packages,
+                    hits: packages.length,
+                    page: 1,
+                    pages: 1,
+                    total: packages.length,
+                }}
             />
         </div>
     </div>

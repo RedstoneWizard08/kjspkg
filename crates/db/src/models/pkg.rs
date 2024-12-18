@@ -209,3 +209,13 @@ impl Package {
         }
     }
 }
+
+impl PackageVisibility {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Private => "Private",
+            Self::Public => "Public",
+            Self::Unlisted => "Unlisted",
+        }
+    }
+}

@@ -1,4 +1,4 @@
-use crate::{AuthConfigs, PostgresConfig, StorageConfig, UIConfig};
+use crate::{AuthConfigs, MeilisearchConfig, PostgresConfig, StorageConfig, UIConfig};
 use app_core::Result;
 use std::fs;
 
@@ -9,6 +9,7 @@ pub struct AppConfig {
     pub auth: AuthConfigs,
     pub storage: StorageConfig,
     pub ui: UIConfig,
+    pub meilisearch: MeilisearchConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

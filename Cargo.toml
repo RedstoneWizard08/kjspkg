@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["./apps/*", "./crates/*", "apps/astro-migrator"]
+members = ["./apps/*", "./crates/*"]
 
 [workspace.package]
 edition = "2021"
@@ -26,7 +26,7 @@ clap-verbosity-flag = "3.0.0"
 clap_complete = "4.5.38"
 colored = "2.1.0"
 color-eyre = "0.6.3"
-config = "0.14.1"
+config = "0.15.0"
 const_format = "0.2.34"
 copy_dir = "0.1.3"
 ctrlc = "3.4.5"
@@ -56,6 +56,7 @@ jsonwebtoken = "9.3.0"
 lazy_static = "1.5.0"
 lenient_semver = { version = "0.4.2", features = ["version_serde"] }
 log = "0.4.22"
+meilisearch-sdk = "0.27.1"
 mime_guess = "2.0.5"
 oauth2 = "4.4.2"
 octocrab = "0.42.1"
@@ -87,11 +88,11 @@ termsize = "0.1.9"
 thiserror = "2.0.3"
 tiny_http = "0.12.0"
 tokio = { version = "1.41.1", features = ["process", "rt", "rt-multi-thread", "macros"] }
-tokio-tungstenite = { version = "0.24.0", features = ["rustls"] }
+tokio-tungstenite = { version = "0.26.0", features = ["rustls"] }
 toml = "0.8.19"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["ansi", "env-filter", "registry"] }
-tungstenite = { version = "0.24.0", features = ["rustls"] }
+tungstenite = { version = "0.26.0", features = ["rustls"] }
 url = "2.5.2"
 utoipa = { version = "5.2.0", features = ["axum_extras", "chrono", "yaml"] }
 utoipa-rapidoc = { version = "5.0.0", features = ["axum"] }
@@ -112,3 +113,4 @@ jsglue = { version = "0", path = "./crates/jsglue" }
 modhost = { version = "0", path = "./apps/server" }
 modhost-api = { version = "0", path = "./crates/modhost-api" }
 parse-wiki-text-2 = { version = "0", path = "./crates/parse-wiki-text-2" }
+search = { version = "0", path = "./crates/search" }

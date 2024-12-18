@@ -1,6 +1,5 @@
 import type { PackageData, PackageVersion, User } from "$lib/types";
 import type { PublicGalleryImage } from "$lib/types/gallery";
-import type { SearchResults } from "$lib/types/search";
 
 export const getUser = async (id: string | number): Promise<User | undefined> => {
     try {
@@ -21,27 +20,6 @@ export const searchUsers = async (query: string): Promise<User[] | undefined> =>
 export const getUserPackages = async (id: string | number): Promise<PackageData[] | undefined> => {
     try {
         return await (await fetch(`/api/v1/users/${id}/packages`)).json();
-    } catch (_err: any) {
-        return undefined;
-    }
-};
-
-export const searchPackages = async (
-    q?: string,
-    page = 1,
-    perPage = 30,
-): Promise<SearchResults | undefined> => {
-    let query = "";
-
-    if (q) {
-        query = "?q=" + encodeURIComponent(q);
-    }
-
-    if (query.startsWith("?")) query += `&page=${page}&per_page=${perPage}`;
-    else query += `?page=${page}&per_page=${perPage}`;
-
-    try {
-        return await (await fetch(`/api/v1/packages/search${query}`)).json();
     } catch (_err: any) {
         return undefined;
     }

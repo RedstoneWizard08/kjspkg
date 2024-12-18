@@ -70,8 +70,8 @@ pub async fn create_handler(
         .execute(&mut conn)
         .await?;
 
-    // tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
+    state.search.update_package(pkg.id, &mut conn).await?;
 
     Ok(Response::builder().body(Body::new(serde_json::to_string(
         &get_full_package(pkg.id.to_string(), &mut conn).await?,

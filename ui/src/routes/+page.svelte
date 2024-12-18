@@ -52,7 +52,7 @@
     class="m-0 flex w-full flex-col items-center justify-center bg-gradient-to-b from-primary-900 from-10% via-secondary-700 to-surface-900 to-90% p-10 py-40"
 >
     <!-- When you can't decide what font to use: -->
-    <h2 class="flex flex-row items-center justify-center text-4xl">
+    <h2 class="flex flex-row items-center justify-center md:text-4xl text-3xl">
         <span>{siteConfig.siteName}</span>
 
         {#if siteConfig.showBeta}

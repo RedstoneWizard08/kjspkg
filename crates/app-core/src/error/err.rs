@@ -99,6 +99,12 @@ pub enum AppError {
     #[error(transparent)]
     ParseInt(#[from] ParseIntError),
 
+    #[error(transparent)]
+    ParseDate(#[from] chrono::ParseError),
+
+    #[error(transparent)]
+    Meilisearch(#[from] meilisearch_sdk::errors::Error),
+
     #[error("Missing required token header or cookie!")]
     MissingToken,
 

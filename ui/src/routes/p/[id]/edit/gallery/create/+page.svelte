@@ -93,7 +93,7 @@
     Upload Image
 </p>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:label" height="24" class="mr-2" />
         Name
@@ -102,7 +102,7 @@
     <input type="text" placeholder="Example: My Image" class="input rounded-md" bind:value={name} />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <div class="flex w-full flex-row items-center justify-between">
         <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
             <Icon icon="tabler:arrows-sort" height="24" class="mr-2" />
@@ -125,7 +125,7 @@
     <input type="number" placeholder="Example: -1" class="input rounded-md" bind:value={ordering} />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:file-description" height="24" class="mr-2" />
         Edit Description (Optional)
@@ -134,7 +134,7 @@
     <MarkdownEditor carta={editor} bind:value={description} mode="tabs" />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:upload" height="24" class="mr-2" />
         Upload Image

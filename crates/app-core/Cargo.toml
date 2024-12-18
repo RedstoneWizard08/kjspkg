@@ -12,11 +12,13 @@ readme.workspace = true
 [dependencies]
 anyhow.workspace = true
 axum.workspace = true
+chrono.workspace = true
 config.workspace = true
 diesel.workspace = true
 diesel-async.workspace = true
 dotenvy.workspace = true
 jsglue.workspace = true
+meilisearch-sdk.workspace = true
 octocrab.workspace = true
 reqwest.workspace = true
 rust-s3.workspace = true

@@ -33,7 +33,7 @@
 </p>
 
 {#if loading}
-    <div class="card variant-soft-secondary w-full space-y-2 p-4">
+    <div class="card variant-glass-surface w-full space-y-2 p-4">
         <div class="flex flex-row items-center justify-center">
             <p class="flex flex-row items-center justify-center">
                 <Icon icon="tabler:loader-2" height="24" class="mr-2 animate-spin" />
@@ -42,20 +42,20 @@
         </div>
     </div>
 {:else if vers.length >= 1}
-    <div class="card variant-soft-secondary w-full space-y-2 p-4">
+    <div class="card variant-glass-surface w-full space-y-2 p-4">
         {#each vers as version}
             <EditVersion {version} pkg={id} />
         {/each}
     </div>
 {:else}
     <div
-        class="card variant-soft-secondary flex w-full flex-row items-center justify-center p-4 py-16"
+        class="card variant-glass-surface flex w-full flex-row items-center justify-center p-4 py-16"
     >
         No images found!
     </div>
 {/if}
 
-<div class="card variant-soft-secondary w-full space-y-2 p-4">
+<div class="card variant-glass-surface w-full space-y-2 p-4">
     <p class="mb-4 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:upload" height="24" class="mr-2" />
         Upload Version

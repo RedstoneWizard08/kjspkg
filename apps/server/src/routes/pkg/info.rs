@@ -146,6 +146,7 @@ pub async fn update_handler(
 
     // tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
+    state.search.update_package(pkg.id, &mut conn).await?;
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")
@@ -197,8 +198,8 @@ pub async fn delete_handler(
         .execute(&mut conn)
         .await?;
 
-    // tokio::spawn(refresh_list_cache(state.pool));
     clear_user_cache(user.id);
+    state.search.delete_package(pkg.id).await?;
 
     Ok(Response::builder().body(Body::new("Deleted package successfully!".to_string()))?)
 }

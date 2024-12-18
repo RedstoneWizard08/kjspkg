@@ -1,5 +1,3 @@
-#![cfg(not(debug_assertions))]
-
 use crate::Result;
 use std::{
     env::consts::{ARCH, EXE_SUFFIX, OS},

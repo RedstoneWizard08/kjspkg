@@ -133,7 +133,7 @@
     Edit Version
 </p>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <div class="flex w-full flex-row items-center justify-between">
         <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
             <Icon icon="tabler:hash" height="24" class="mr-2" />
@@ -163,7 +163,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:eye" height="24" class="mr-2" />
         Display Name
@@ -177,7 +177,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:file-power" height="24" class="mr-2" />
         Mod Loaders
@@ -198,7 +198,7 @@
     </div>
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:versions" height="24" class="mr-2" />
         Game versions
@@ -268,7 +268,7 @@
     {/if}
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:file-description" height="24" class="mr-2" />
         Edit Changelog

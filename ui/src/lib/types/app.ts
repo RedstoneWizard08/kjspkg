@@ -1,10 +1,12 @@
+import type { Sort, SortMode } from "./search";
+
 export interface UserPreferences {
-    sortBy: SortMode;
+    sortBy: Sort;
+    sortDir: SortMode;
     locale: string;
     theme: string;
     lightMode: boolean;
     compact: boolean;
 }
 
-export type SortMode = "" | "name" | "downloads" | "published" | "updated";
 export type LoadingState = "loading" | "ready" | "failed";

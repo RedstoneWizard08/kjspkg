@@ -37,6 +37,7 @@ config.astro.pkl
 
 .pgdump
 .minio
+.meili
 
 # Dev
 docker-compose.yml

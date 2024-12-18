@@ -44,7 +44,7 @@
 
 {#if images.length >= 1}
     <div
-        class="card variant-soft-secondary grid w-full grid-cols-[1fr_1fr] gap-2 p-4 md:grid-cols-[1fr_1fr_1fr]"
+        class="card variant-glass-surface grid w-full grid-cols-[1fr_1fr] gap-2 p-4 md:grid-cols-[1fr_1fr_1fr]"
     >
         {#each images as img}
             <a
@@ -81,13 +81,13 @@
     </div>
 {:else}
     <div
-        class="card variant-soft-secondary flex w-full flex-row items-center justify-center p-4 py-16"
+        class="card variant-glass-surface flex w-full flex-row items-center justify-center p-4 py-16"
     >
         No images found!
     </div>
 {/if}
 
-<div class="card variant-soft-secondary w-full space-y-2 p-4">
+<div class="card variant-glass-surface w-full space-y-2 p-4">
     <p class="mb-4 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:upload" height="24" class="mr-2" />
         Upload Image

@@ -32,7 +32,7 @@
     const openHomeDrawer = () => {
         drawerStore.open({
             id: "home",
-            bgDrawer: "bg-secondary-900 text-white",
+            bgDrawer: "bg-surface-800 text-white",
             width: "w-[300px]",
             rounded: "rounded-none",
         });

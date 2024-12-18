@@ -7,6 +7,7 @@ use axum::body::Bytes;
 use db::DbPool;
 use oauth2::basic::BasicClient;
 use s3::Bucket;
+use search::MeilisearchService;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -23,6 +24,7 @@ pub struct AppState {
     pub config: AppConfig,
     pub loaders: Vec<ModLoader>,
     pub game_versions: Vec<GameVersion>,
+    pub search: MeilisearchService,
     pub verifier: Arc<Box<dyn Fn(Bytes) -> bool + Send + Sync>>,
 }
 
@@ -43,6 +45,7 @@ impl AppState {
             loaders: vec![],
             game_versions: vec![],
             verifier: Arc::new(verifier),
+            search: MeilisearchService::new(config)?,
         })
     }
 }

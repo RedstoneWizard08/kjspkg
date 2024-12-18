@@ -1,17 +1,21 @@
 import type { PackageData } from "./pkg";
 
-export type SortMode = "none" | "name" | "downloads" | "published" | "updated";
-export type SortDirection = "asc" | "desc";
-
-export interface Pagination {
-    page: number;
-    per_page: number;
-    results: number;
-    total: number;
-    pages: number;
+export interface Facets {
+    game_versions: string[];
+    loaders: string[];
+    published: [number, number];
+    updated: [number, number];
+    downloads: [number, number];
 }
 
+export type Facet<K extends keyof Facets> = [K, Facets[K]];
+export type Sort = "none" | "name" | "downloads" | "published" | "updated";
+export type SortMode = "asc" | "desc";
+
 export interface SearchResults {
-    pagination: Pagination;
+    page: number;
+    pages: number;
+    hits: number;
+    total: number;
     results: PackageData[];
 }

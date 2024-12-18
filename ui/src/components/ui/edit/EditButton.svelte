@@ -16,7 +16,7 @@
 
 <a
     href={urlPath}
-    class="variant-glass-secondary flex flex-row items-center justify-start rounded-md p-4 py-2 transition-all hover:variant-soft-primary"
+    class="variant-glass-surface flex flex-row items-center justify-start rounded-md p-4 py-2 transition-all hover:variant-soft-primary"
     class:!variant-glass-primary={$page.route.id == route ||
         extraMatches.includes($page.route.id ?? "")}
     class:hover:!variant-outline-secondary={$page.route.id == route ||

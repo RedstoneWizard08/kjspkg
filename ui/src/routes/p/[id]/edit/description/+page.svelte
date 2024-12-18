@@ -38,7 +38,7 @@
     Edit Description
 </p>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <MarkdownEditor carta={editor} bind:value={readme} mode="tabs" />
 </div>
 

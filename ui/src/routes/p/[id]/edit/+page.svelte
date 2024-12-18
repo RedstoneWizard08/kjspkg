@@ -94,7 +94,7 @@
     General Settings
 </p>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:link" height="24" class="mr-2" />
         Slug
@@ -109,7 +109,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:eye" height="24" class="mr-2" />
         Display Name
@@ -123,7 +123,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:code" height="24" class="mr-2" />
         Source Code
@@ -137,7 +137,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:exclamation-circle" height="24" class="mr-2" />
         Issue Tracker
@@ -151,7 +151,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:world" height="24" class="mr-2" />
         Wiki
@@ -165,7 +165,7 @@
     />
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:license" height="24" class="mr-2" />
         License
@@ -188,7 +188,7 @@
     </div>
 </div>
 
-<div class="card variant-soft-secondary w-full p-4">
+<div class="card variant-glass-surface w-full p-4">
     <p class="mb-2 flex flex-row items-center justify-start text-primary-500">
         <Icon icon="tabler:eye" height="24" class="mr-2" />
         Visibility

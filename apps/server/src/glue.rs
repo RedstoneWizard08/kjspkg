@@ -5,10 +5,16 @@ use jsglue::{config::GlueConfig, framework::Framework, glue::Glue};
 /// Create a new [`Glue`] instance.
 #[cfg(debug_assertions)]
 pub async fn make_glue(config: &AppConfig) -> Result<Glue> {
+    use std::path::PathBuf;
+
+    let dir = format!("{}/../../ui", env!("CARGO_MANIFEST_DIR"));
+
+    crate::ui::build_ui(config, &PathBuf::from(&dir)).await?;
+
     Ok(Glue::new(
         GlueConfig::builder()
             .base("http://localhost:4001")
-            .project(format!("{}/../../ui", env!("CARGO_MANIFEST_DIR")))
+            .project(dir)
             .cmd("bun")
             .arg("run")
             .arg("dev")

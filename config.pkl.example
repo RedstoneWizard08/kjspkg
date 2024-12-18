@@ -14,6 +14,17 @@ app: ModHost.AppConfig = new {
         database = "modhost"
     }
 
+    meilisearch {
+        host = "localhost"
+        port = 7700
+        protocol = "http"
+        key = "change me!"
+
+        indexes {
+            packages = "packages"
+        }
+    }
+
     auth {
         github {
             client_id = "change me!"

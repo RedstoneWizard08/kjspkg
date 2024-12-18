@@ -12,11 +12,11 @@
     let selected = $derived(splitToRows(projects, rows));
 
     onMount(async () => {
-        const pkgs = await searchPackages(undefined, 1, 100);
+        const pkgs = await searchPackages(undefined, [], undefined, undefined, 1, 100);
 
         if (pkgs) {
             projects =
-                pkgs.pagination.results >= maxPkgs ? pkgs.results.slice(0, maxPkgs) : pkgs.results;
+                pkgs.hits >= maxPkgs ? pkgs.results.slice(0, maxPkgs) : pkgs.results;
         }
     });
 
