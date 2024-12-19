@@ -30,6 +30,7 @@ pub mod worker;
 
 pub use logger::*;
 pub use routes::meta::loaders::ModLoader;
+pub use routes::meta::tags::Tag;
 pub use routes::meta::vers::GameVersion;
 pub use server::*;
 

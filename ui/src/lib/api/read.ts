@@ -1,9 +1,18 @@
-import type { PackageData, PackageVersion, User } from "$lib/types";
+import type { PackageData, PackageVersion, Tag, User } from "$lib/types";
 import type { PublicGalleryImage } from "$lib/types/gallery";
+import { getToken, isLoggedIn } from "./auth";
 
 export const getUser = async (id: string | number): Promise<User | undefined> => {
     try {
-        return await (await fetch(`/api/v1/users/${id}`)).json();
+        return await (
+            await fetch(`/api/v1/users/${id}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -11,7 +20,15 @@ export const getUser = async (id: string | number): Promise<User | undefined> =>
 
 export const searchUsers = async (query: string): Promise<User[] | undefined> => {
     try {
-        return await (await fetch(`/api/v1/users/search?q=${query}`)).json();
+        return await (
+            await fetch(`/api/v1/users/search?q=${query}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -19,7 +36,15 @@ export const searchUsers = async (query: string): Promise<User[] | undefined> =>
 
 export const getUserPackages = async (id: string | number): Promise<PackageData[] | undefined> => {
     try {
-        return await (await fetch(`/api/v1/users/${id}/packages`)).json();
+        return await (
+            await fetch(`/api/v1/users/${id}/packages`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -30,7 +55,15 @@ export const getPackage = async (
     fetcher = fetch,
 ): Promise<PackageData | undefined> => {
     try {
-        return await (await fetcher(`/api/v1/packages/${id}`)).json();
+        return await (
+            await fetcher(`/api/v1/packages/${id}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -38,7 +71,15 @@ export const getPackage = async (
 
 export const getPackageAuthors = async (pkg: string | number): Promise<User[] | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${pkg}/authors`)).json();
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/authors`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -49,7 +90,15 @@ export const getPackageVersions = async (
     fetcher = fetch,
 ): Promise<PackageVersion[] | undefined> => {
     try {
-        return await (await fetcher(`/api/v1/packages/${pkg}/versions`)).json();
+        return await (
+            await fetcher(`/api/v1/packages/${pkg}/versions`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -60,7 +109,15 @@ export const getPackageVersion = async (
     version: string | number,
 ): Promise<PackageVersion | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${pkg}/versions/${version}`)).json();
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/versions/${version}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -72,7 +129,13 @@ export const getPackageVersionFile = async (
 ): Promise<ArrayBuffer | undefined> => {
     try {
         return await (
-            await fetch(`/api/v1/packages/${pkg}/versions/${version}/download`)
+            await fetch(`/api/v1/packages/${pkg}/versions/${version}/download`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
         ).arrayBuffer();
     } catch (_err: any) {
         return undefined;
@@ -83,7 +146,15 @@ export const getPackageGallery = async (
     pkg: string | number,
 ): Promise<PublicGalleryImage[] | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${pkg}/gallery`)).json();
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/gallery`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }
@@ -94,8 +165,24 @@ export const getGalleryImage = async (
     img: string | number,
 ): Promise<PublicGalleryImage | undefined> => {
     try {
-        return await (await fetch(`/api/v1/packages/${pkg}/gallery/${img}`)).json();
+        return await (
+            await fetch(`/api/v1/packages/${pkg}/gallery/${img}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
+    }
+};
+
+export const getTags = async (): Promise<Tag[]> => {
+    try {
+        return await (await fetch("/api/v1/meta/tags")).json();
+    } catch (_err: any) {
+        return [];
     }
 };

@@ -8,6 +8,18 @@
 
 A simple, open-source, and self-hostable place to host mods for any game!
 
+## Why ModHost?
+
+There are a lot of reasons to choose ModHost! Here are just a few:
+
+- [x] Fast, modern UI
+- [x] Useful and blazingly fast full-text search
+- [x] Useful search filters
+- [x] Fully documented API
+- [x] Easy to self-host
+- [x] Simple customization
+- [x] Highly configurable
+
 ## Logo?
 
 Yeah, the logo is a BIG work-in-progress. If you have a better one or concept, feel free to let me know!

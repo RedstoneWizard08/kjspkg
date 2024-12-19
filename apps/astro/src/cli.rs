@@ -1,4 +1,4 @@
-use crate::vers::get_astro_versions;
+use crate::{tags::tags, vers::get_astro_versions};
 use anyhow::Result;
 use clap::{Command, CommandFactory, Parser};
 use clap_complete::{generate, Generator, Shell};
@@ -34,6 +34,7 @@ impl Cli {
             .await?
             .versions(get_astro_versions().await?)
             .loaders(loaders!["AstroModIntegrator", "UE4SS"])
+            .tags(tags())
             .router()
             .run()
             .await?;

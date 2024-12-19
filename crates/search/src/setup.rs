@@ -24,6 +24,7 @@ impl MeilisearchService {
                 "visibility",
                 "created_at",
                 "updated_at",
+                "tags",
             ])
             .await?;
 
@@ -47,6 +48,7 @@ impl MeilisearchService {
                 "visibility",
                 "created_at",
                 "updated_at",
+                "tags",
             ])
             .await?;
 

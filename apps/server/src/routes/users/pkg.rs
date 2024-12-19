@@ -12,8 +12,8 @@ use db::{
 };
 use diesel::{BelongingToDsl, ExpressionMethods, GroupedBy, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
-use parking_lot::Mutex;
 use std::{collections::HashMap, sync::Arc};
+use tokio::sync::Mutex;
 
 const CACHE_EXPIRY_MS: i64 = 15 * 60 * 1000; // 15 minutes = 15m * 60s * 1000ms
 
@@ -22,8 +22,8 @@ lazy_static! {
         Arc::new(Mutex::new(HashMap::new()));
 }
 
-pub fn clear_user_cache(id: i32) {
-    USER_PACKAGES_CACHE.lock().remove(&id);
+pub async fn clear_user_cache(id: i32) {
+    USER_PACKAGES_CACHE.lock().await.remove(&id);
 }
 
 /// Get User Packages
@@ -50,15 +50,35 @@ pub async fn list_handler(
 ) -> Result<Json<Vec<PackageData>>> {
     let mut conn = state.pool.get().await?;
     let user = get_user(id, &mut conn).await?;
+    let mut lock = USER_PACKAGES_CACHE.lock().await;
 
-    if let Some((expires, data)) = USER_PACKAGES_CACHE.lock().get(&user.id) {
+    if let Some((expires, data)) = lock.get(&user.id) {
         let now = Utc::now().timestamp_millis();
 
         if *expires > now {
-            return Ok(Json(data.clone()));
+            return match get_user_from_req(&jar, &headers, &mut conn).await {
+                Ok(user) => Ok(Json(
+                    data.clone()
+                        .into_iter()
+                        .filter(|v| {
+                            v.visibility == PackageVisibility::Public
+                                || v.authors.iter().any(|v| v.github_id == user.github_id)
+                                || user.admin
+                        })
+                        .collect(),
+                )),
+
+                Err(_) => Ok(Json(
+                    data.clone()
+                        .into_iter()
+                        .filter(|v| v.visibility == PackageVisibility::Public)
+                        .collect(),
+                )),
+            };
         }
     }
 
+    // TODO: Do this as a single query
     let pkgs = package_authors::table
         .filter(package_authors::user_id.eq(user.id))
         .inner_join(packages::table)
@@ -85,7 +105,7 @@ pub async fn list_handler(
         })
         .collect::<Vec<_>>();
 
-    USER_PACKAGES_CACHE.lock().insert(
+    lock.insert(
         user.id,
         (Utc::now().timestamp_millis() + CACHE_EXPIRY_MS, res.clone()),
     );

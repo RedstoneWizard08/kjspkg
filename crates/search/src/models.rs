@@ -63,6 +63,9 @@ pub struct MeiliPackage {
 
     /// A list of game versions this package supports (all versions).
     pub game_versions: Vec<String>,
+
+    /// A list of tags for this package.
+    pub tags: Vec<String>,
 }
 
 #[derive(
@@ -108,6 +111,7 @@ impl MeiliPackage {
                 .sorted()
                 .dedup()
                 .collect_vec(),
+            tags: pkg.tags.into_iter().filter_map(|v| v).collect_vec(),
             authors,
             versions,
         }
@@ -129,6 +133,7 @@ impl MeiliPackage {
             visibility: self.visibility,
             license: self.license,
             authors: self.authors,
+            tags: self.tags,
         }
     }
 }

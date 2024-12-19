@@ -74,13 +74,13 @@
                 <img
                     src="/modhost.png"
                     alt="author's profile"
-                    class="rounded-token mr-4 aspect-square h-16"
+                    class="mr-4 aspect-square h-16 rounded-token"
                 />
             {:else}
                 <img
                     src="https://avatars.githubusercontent.com/u/{user?.github_id}"
                     alt="author's profile"
-                    class="rounded-token mr-4 aspect-square h-16"
+                    class="mr-4 aspect-square h-16 rounded-token"
                 />
             {/if}
 
@@ -122,7 +122,7 @@
 
         <div class="flex flex-row items-center justify-between">
             <button
-                class="variant-soft-secondary btn hover:variant-filled-primary mb-4 w-fit"
+                class="variant-soft-secondary btn mb-4 w-fit hover:variant-filled-primary"
                 onclick={() => ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
             >
                 <Icon icon="tabler:layout-dashboard" height="24" class="mr-2" />

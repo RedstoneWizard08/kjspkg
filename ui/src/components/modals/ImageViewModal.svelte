@@ -27,7 +27,7 @@
 </script>
 
 {#if $modals[0] && img}
-    <div class="w-modal-slim relative rounded-lg bg-surface-500 p-8 shadow-xl">
+    <div class="relative rounded-lg bg-surface-500 p-8 shadow-xl">
         <header class="text-2xl font-bold">{img.name}</header>
 
         <img src={img.url} alt={img.name} class="my-4" />

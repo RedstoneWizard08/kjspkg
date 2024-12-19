@@ -6,6 +6,7 @@ use crate::{
     },
     state::AppState,
     worker::run_worker,
+    Tag,
 };
 use anyhow::Result;
 use app_config::{get_config, AppConfig};
@@ -83,8 +84,16 @@ impl ModHost {
         self
     }
 
+    /// Set the tags for the API.
+    pub fn tags(mut self, tags: Vec<Tag>) -> Self {
+        self.state.tags = tags;
+        self
+    }
+
     /// Register the router.
     /// If you are registering versions, run this AFTER you run [`Self::versions`]!
+    /// If you are registering loaders, run this AFTER you run [`Self::loaders`]!
+    /// If you are registering tags, run this AFTER you run [`Self::tags`]!
     pub fn router(mut self) -> Self {
         info!("Registering routes...");
 

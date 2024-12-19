@@ -2,7 +2,13 @@
     import { afterNavigate, beforeNavigate } from "$app/navigation";
     import { _ } from "svelte-i18n";
     import { page } from "$app/stores";
-    import type { ProjectVisibility, LoadingState, PackageData, PackageVersion } from "$lib/types";
+    import type {
+        ProjectVisibility,
+        LoadingState,
+        PackageData,
+        PackageVersion,
+        Tag,
+    } from "$lib/types";
     import {
         fixLoaderName,
         getLoaders,
@@ -14,7 +20,7 @@
     import { getPackage, getPackageGallery, getPackageVersions } from "$api";
     import { getToastStore } from "@skeletonlabs/skeleton";
     import { base } from "$app/paths";
-    import { currentPackage, user } from "$lib/stores";
+    import { currentPackage, tagsStore, user } from "$lib/stores";
     import { tryAggregateVersions } from "$lib/vers";
     import { siteConfig } from "$lib/config";
     import { copyText } from "$lib/clipboard";
@@ -34,6 +40,7 @@
     let repo = $state("");
     let issues = $state("");
     let wiki = $state("");
+    let tags = $state<Tag[]>([]);
     let license = $state<string | undefined>(undefined);
     let vis = $state<ProjectVisibility>("Public");
     let image = $state<PublicGalleryImage | undefined>(undefined);
@@ -73,6 +80,9 @@
             wiki = $currentPackage.wiki ?? "";
             license = $currentPackage.license;
             vis = $currentPackage.visibility;
+            tags = $currentPackage.tags
+                .filter((t) => !!$tagsStore.find((v) => v.id == t))
+                .map((t) => $tagsStore.find((v) => v.id == t)!);
 
             loadingState = "ready";
 
@@ -229,6 +239,21 @@
                     <span class="variant-filled-primary badge select-text"
                         >{$_("package.unknown")}</span
                     >
+                </dd>
+            {/if}
+
+            {#if tags.length > 0}
+                <hr class="w-full" />
+
+                <dt class="text-sm opacity-50">Tags</dt>
+
+                <dd class="flex flex-wrap gap-1">
+                    {#each tags as tag}
+                        <span class="variant-filled-primary badge select-text">
+                            <Icon icon={tag.icon} width="16" class="mr-2" />
+                            {tag.name}
+                        </span>
+                    {/each}
                 </dd>
             {/if}
 

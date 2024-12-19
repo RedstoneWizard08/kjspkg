@@ -1,4 +1,5 @@
 import type { Facet, SearchResults, Sort, SortMode } from "$lib/types/search";
+import { getToken, isLoggedIn } from "./auth";
 
 export const serializeFacets = (facets: Facet<any>[]) => {
     return `[${facets.map((facet) => `["${facet[0]}", ["${facet[1]}"]]`).join(",")}]`;
@@ -33,7 +34,15 @@ export const searchPackages = async (
     }
 
     try {
-        return await (await fetch(`/api/v1/packages/search${queryStr}`)).json();
+        return await (
+            await fetch(`/api/v1/packages/search${queryStr}`, {
+                headers: isLoggedIn()
+                    ? {
+                          Authorization: `Bearer ${getToken()}`,
+                      }
+                    : {},
+            })
+        ).json();
     } catch (_err: any) {
         return undefined;
     }

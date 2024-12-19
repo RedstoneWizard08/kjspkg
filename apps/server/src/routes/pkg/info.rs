@@ -44,6 +44,9 @@ pub struct PartialPackage {
 
     #[serde(default)]
     pub license: Option<String>,
+
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
 }
 
 /// Get Package
@@ -139,13 +142,16 @@ pub async fn update_handler(
             packages::wiki.eq(data.wiki.map(|v| Some(v)).unwrap_or(pkg.wiki)),
             packages::visibility.eq(data.visibility.unwrap_or(pkg.visibility)),
             packages::license.eq(data.license.map(|v| Some(v)).unwrap_or(pkg.license)),
+            packages::tags.eq(data
+                .tags
+                .map(|v| v.into_iter().map(|v| Some(v)).collect::<Vec<_>>())
+                .unwrap_or(pkg.tags)),
         ))
         .returning(Package::as_select())
         .get_result(&mut conn)
         .await?;
 
-    // tokio::spawn(refresh_list_cache(state.pool));
-    clear_user_cache(user.id);
+    tokio::spawn(clear_user_cache(user.id));
     state.search.update_package(pkg.id, &mut conn).await?;
 
     Ok(Response::builder()
@@ -198,7 +204,7 @@ pub async fn delete_handler(
         .execute(&mut conn)
         .await?;
 
-    clear_user_cache(user.id);
+    tokio::spawn(clear_user_cache(user.id));
     state.search.delete_package(pkg.id).await?;
 
     Ok(Response::builder().body(Body::new("Deleted package successfully!".to_string()))?)

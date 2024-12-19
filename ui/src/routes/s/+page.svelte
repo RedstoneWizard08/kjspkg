@@ -8,45 +8,54 @@
         userPreferencesStore,
         updatePackagesStore,
         emptySearchResults,
+        tagsStore,
     } from "$lib/stores";
     import { vsprintf } from "sprintf-js";
     import type { Facet, LoadingState, Sort, SortMode } from "$lib/types";
     import IconBlank from "$components/icons/IconBlank.svelte";
     import { onMount } from "svelte";
     import { page } from "$app/stores";
-    import { guessSortMode } from "$lib/utils";
+    import { dedupe, guessSortMode } from "$lib/utils";
     import { contextMenu, type ContextMenuItem } from "$lib/contextMenu";
     import PackageList from "$components/ui/PackageList.svelte";
     import TablerIconCheck from "$components/icons/TablerIconCheck.svelte";
     import { siteConfig } from "$lib/config";
     import Icon from "@iconify/svelte";
     import { searchPackages } from "$api";
-    import type { ModLoader } from "$lib/loaders";
-    import type { GameVersion } from "$lib/versions";
+    import { gameVersions } from "$lib/versions";
+    import { modLoaders } from "$lib/loaders";
 
     let currentPage = $state(1);
     let perPage = $state(30);
     let loadingState: LoadingState = $state($packagesStore.hits == 0 ? "loading" : "ready");
-    let loaders = $state<ModLoader[]>([]);
-    let versions = $state<GameVersion[]>([]);
     let loaderFilters = $state<string[]>([]);
     let versionFilters = $state<string[]>([]);
+    let tagFilters = $state<string[]>([]);
     let versionSearch = $state("");
+    let tagsSearch = $state("");
 
     const searchedVersions = $derived(
-        versions.filter((v) => v.id.toLowerCase().includes(versionSearch.toLowerCase())),
+        ($gameVersions || []).filter((v) =>
+            v.id.toLowerCase().includes(versionSearch.toLowerCase()),
+        ),
+    );
+
+    const searchedTags = $derived(
+        $tagsStore.filter(
+            (v) =>
+                v.id.toLowerCase().includes(tagsSearch.toLowerCase()) ||
+                v.name.toLowerCase().includes(tagsSearch.toLowerCase()),
+        ),
     );
 
     const showDetails = $derived(($page.url.searchParams.get("showDetails") ?? "false") == "true");
 
     onMount(async () => {
-        (async () => {
-            loaders = await siteConfig.loaderFetcher();
-            versions = await siteConfig.versionFetcher();
-        })();
-
         const dir = $page.url.searchParams.get("dir");
         const curPage = $page.url.searchParams.get("page");
+        const queryLoaderFilters = $page.url.searchParams.get("loaders");
+        const queryVersionFilters = $page.url.searchParams.get("versions");
+        const queryTagFilters = $page.url.searchParams.get("tags");
 
         loadingState = (await updatePackagesStore()) ? "ready" : "failed";
         $userPreferencesStore.sortBy = guessSortMode($page.url.searchParams.get("sort") ?? "");
@@ -67,7 +76,29 @@
             $currentSearchStore = $page.url.searchParams.get("q")!;
         }
 
-        currentPage = curPage ? parseInt(curPage) : currentPage;
+        try {
+            const val = curPage ? parseInt(curPage) : currentPage;
+
+            currentPage = val;
+        } catch (_) {}
+
+        try {
+            const val = queryLoaderFilters ? JSON.parse(queryLoaderFilters) : loaderFilters;
+
+            loaderFilters = val;
+        } catch (_) {}
+
+        try {
+            const val = queryVersionFilters ? JSON.parse(queryVersionFilters) : versionFilters;
+
+            versionFilters = val;
+        } catch (_) {}
+
+        try {
+            const val = queryTagFilters ? JSON.parse(queryTagFilters) : tagFilters;
+
+            tagFilters = val;
+        } catch (_) {}
     });
 
     $effect(() => {
@@ -79,6 +110,10 @@
 
         if (versionFilters.length > 0) {
             facets.push(["game_versions", versionFilters] as Facet<"game_versions">);
+        }
+
+        if (tagFilters.length > 0) {
+            facets.push(["tags", tagFilters] as Facet<"tags">);
         }
 
         searchPackages(
@@ -101,6 +136,17 @@
 
         $page.url.searchParams.set("dir", $userPreferencesStore.sortDir);
         $page.url.searchParams.set("page", currentPage.toString());
+
+        if (loaderFilters.length > 0)
+            $page.url.searchParams.set("loaders", JSON.stringify(loaderFilters));
+        else $page.url.searchParams.delete("loaders");
+
+        if (versionFilters.length > 0)
+            $page.url.searchParams.set("versions", JSON.stringify(versionFilters));
+        else $page.url.searchParams.delete("versions");
+
+        if (tagFilters.length > 0) $page.url.searchParams.set("tags", JSON.stringify(tagFilters));
+        else $page.url.searchParams.delete("tags");
 
         replaceState($page.url, $page.state);
     };
@@ -125,6 +171,8 @@
         return () => {
             if (loaderFilters.includes(id)) loaderFilters = loaderFilters.filter((v) => v != id);
             else loaderFilters.push(id);
+
+            updateQuery();
         };
     };
 
@@ -132,6 +180,17 @@
         return () => {
             if (versionFilters.includes(id)) versionFilters = versionFilters.filter((v) => v != id);
             else versionFilters.push(id);
+
+            updateQuery();
+        };
+    };
+
+    const toggleTagFilter = (id: string) => {
+        return () => {
+            if (tagFilters.includes(id)) tagFilters = tagFilters.filter((v) => v != id);
+            else tagFilters.push(id);
+
+            updateQuery();
         };
     };
 </script>
@@ -144,7 +203,7 @@
 
 <div class="flex h-full w-full flex-col items-start md:flex-row md:justify-between">
     <div
-        class="card flex w-full flex-col items-start justify-start space-y-4 p-3 py-4 md:sticky md:top-[8px] md:mr-4 md:w-80"
+        class="card z-10 flex h-full w-full flex-col items-start justify-start space-y-4 p-3 py-4 md:sticky md:top-0 md:mr-4 md:w-80"
     >
         <p class="mx-2 my-0 text-lg">Search Filters</p>
 
@@ -152,7 +211,7 @@
 
         {#if $currentSearchStore || loaderFilters.length > 0 || versionFilters.length > 0}
             <button
-                class="variant-soft-secondary btn hover:variant-filled-primary w-fit"
+                class="variant-soft-secondary btn w-fit hover:variant-filled-primary"
                 onclick={() => {
                     $currentSearchStore = "";
                     loaderFilters = [];
@@ -170,10 +229,10 @@
         <p class="mx-2">Filter Mod Loaders</p>
 
         <div class="flex w-full flex-col items-start justify-start space-y-2">
-            {#each loaders as loader}
+            {#each $modLoaders || [] as loader}
                 <button
                     type="button"
-                    class="btn variant-glass-primary w-full justify-start rounded-xl"
+                    class="variant-glass-primary btn w-full justify-start rounded-xl"
                     class:!variant-filled-primary={loaderFilters.includes(loader.id)}
                     onclick={toggleLoaderFilter(loader.id)}>{loader.name}</button
                 >
@@ -192,24 +251,53 @@
         />
 
         <div
-            class="flex md:max-h-60 max-h-36 w-full flex-col items-start justify-start space-y-2 overflow-scroll"
+            class="flex max-h-36 w-full flex-col items-start justify-start space-y-2 overflow-scroll md:max-h-60"
         >
             {#each searchedVersions as version}
                 <button
                     type="button"
-                    class="btn variant-glass-primary w-full justify-start rounded-xl"
+                    class="variant-glass-primary btn w-full justify-start rounded-xl"
                     class:!variant-filled-primary={versionFilters.includes(version.id)}
                     onclick={toggleVersionFilter(version.id)}>{version.id}</button
                 >
             {/each}
         </div>
+
+        {#if $tagsStore.length > 0}
+            <hr class="w-full" />
+
+            <p class="mx-2">Filter Tags</p>
+
+            <input
+                type="text"
+                bind:value={tagsSearch}
+                class="input rounded-md"
+                placeholder="Search tags..."
+            />
+
+            <div
+                class="flex max-h-36 w-full flex-col items-start justify-start space-y-2 overflow-scroll md:max-h-60"
+            >
+                {#each searchedTags as tag}
+                    <button
+                        type="button"
+                        class="variant-glass-primary btn w-full justify-start rounded-xl"
+                        class:!variant-filled-primary={tagFilters.includes(tag.id)}
+                        onclick={toggleTagFilter(tag.id)}
+                    >
+                        <Icon icon={tag.icon} class="mr-2" width="20" />
+                        {tag.name}
+                    </button>
+                {/each}
+            </div>
+        {/if}
     </div>
 
     <div class="flex h-full w-full flex-col items-center justify-start">
         <div
-            class="border-surface-600 bg-surface-900 sticky top-[-1px] z-10 mb-2 flex w-full flex-col p-2 backdrop-blur md:flex-row md:items-center md:justify-between"
+            class="sticky top-0 z-10 mb-2 flex w-full flex-col border-surface-600 bg-surface-900 p-2 backdrop-blur md:flex-row md:items-center md:justify-between"
         >
-            <h1 class="h4 mb-2 md:mb-0">
+            <h1 class="mb-2 text-lg md:mb-0">
                 {#if !$currentSearchStore}
                     {@html vsprintf($_("search.found_plural"), [$packagesStore.total])}
                     {$_(`search.plural.${siteConfig.type}`)}
@@ -230,7 +318,7 @@
                     {#if $currentSearchStore != ""}
                         {$_("search.matching")}
                         <button
-                            class="hover:variant-filled-error transition-all hover:rounded hover:p-1 hover:px-2 hover:line-through"
+                            class="transition-all hover:variant-filled-error hover:rounded hover:p-1 hover:px-2 hover:line-through"
                             onclick={() => ($currentSearchStore = "")}
                         >
                             {$currentSearchStore}
@@ -239,10 +327,12 @@
                 {/if}
             </h1>
 
-            <div class="flex items-center flex-col md:flex-row md:justify-end md:space-y-0 space-y-2 justify-between">
-                <div class="flex flex-row flex-wrap items-center space-x-1 md:space-x-2 md:mr-8">
+            <div
+                class="flex flex-col items-center justify-between space-y-2 md:flex-row md:justify-end md:space-y-0"
+            >
+                <div class="flex flex-row flex-wrap items-center space-x-1 md:mr-8 md:space-x-2">
                     <button
-                        class="btn variant-glass-primary hover:variant-ghost-primary btn-sm text-center font-bold transition-all"
+                        class="variant-glass-primary btn btn-sm text-center font-bold transition-all hover:variant-ghost-primary"
                         disabled={currentPage <= 1}
                         onclick={prevPage}><Icon height="24" icon="tabler:arrow-left" /></button
                     >
@@ -250,19 +340,19 @@
                     {#if $packagesStore.pages > 3}
                         {#if currentPage < $packagesStore.pages - 1}
                             <button
-                                class="btn variant-filled-primary btn-icon-sm text-center font-bold transition-all"
+                                class="variant-filled-primary btn btn-icon-sm text-center font-bold transition-all"
                                 >{currentPage}</button
                             >
                         {/if}
 
                         <button
-                            class="btn variant-glass-primary hover:variant-ghost-primary btn-icon-sm text-center font-bold transition-all"
+                            class="variant-glass-primary btn btn-icon-sm text-center font-bold transition-all hover:variant-ghost-primary"
                             disabled>...</button
                         >
 
                         {#if currentPage >= $packagesStore.pages - 1}
                             <button
-                                class="btn variant-glass-primary hover:variant-ghost-primary btn-icon-sm text-center font-bold transition-all"
+                                class="variant-glass-primary btn btn-icon-sm text-center font-bold transition-all hover:variant-ghost-primary"
                                 class:!variant-filled-primary={currentPage ==
                                     $packagesStore.pages - 1}
                                 onclick={() => {
@@ -273,7 +363,7 @@
                         {/if}
 
                         <button
-                            class="btn variant-glass-primary hover:variant-ghost-primary btn-icon-sm text-center font-bold transition-all"
+                            class="variant-glass-primary btn btn-icon-sm text-center font-bold transition-all hover:variant-ghost-primary"
                             class:!variant-filled-primary={currentPage == $packagesStore.pages}
                             onclick={() => {
                                 currentPage = $packagesStore.pages;
@@ -283,7 +373,7 @@
                     {:else}
                         {#each new Array($packagesStore.pages) as _, page}
                             <button
-                                class="btn variant-glass-primary hover:variant-ghost-primary btn-icon-sm text-center font-bold transition-all"
+                                class="variant-glass-primary btn btn-icon-sm text-center font-bold transition-all hover:variant-ghost-primary"
                                 class:!variant-filled-primary={currentPage == page + 1}
                                 onclick={() => {
                                     currentPage = page + 1;
@@ -294,7 +384,7 @@
                     {/if}
 
                     <button
-                        class="btn variant-glass-primary hover:variant-ghost-primary btn-sm text-center font-bold transition-all"
+                        class="variant-glass-primary btn btn-sm text-center font-bold transition-all hover:variant-ghost-primary"
                         disabled={currentPage >= $packagesStore.pages}
                         onclick={nextPage}
                     >
@@ -302,21 +392,50 @@
                     >
                 </div>
 
-                <div class="flex flex-row flex-wrap space-x-1 md:space-x-2 items-center justify-end">
+                <div
+                    class="flex flex-row flex-wrap items-center justify-end space-x-1 md:space-x-2"
+                >
                     <button
-                        class="variant-soft-secondary btn btn-sm hover:border-secondary-500 border border-transparent transition-all"
+                        class="variant-soft-secondary btn rounded-full border border-transparent p-2 text-sm transition-all hover:border-secondary-500 md:text-base"
+                        use:contextMenu={{
+                            initiator: "left",
+                            items: [
+                                ...dedupe([5, 10, 15, 20, 25, 30, 35, perPage])
+                                    .sort()
+                                    .map(
+                                        (count) =>
+                                            ({
+                                                type: "ITEM",
+                                                label: count.toString(),
+                                                icon:
+                                                    perPage == count ? TablerIconCheck : IconBlank,
+                                                action: () => {
+                                                    perPage = count;
+                                                    updateQuery();
+                                                },
+                                            }) as ContextMenuItem,
+                                    ),
+                            ],
+                        }}
+                    >
+                        <Icon icon="tabler:list" height="20" class="mr-2" />
+                        {perPage}
+                    </button>
+
+                    <button
+                        class="variant-soft-secondary btn btn-sm border border-transparent transition-all hover:border-secondary-500"
                         onclick={() =>
                             ($userPreferencesStore.compact = !$userPreferencesStore.compact)}
                     >
                         {#if $userPreferencesStore.compact}
-                            <Icon icon="tabler:list" height="24" />
+                            <Icon icon="tabler:list-details" height="24" />
                         {:else}
                             <Icon icon="tabler:layout-dashboard" height="24" />
                         {/if}
                     </button>
 
                     <button
-                        class="btn variant-soft-secondary hover:border-secondary-500 md:w-[9.5rem] w-[9rem] rounded-full border border-transparent p-2 transition-all md:text-base text-sm"
+                        class="variant-soft-secondary btn w-[9rem] rounded-full border border-transparent p-2 text-sm transition-all hover:border-secondary-500 md:w-[9.5rem] md:text-base"
                         use:contextMenu={{
                             initiator: "left",
                             items: [
@@ -386,9 +505,9 @@
                 class:md:grid-cols-2={$userPreferencesStore.compact}
                 class:lg:grid-cols-3={$userPreferencesStore.compact}
             >
-                {#each Array(5) as _}
+                {#each Array(6) as _}
                     <div
-                        class="placeholder rounded-container-token h-24 w-full animate-pulse"
+                        class="placeholder h-24 w-full animate-pulse rounded-container-token"
                     ></div>
                 {/each}
             </dl>

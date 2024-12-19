@@ -4,12 +4,12 @@ import {
     type PackageData,
     type UserPreferences,
     type Vec2,
-    type Sort,
     type LoadingState,
+    type Tag,
 } from "./types";
 import { browser } from "$app/environment";
 import { locales } from "svelte-i18n";
-import { getCurrentUser, searchPackages } from "$api";
+import { getCurrentUser, getTags, searchPackages } from "$api";
 import { persisted } from "svelte-persisted-store";
 import { siteConfig } from "./config";
 import type { SearchResults } from "./types/search";
@@ -29,6 +29,7 @@ export const user = writable<User | undefined>(undefined);
 export const currentPackage = writable<PackageData | undefined>(undefined);
 export const editSaving = writable<boolean>(false);
 export const editLoadingState = writable<LoadingState>("loading");
+export const tagsStore = writable<Tag[]>([]);
 
 export const userPreferencesStore = persisted<UserPreferences>("preferences", {
     sortBy: "none",
@@ -54,6 +55,10 @@ export const updateUserStore = async () => {
     if (get(user)) return;
 
     user.set(await getCurrentUser());
+};
+
+export const updateTagsStore = async () => {
+    tagsStore.set(await getTags());
 };
 
 export const updateTheme = () => {

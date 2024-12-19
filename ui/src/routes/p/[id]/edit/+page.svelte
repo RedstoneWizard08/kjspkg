@@ -195,7 +195,7 @@
     </p>
 
     <select
-        class="select variant-ghost-primary cursor-pointer !outline-none"
+        class="select cursor-pointer rounded-lg !outline-none"
         bind:value={visibility}
     >
         <option value="Public">Public</option>

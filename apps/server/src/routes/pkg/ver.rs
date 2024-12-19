@@ -1,4 +1,4 @@
-use crate::{auth::get_user_from_req, state::AppState, Result};
+use crate::{auth::get_user_from_req, state::AppState, util::versions::get_latest_version, Result};
 use anyhow::anyhow;
 use app_core::AppError;
 use axum::{
@@ -170,21 +170,11 @@ pub async fn latest_handler(
         }
     }
 
-    let mut versions = package_versions::table
-        .filter(package_versions::package.eq(pkg.id))
-        .select(PackageVersion::as_select())
-        .load(&mut conn)
-        .await?;
-
-    versions.sort_by(|a, b| {
-        Version::parse(&a.version_number)
-            .unwrap()
-            .cmp(&Version::parse(&b.version_number).unwrap())
-    });
+    let ver = get_latest_version(pkg.id, &mut conn).await?;
 
     Ok(Response::builder()
         .header("Content-Type", "application/json")
-        .body(Body::new(serde_json::to_string(&versions.last().unwrap())?))?)
+        .body(Body::new(serde_json::to_string(&ver)?))?)
 }
 
 /// Download Package Version

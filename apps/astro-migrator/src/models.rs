@@ -229,6 +229,7 @@ impl Mod {
             source: None,
             issues: None,
             wiki: None,
+            tags: self.tags.into_iter().map(|v| Some(v)).collect(),
             visibility: if self.published {
                 PackageVisibility::Public
             } else {

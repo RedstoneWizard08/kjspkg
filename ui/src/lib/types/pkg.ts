@@ -62,6 +62,11 @@ export interface Package {
      * The license a package is under.
      */
     license?: string;
+
+    /**
+     * The package's tags.
+     */
+    tags: string[];
 }
 
 export interface PackageUpdate {
@@ -104,6 +109,11 @@ export interface PackageUpdate {
      * The license a package is under.
      */
     license?: string;
+
+    /**
+     * The package's tags.
+     */
+    tags?: string[];
 }
 
 export interface NewPackage {
@@ -151,6 +161,11 @@ export interface NewPackage {
      * The license a package is under.
      */
     license?: string;
+
+    /**
+     * The package's tags.
+     */
+    tags?: string[];
 }
 
 export interface PackageData extends Package {

@@ -47,6 +47,7 @@ use utoipa::{
         crate::routes::meta::badge::version_handler,
         crate::routes::meta::vers::game_versions_handler,
         crate::routes::meta::loaders::loaders_handler,
+        crate::routes::meta::tags::tags_handler,
     ),
     components(
         schemas(
@@ -82,6 +83,7 @@ use utoipa::{
             crate::routes::pkg::gallery::GalleryImageUpload,
             crate::routes::meta::vers::GameVersion,
             crate::routes::meta::loaders::ModLoader,
+            crate::routes::meta::tags::Tag,
         ),
         responses(
             db::User,
@@ -116,6 +118,7 @@ use utoipa::{
             crate::routes::pkg::gallery::GalleryImageUpload,
             crate::routes::meta::vers::GameVersion,
             crate::routes::meta::loaders::ModLoader,
+            crate::routes::meta::tags::Tag,
         ),
     ),
     tags(

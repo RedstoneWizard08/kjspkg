@@ -115,3 +115,13 @@ export const splitToRows = <T>(data: T[], rows: number): T[][] => {
 
     return out;
 };
+
+export const dedupe = <T>(arr: T[]): T[] => {
+    const newArr: T[] = [];
+
+    for (const item of arr) {
+        if (!newArr.includes(item)) newArr.push(item);
+    }
+
+    return newArr;
+};

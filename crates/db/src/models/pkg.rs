@@ -3,6 +3,7 @@ use crate::schema::packages;
 use chrono::NaiveDateTime;
 use diesel::pg::Pg;
 use diesel_derive_enum::DbEnum;
+use itertools::Itertools;
 
 #[derive(
     Debug,
@@ -86,6 +87,9 @@ pub struct Package {
 
     /// The license the package is under.
     pub license: Option<String>,
+
+    /// A list of tags for this package.
+    pub tags: Vec<Option<String>>,
 }
 
 /// A model for creating a new package.
@@ -139,6 +143,10 @@ pub struct NewPackage {
     /// The license the package is under.
     #[serde(default)]
     pub license: Option<String>,
+
+    /// A list of tags for this package.
+    #[serde(default)]
+    pub tags: Vec<Option<String>>,
 }
 
 /// A package with additional data.
@@ -187,6 +195,9 @@ pub struct PackageData {
 
     /// The license the package is under.
     pub license: Option<String>,
+
+    /// A list of tags for this package.
+    pub tags: Vec<String>,
 }
 
 impl Package {
@@ -205,6 +216,7 @@ impl Package {
             downloads: self.downloads,
             visibility: self.visibility,
             license: self.license,
+            tags: self.tags.into_iter().filter_map(|v| v).collect_vec(),
             authors,
         }
     }

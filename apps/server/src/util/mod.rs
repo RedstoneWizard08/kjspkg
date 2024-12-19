@@ -1,6 +1,7 @@
 pub mod gallery;
 pub mod sanitize;
 pub mod scheme;
+pub mod versions;
 
 use octocrab::Octocrab;
 

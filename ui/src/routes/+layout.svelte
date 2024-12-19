@@ -3,7 +3,12 @@
     import "highlight.js/styles/github-dark.min.css";
 
     import "carta-md/default.css";
-    import { currentScrollPosition, updateUserStore, userPreferencesStore } from "$lib/stores";
+    import {
+        currentScrollPosition,
+        updateTagsStore,
+        updateUserStore,
+        userPreferencesStore,
+    } from "$lib/stores";
     import {
         Modal,
         Toast,
@@ -68,9 +73,14 @@
 
         document.body.dataset.theme = $userPreferencesStore.theme ?? siteConfig.defaultTheme;
 
-        updateUserStore();
-        updateGameVersionsIfNeeded();
-        updateModLoadersIfNeeded();
+        (async () => {
+            await Promise.all([
+                updateUserStore(),
+                updateGameVersionsIfNeeded(),
+                updateModLoadersIfNeeded(),
+                updateTagsStore(),
+            ]);
+        })();
     });
 
     beforeNavigate(() => (navigating = true));
@@ -144,7 +154,7 @@
                 </div>
             {:else}
                 <div
-                    class="container mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4 md:p-10"
+                    class="container mx-auto flex min-h-full max-w-screen-lg flex-col space-y-2 p-4"
                 >
                     {#key data.href}
                         {@render children?.()}

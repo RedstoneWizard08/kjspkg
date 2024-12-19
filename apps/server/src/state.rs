@@ -1,5 +1,5 @@
 use crate::{
-    routes::meta::{loaders::ModLoader, vers::GameVersion},
+    routes::meta::{loaders::ModLoader, tags::Tag, vers::GameVersion},
     Result,
 };
 use app_config::AppConfig;
@@ -24,6 +24,7 @@ pub struct AppState {
     pub config: AppConfig,
     pub loaders: Vec<ModLoader>,
     pub game_versions: Vec<GameVersion>,
+    pub tags: Vec<Tag>,
     pub search: MeilisearchService,
     pub verifier: Arc<Box<dyn Fn(Bytes) -> bool + Send + Sync>>,
 }
@@ -44,6 +45,7 @@ impl AppState {
             config: config.clone(),
             loaders: vec![],
             game_versions: vec![],
+            tags: vec![],
             verifier: Arc::new(verifier),
             search: MeilisearchService::new(config)?,
         })

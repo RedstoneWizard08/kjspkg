@@ -31,7 +31,7 @@
 
 <a
     href={`${base}/p/${pkg.slug}`}
-    class="card hover:variant-soft-primary flex p-4"
+    class="card flex p-4 hover:variant-soft-primary"
     class:flex-col={compact}
     onclick={() => select?.(pkg.id)}
     class:!variant-filled-primary={$page.url.searchParams.get("id") == pkg.name}
@@ -39,25 +39,19 @@
 >
     {#if showAvatar && !compact}
         {#if img}
-        <img
-                src={img}
-                alt="package icon"
-                class="rounded-lg my-auto mr-4 aspect-square h-16"
-            />
-            {:else}
-        {#if pkg.authors[0].github_id == -1}
+            <img src={img} alt="package icon" class="my-auto mr-4 aspect-square h-16 rounded-lg" />
+        {:else if pkg.authors[0].github_id == -1}
             <img
                 src="/modhost.png"
                 alt="author's profile avatar"
-                class="rounded-token my-auto mr-4 aspect-square h-8"
+                class="my-auto mr-4 aspect-square h-8 rounded-token"
             />
         {:else}
             <img
                 src={`https://avatars.githubusercontent.com/u/${pkg.authors[0].github_id}`}
                 alt="author's profile avatar"
-                class="rounded-token my-auto mr-4 aspect-square h-8"
+                class="my-auto mr-4 aspect-square h-8 rounded-token"
             />
-        {/if}
         {/if}
     {/if}
     <dl class="my-auto">

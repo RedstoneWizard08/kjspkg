@@ -7,6 +7,7 @@ use db::PackageVisibility;
 pub enum Facet {
     GameVersions(Vec<String>),
     Loaders(Vec<String>),
+    Tags(Vec<String>),
     Published(NaiveDateTime, NaiveDateTime),
     Updated(NaiveDateTime, NaiveDateTime),
     Downloads(i32, i32),
@@ -80,6 +81,7 @@ impl Facet {
                 Self::Visibility(v) => format!("visibility = {}", v.as_str()),
                 Self::GameVersions(v) => format!("game_versions IN [{}]", v.join(", ")),
                 Self::Loaders(v) => format!("loaders IN [{}]", v.join(", ")),
+                Self::Tags(v) => format!("tags IN [{}]", v.join(", ")),
                 Self::Published(start, end) => format!(
                     "(created_at >= {}) AND (created_at <= {})",
                     start.and_utc().timestamp(),
@@ -103,6 +105,7 @@ impl Facet {
             // 'visibility', and 'author', and 'manual' can only be set by the system for security reasons
             "game_versions" => Ok(Facet::GameVersions(it.1)),
             "loaders" => Ok(Facet::Loaders(it.1)),
+            "tags" => Ok(Facet::Tags(it.1)),
 
             "published" => {
                 if it.1.len() == 2 {

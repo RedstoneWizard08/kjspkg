@@ -1,5 +1,6 @@
 pub mod cli;
 pub mod models;
+pub mod tags;
 pub mod vers;
 
 use once_cell::sync::Lazy;

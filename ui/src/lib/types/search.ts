@@ -3,6 +3,7 @@ import type { PackageData } from "./pkg";
 export interface Facets {
     game_versions: string[];
     loaders: string[];
+    tags: string[];
     published: [number, number];
     updated: [number, number];
     downloads: [number, number];

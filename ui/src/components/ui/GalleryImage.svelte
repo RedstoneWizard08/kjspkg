@@ -19,7 +19,7 @@
     onclick={openViewModal}
     class="card flex h-full w-full cursor-pointer flex-col items-center justify-start gap-y-4 p-2 transition-all hover:variant-soft-primary"
 >
-    <p class="w-[90%] text-left text-lg font-bold text-ellipsis overflow-clip">{img.name}</p>
+    <p class="w-[90%] overflow-clip text-ellipsis text-left text-lg font-bold">{img.name}</p>
 
     <img src={img.url} alt={img.name} class="aspect-square w-[90%] rounded-lg object-cover" />
 </button>

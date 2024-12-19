@@ -5,7 +5,10 @@ use db::{create_connection, run_migrations, users, NewUser, User};
 use diesel::{insert_into, SelectableHelper};
 use diesel_async::RunQueryDsl;
 use indicatif::ProgressIterator;
+use itertools::Itertools;
 use modhost::init_logger;
+use ron::ser::PrettyConfig;
+use search::MeilisearchService;
 use std::{fs, path::PathBuf};
 use tracing::level_filters::LevelFilter;
 
@@ -23,6 +26,7 @@ pub async fn main() -> Result<()> {
 
     let mods_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("mods");
     let raw = fs::read_to_string(mods_dir.join("mods.json"))?;
+    let tags_file = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tags.ron");
     let data = serde_json::from_str::<ModsDump>(&raw)?;
     let dump: Vec<Mod> = data.into();
 
@@ -38,10 +42,33 @@ pub async fn main() -> Result<()> {
         .await?
         .id;
 
+    let mut tags = Vec::new();
+
     for item in dump.into_iter().progress() {
-        item.upload_all(id, &mut pool.get().await?, &pkgs, &imgs)
+        let (pkg, _) = item
+            .upload_all(id, &mut pool.get().await?, &pkgs, &imgs)
             .await?;
+
+        tags.extend(pkg.tags);
     }
+
+    let tags = tags
+        .into_iter()
+        .filter_map(|v| v)
+        .sorted()
+        .dedup()
+        .collect_vec();
+
+    let search = MeilisearchService::new(&config)?;
+
+    search.index_packages(&mut pool.get().await?).await?;
+
+    fs::write(
+        tags_file,
+        ron::ser::to_string_pretty(&tags, PrettyConfig::default())?,
+    )?;
+
+    println!("Known tags written to tags.ron");
 
     Ok(())
 }
